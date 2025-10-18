@@ -60,3 +60,15 @@ We welcome contributions from developers, UX designers, data curators, and DTES 
 📜 License & Contact
 
 Distributed under the MIT License. See LICENSE.md for more information.
+
+Field
+
+Detail
+
+Contact
+
+Your Name - your.email@example.com
+
+Project Link
+
+[Insert your GitHub Repo URL here]
