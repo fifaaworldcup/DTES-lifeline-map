@@ -30,3 +30,20 @@ You will need the following software installed:
 ### Installation Steps
 
 1. Clone the repository:
+  
+2. Install dependencies:
+npm install
+
+3. Configure Environment Variables:
+Create a file named `.env` in the root directory. This will hold sensitive keys, such as your Mapbox/Leaflet API keys and any Firebase/Firestore configuration.
+
+4. Run the application:
+npm start
+
+
+## 🤝 Contribution
+We welcome contributions from developers, UX designers, data curators, and DTES community members. Please see our CONTRIBUTING.md file for detailed guidelines.
+
+##📜 License & Contact
+
+Distributed under the MIT License. See LICENSE.md for more information.
