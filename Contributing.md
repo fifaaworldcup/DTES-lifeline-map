@@ -7,21 +7,23 @@ This project is driven by a mission to improve access to life-saving resources i
 - **Fork and Branch**: Create a fork of the repository and branch off of main.
 
 
-- **Commit Messages**: Use clear, descriptive commit messages (e.g., `feat: add real-time status listener` or `fix: correct leaflet icon path`).
+Commit Messages: Use clear, descriptive commit messages (e.g., feat: add real-time status listener or fix: correct leaflet icon path).
 
-- **Code Standards**:
+Code Standards:
+
 - Use modern JavaScript (ES6+).
 - Ensure your code is well-commented, especially complex logic around Firebase or Leaflet.
 - Maintain full responsiveness and accessibility (A11Y) in all UI components, as the primary users will be on mobile devices in challenging conditions.
 
-- **Pull Requests (PRs)**: Submit PRs targeting the main branch. Ensure your PR is linked to an existing issue.
+Pull Requests (PRs): Submit PRs targeting the main branch. Ensure your PR is linked to an existing issue.
 
 ## Reporting Issues and Bugs
 
 If you find a bug or have a suggestion, please open an issue in the GitHub repository.
 
-- **For Bugs**: Include clear steps to reproduce the issue, what you expected, and what actually happened.
-- **For Feature Requests**: Clearly articulate the problem and how the proposed feature would benefit users (e.g., "It is difficult to see which sites are open after 9 PM. A time slider would help.").
+For Bugs: Include clear steps to reproduce the issue, what you expected, and what actually happened.
+
+For Feature Requests: Clearly articulate the problem and how the proposed feature would benefit users (e.g., "It is difficult to see which sites are open after 9 PM. A time slider would help.").
 
 ## Community Data Curation and Verification
 
