@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vancouver DTES Lifeline Map</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Nunito Sans Font -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap');
+        body { font-family: 'Nunito Sans', sans-serif; }
+        
+        /* Map Container */
+        #map { 
+            height: 70vh; 
+            width: 100%; 
+            min-height: 400px; 
+            border-radius: 0.75rem; 
+            transition: opacity 0.5s;
+        }
+        
+        /* Leaflet Popup Styles */
+        .leaflet-popup-content .popup-btn {
+            padding: 0.35rem 0.6rem;
+            border-radius: 0.4rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            margin-top: 10px;
+            margin-right: 5px;
+            font-size: 0.85rem;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+        .leaflet-popup-content .popup-btn:hover { transform: translateY(-1px); }
+        .direction-btn { background-color: #EF4444; color: white; justify-content: center; width: 100%; margin-top: 12px !important; }
+        .direction-btn:hover { background-color: #DC2626; } 
+        
+        .like-btn { background-color: #10B981; color: white; } 
+        .dislike-btn { background-color: #FBBF24; color: #333; } 
+        .report-btn { background-color: #F87171; color: white; } 
+        .like-btn:hover { background-color: #059669; }
+        .dislike-btn:hover { background-color: #F59E0B; }
+        .report-btn:hover { background-color: #EF4444; }
+        .leaflet-popup-content-wrapper { border-radius: 0.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+        /* Filter Buttons */
+        .filter-button.active {
+            box-shadow: 0 0 0 3px #1D4ED8, 0 2px 4px rgba(0,0,0,0.1); 
+            border-color: #1D4ED8;
+            background-color: #1D4ED8 !important;
+        }
+        .filter-button { transition: all 0.2s ease-in-out; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+        /* User Location Icon (Pulsing blue dot) */
+         .user-location-icon {
+            background-color: #3B82F6;
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+        }
+        
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.98);
+            z-index: 1010;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 36px; height: 36px; border-radius: 50%;
+            border-left-color: #1D4ED8;
+            animation: spin 1s ease infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin=""/>
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <!-- Leaflet Control Geocoder CSS (Required for Routing) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <!-- Font Awesome (for icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    
+    <!-- Initial Loading Overlay -->
+    <div id="loadingOverlay" role="status" aria-live="polite">
+        <div class="spinner mb-4"></div>
+        <p class="text-2xl font-bold text-gray-800">DTES Lifeline Map</p>
+        <p class="text-sm text-gray-500 mt-2" id="loadingStatusText">Initializing database connection...</p>
+    </div>
+
+    <div class="container mx-auto p-4 md:p-8 opacity-0 transition-opacity duration-500" id="mainAppContent">
+        <header class="bg-white p-6 shadow-xl rounded-xl mb-6">
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">Vancouver DTES Lifeline Map</h1>
+            <p class="text-gray-600 mb-2">Instant access to harm reduction, food, and crucial support services in the **Downtown Eastside** and central Vancouver. Data verified from official sources like Vancouver Coastal Health (VCH) and BC Government.</p>
+            <p class="text-sm text-gray-500 mb-2">
+                <span id="userLocationStatus" class="font-semibold text-gray-500">Waiting for location...</span> | 
+                <span id="authStatus" class="text-gray-500">Initializing Firebase...</span>
+            </p>
+            <p class="text-xs text-red-600 font-semibold mt-2 bg-red-50 p-2 rounded-lg border border-red-200">
+                <i class="fas fa-exclamation-triangle mr-1"></i> **Crucial Note:** Service hours are based on **typical schedules** from official sources. Always rely on the **Community Status** (Green/Red pins) for real-time availability. Verify directly with providers.
+            </p>
+        </header>
+
+        <!-- Controls, Search, and Filters -->
+        <div class="grid grid-cols-1 gap-4 mb-6">
+            
+            <!-- Filter & Search Block -->
+            <div class="bg-white p-4 shadow-lg rounded-xl">
+                <div class="flex flex-col md:flex-row gap-4 mb-4">
+                    <div class="flex-grow">
+                        <label for="searchBar" class="block text-sm font-medium text-gray-700 mb-1">Search DTES Resources:</label>
+                        <input type="text" id="searchBar" placeholder="Search by name (e.g., Insite, UGM)" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                    </div>
+                </div>
+                
+                <h3 class="text-sm font-semibold text-gray-700 mb-2">Filter by Type:</h3>
+                <div id="filterButtons" class="grid grid-cols-3 sm:grid-cols-6 gap-3">
+                    <button data-filter="all" class="filter-button bg-gray-600 hover:bg-gray-700 text-white py-2 px-3 rounded-lg shadow-md active" aria-pressed="true">
+                        <i class="fas fa-search-location mr-1"></i> All
+                    </button>
+                    <button data-filter="Naloxone" class="filter-button bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
+                        <i class="fas fa-kit-medical mr-1"></i> Naloxone
+                    </button>
+                    <button data-filter="Injection Site" class="filter-button bg-green-500 hover:bg-green-600 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
+                        <i class="fas fa-syringe mr-1"></i> Consumption
+                    </button>
+                    <button data-filter="Detox" class="filter-button bg-orange-500 hover:bg-orange-600 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
+                        <i class="fas fa-house-medical-flag mr-1"></i> Detox
+                    </button>
+                    <button data-filter="Food" class="filter-button bg-purple-600 hover:bg-purple-700 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
+                        <i class="fas fa-utensils mr-1"></i> Food/Shelter
+                    </button>
+                    <button data-filter="Urgent" class="filter-button bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
+                        <i class="fas fa-hospital mr-1"></i> Urgent Care
+                    </button>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                 <button id="locateUserButton" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-150 ease-in-out transform hover:scale-[1.02]">
+                    <i class="fas fa-crosshairs mr-2"></i> Find Me
+                </button>
+                <button id="instructionsButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-150 ease-in-out transform hover:scale-[1.02]">
+                    <i class="fas fa-hand-holding-medical mr-2"></i> Naloxone Guide
+                </button>
+                 <button id="reportStatusButton" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-150 ease-in-out transform hover:scale-[1.02]">
+                    <i class="fas fa-bullhorn mr-2"></i> Report Status
+                </button>
+                <button id="emergencyButton" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-150 ease-in-out transform hover:scale-[1.02]">
+                    <i class="fas fa-phone-alt mr-2"></i> Call 911
+                </button>
+            </div>
+        </div>
+
+        <div id="emergencyMessage" class="hidden bg-red-200 border border-red-500 text-red-800 px-4 py-3 rounded-lg relative mb-4 font-bold" role="alert">
+            <span class="block sm:inline">EMERGENCY: Attempting to connect to 911 (simulated). Please use your phone for a real emergency.</span>
+        </div>
+        
+        <!-- Map Container -->
+        <div id="map" class="shadow-2xl border-4 border-white opacity-0"></div>
+
+        <!-- Status Footer - Expanded Lifelines -->
+        <footer class="mt-6 bg-gray-800 text-white p-4 rounded-xl shadow-lg">
+            <h2 class="text-lg font-bold mb-3">Lifelines & Crisis Support (Anonymous & 24/7)</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 text-sm">
+                <!-- General Crisis -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-teal-400 mb-1"><i class="fas fa-headset mr-2"></i> BC Crisis Line</p>
+                    <a href="tel:310-6789" class="hover:text-teal-300 transition block text-base">310-6789</a> (No area code)
+                </div>
+                <!-- Indigenous -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-yellow-400 mb-1"><i class="fas fa-leaf mr-2"></i> KUU-US Indigenous</p>
+                    <a href="tel:18005888717" class="hover:text-yellow-300 transition block text-base">1-800-588-8717</a> (24/7)
+                </div>
+                <!-- Youth/Kids -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-blue-400 mb-1"><i class="fas fa-child mr-2"></i> Youth in BC / Kids Help</p>
+                    <a href="tel:18006686868" class="hover:text-blue-300 transition block text-base">1-800-668-6868</a> (24/7)
+                </div>
+                <!-- Substance Use -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-orange-400 mb-1"><i class="fas fa-pills mr-2"></i> ADIRS (Drug/Alcohol Info)</p>
+                    <a href="tel:18006631441" class="hover:text-orange-300 transition block text-base">1-800-663-1441</a> (24/7)
+                </div>
+                 <!-- LGBTQ2S+ -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-pink-400 mb-1"><i class="fas fa-transgender mr-2"></i> Trans Lifeline</p>
+                    <a href="tel:18773306366" class="hover:text-pink-300 transition block text-base">1-877-330-6366</a> (Peer Support)
+                </div>
+                <!-- Suicide Prevention -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-red-400 mb-1"><i class="fas fa-heartbeat mr-2"></i> Suicide Crisis Helpline</p>
+                    <a href="tel:988" class="hover:text-red-300 transition block text-base">988</a> (24/7, text/call)
+                </div>
+                <!-- Mental Health Support -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-indigo-400 mb-1"><i class="fas fa-brain mr-2"></i> Mental Health Support Line</p>
+                    <a href="tel:3106789" class="hover:text-indigo-300 transition block text-base">310-6789</a> (No area code, 24/7)
+                </div>
+                <!-- BC Suicide Prevention -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-red-400 mb-1"><i class="fas fa-heartbeat mr-2"></i> 1-800-SUICIDE</p>
+                    <a href="tel:18007842433" class="hover:text-red-300 transition block text-base">1-800-784-2433</a> (24/7)
+                </div>
+                <!-- Alcohol & Drug Info -->
+                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                    <p class="font-semibold text-orange-400 mb-1"><i class="fas fa-pills mr-2"></i> Alcohol & Drug Info Line</p>
+                    <a href="tel:18006631441" class="hover:text-orange-300 transition block text-base">1-800-663-1441</a> (24/7)
+                </div>
+                <!-- Crisis Text Line -->
+                <div>
+                    <p class="font-semibold text-teal-400 mb-1"><i class="fas fa-sms mr-2"></i> Crisis Text Line</p>
+                    <a href="sms:686868" class="hover:text-teal-300 transition block text-base">Text HOME to 686868</a> (24/7)
+                </div>
+            </div>
+            <div class="mt-4 text-center text-xs text-gray-400">
+                <p>Data sourced from official providers like VCH, BCCDC, and BC Government. For more helplines, visit <a href="https://www.crisiscentre.bc.ca/" class="underline hover:text-white">Crisis Centre BC</a>.</p>
+            </div>
+        </footer>
+
+        <!-- Privacy Policy Section -->
+        <section class="mt-8 bg-white p-6 shadow-xl rounded-xl">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4">Privacy Policy</h2>
+            <p class="text-gray-600 text-sm">
+                This app does not collect or store any personal information. User location is processed client-side only for mapping and directions, and is not shared or stored. Community reports are anonymous and stored in Firebase for real-time updates, using only non-identifiable data (e.g., status, notes, timestamp). No tracking cookies or analytics are used. Geolocation requires user consent. For Firebase privacy, see Google's policy. If you have concerns, contact the developer. Last updated: October 19, 2025.
+            </p>
+        </section>
+    </div>
+
+    <!-- Instructions Modal (Naloxone Guide) -->
+    <div id="instructionsModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible transition duration-300" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-xl mx-auto transform transition duration-300 scale-95">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                <h3 class="text-2xl font-bold text-gray-800">Overdose Response & Naloxone Guide</h3>
+                <button id="closeModalButton" class="text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Close guide">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="py-4 text-gray-700 space-y-4 overflow-y-auto max-h-[80vh]">
+                <h4 class="text-xl font-semibold text-red-600">Recognizing an Overdose</h4>
+                <ul class="list-disc list-inside space-y-1 ml-4 text-sm">
+                    <li>Slow, shallow, or no breathing.</li>
+                    <li>Gurgling or choking sounds.</li>
+                    <li>Unresponsive to shaking or yelling (try a sternum rub).</li>
+                    <li>Pinpoint pupils.</li>
+                    <li>Blue or grey lips/nails.</li>
+                </ul>
+                
+                <h4 class="text-xl font-semibold text-indigo-600">4 Step Overdose Response</h4>
+                <div class="space-y-3 text-sm">
+                    <p><span class="font-bold">1. Call:</span> Get immediate help. Call 911 (or local emergency). The **Good Samaritan Drug Overdose Act** protects you from drug possession charges.</p>
+                    <p><span class="font-bold">2. Stimulate:</span> Try to rouse them. If unresponsive, ensure airway is clear.</p>
+                    <p><span class="font-bold">3. Administer Naloxone:</span> If trained, prepare and inject Naloxone (Narcan) into the arm or thigh muscle. (Follow kit instructions).</p>
+                    <p><span class="font-bold">4. Rescue Breathing:</span> If breathing is stopped or dangerously shallow, start rescue breaths (1 breath every 5 seconds).</p>
+                    <p class="font-semibold text-red-500 pt-2">Repeat Naloxone every 2-3 minutes if no change, until emergency services arrive.</p>
+                </div>
+                <p class="text-xs text-gray-500 italic">Guide based on BCCDC and VCH recommendations. Get trained at <a href="https://towardtheheart.com/" target="_blank">TowardTheHeart.com</a>.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Status Modal (Community Feedback) -->
+    <div id="reportModal" class="modal fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center opacity-0 invisible transition duration-300" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content bg-white rounded-xl shadow-2xl p-6 w-11/12 max-w-md mx-auto transform transition duration-300 scale-95">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-200">
+                <h3 class="text-xl font-bold text-gray-800">Report Resource Status</h3>
+                <button id="closeReportModalButton" class="text-gray-400 hover:text-gray-600 focus:outline-none" aria-label="Close report form">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="reportForm" class="py-4 space-y-4">
+                <div>
+                    <label for="locationSelect" class="block text-sm font-medium text-gray-700">Resource Location:</label>
+                    <select id="locationSelect" name="location" required class="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm rounded-md shadow-sm" aria-required="true"></select>
+                </div>
+                <div>
+                    <label for="statusType" class="block text-sm font-medium text-gray-700">Current Status:</label>
+                    <select id="statusType" name="statusType" required class="mt-1 block w-full pl-3 pr-10 py-2 border-gray-300 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm rounded-md shadow-sm" aria-required="true">
+                        <option value="stocked">Fully Stocked/Open (Positive)</option>
+                        <option value="low">Low Supply/Short Wait</option>
+                        <option value="out">Out of Stock/Closed Early/High Wait (Negative)</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="notes" class="block text-sm font-medium text-gray-700">Optional Notes:</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Staff were helpful, long queue, closed early..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-yellow-500 focus:ring-yellow-500 sm:text-sm"></textarea>
+                </div>
+                <button type="submit" id="submitReportBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-150 ease-in-out">
+                    Submit Report
+                </button>
+                <p id="reportMessage" class="hidden text-center text-sm mt-2 font-bold"></p>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Leaflet JS (CORE LIBRARY - MUST LOAD FIRST) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20n6a4o+S6l0blwU3yYpI9rJbFk6tQcDF6rW50c+iEa="
+        crossorigin=""></script>
+    <!-- Leaflet Control Geocoder JS (Required for L.Control.Geocoder.nominatim()) -->
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> 
+    <!-- Leaflet Routing Machine JS (Depends on CORE Leaflet) -->
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+    <!-- Firebase JS Modules (Application Logic - MUST LOAD AFTER LIBRARIES) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, collection, onSnapshot, setDoc, updateDoc, increment, setLogLevel, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global variables provided by the Canvas environment (Mandatory use)
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+
+        // UI elements
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainAppContent = document.getElementById('mainAppContent');
+        const mapElement = document.getElementById('map');
+        const loadingStatusText = document.getElementById('loadingStatusText');
+        const authStatusElement = document.getElementById('authStatus');
+        const userLocationStatusElement = document.getElementById('userLocationStatus');
+        
+        // --- 1. FIREBASE INITIALIZATION & AUTH ---
+        let db;
+        let auth;
+        let userId = null;
+        let latestStatuses = {}; // Stores real-time status updates from Firestore
+        
+        const MAX_RETRIES = 5;
+        const INITIAL_DELAY = 1000; 
+        
+        // Function to hide loading screen and show app content
+        function showApp() {
+             loadingOverlay.style.opacity = '0';
+             loadingOverlay.style.visibility = 'hidden';
+             mainAppContent.style.opacity = '1';
+             mapElement.style.opacity = '1';
+        }
+
+        async function initializeFirebase(retryCount = 0) {
+            loadingStatusText.textContent = `Initializing database connection (Attempt ${retryCount + 1})...`;
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                setLogLevel('debug'); 
+
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        authStatusElement.textContent = `Authenticated (User ID: ${userId.substring(0, 8)}...)`;
+                    } else {
+                        userId = crypto.randomUUID(); 
+                        authStatusElement.textContent = 'Signed out (Anonymous)';
+                    }
+                    // Proceed to map and data initialization after auth
+                    initializeMapFeatures(db, userId, appId);
+                    loadingStatusText.textContent = `Authentication complete. Loading map data...`;
+                });
+
+            } catch (error) {
+                console.error("Error initializing Firebase:", error);
+                if (retryCount < MAX_RETRIES) {
+                    const delay = INITIAL_DELAY * Math.pow(2, retryCount);
+                    console.log(`Retrying Firebase initialization in ${delay}ms...`);
+                    setTimeout(() => initializeFirebase(retryCount + 1), delay);
+                } else {
+                    authStatusElement.textContent = `Error: Connection Failed`;
+                    loadingStatusText.textContent = `Failed to connect to real-time database. Using static data.`;
+                    // Pass null for db if initialization failed
+                    initializeMapFeatures(null, userId || crypto.randomUUID(), appId);
+                    showApp(); 
+                }
+            }
+        }
+
+        // --- 2. CORE RESOURCE DATA (Verified from VCH, BCCDC, UGM, etc.) ---
+        
+        const RESOURCE_LOCATIONS = [
+            // Supervised Consumption & Overdose Prevention (Injection Site) - Verified from VCH
+            { "id": "insite", "name": "Insite Supervised Consumption Site", "type": "Injection Site", "lat": 49.2818, "lng": -123.1017, "hours": "9:00am - 3:00am Daily", "dayHours": [9, 3], "notes": "Canada's first SCS at 139 East Hastings St. Co-managed by VCH and PHS. High traffic. Open on holidays. Source: VCH.ca" },
+            { "id": "opspigeon", "name": "Overdose Prevention Site at Overdose Prevention Society", "type": "Injection Site", "lat": 49.2819, "lng": -123.1022, "hours": "9:00am - 10:00pm Daily", "dayHours": [9, 22], "notes": "Community-run at 141 East Hastings St. May shorten on holidays. Source: VCH.ca" },
+            { "id": "molsonops", "name": "Molson Overdose Prevention Site", "type": "Injection Site", "lat": 49.2817, "lng": -123.1012, "hours": "Typically 24/7", "dayHours": [0, 24], "notes": "At 166 East Hastings St (alley). Staffed harm reduction. Source: VCH.ca" },
+            { "id": "powellgetaway", "name": "Overdose Prevention Site at Powell Street Getaway", "type": "Injection Site", "lat": 49.2820, "lng": -123.0930, "hours": "Varies, check site", "dayHours": [0, 24], "notes": "At 450 East Hastings St. Community OPS. Source: VCH.ca" },
+            { "id": "hopetohealth", "name": "Supervised Consumption Site at Hope to Health", "type": "Injection Site", "lat": 49.2809, "lng": -123.0975, "hours": "Varies, check site", "dayHours": [0, 24], "notes": "At 611 Powell St. Part of VCH research clinic. Source: VCH.ca" },
+            
+            // Naloxone Kits & Harm Reduction Supplies (Naloxone) - Verified from TowardTheHeart and VCH
+            { "id": "drp", "name": "Downtown Resource Centre & HR Supplies", "type": "Naloxone", "lat": 49.2801, "lng": -123.1025, "hours": "M-F 9:30am - 4:30pm", "dayHours": [9.5, 16.5], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Free Naloxone and supplies. Closed weekends/holidays. Source: VCH.ca" },
+            { "id": "phsfarm", "name": "PHS Pharmacy (Powell St)", "type": "Naloxone", "lat": 49.2808, "lng": -123.0991, "hours": "8:00am - 10:00pm Daily", "dayHours": [8, 22], "notes": "Harm reduction pharmacy. Reduced on major holidays. Source: VCH.ca" },
+            { "id": "vchhr", "name": "VCH Harm Reduction Outreach DTES", "type": "Naloxone", "lat": 49.2785, "lng": -123.0950, "hours": "Approx 10am-8pm Daily", "dayHours": [10, 20], "notes": "Street outreach near Main & Hastings. Staffing-dependent. Source: VCH.ca" },
+            { "id": "spikesonbikes", "name": "Spikes on Bikes Harm Reduction", "type": "Naloxone", "lat": 49.2810, "lng": -123.1000, "hours": "8:00am - 8:00pm Daily", "dayHours": [8, 20], "notes": "Mobile service for supplies/recovery. Source: TowardTheHeart.com" },
+            { "id": "towardtheheart", "name": "Toward The Heart Naloxone Sites", "type": "Naloxone", "lat": 49.2810, "lng": -123.1000, "hours": "Varies by site", "dayHours": [0, 24], "notes": "Multiple DTES locations for free kits. Find sites at TowardTheHeart.com/site-finder. Source: BCCDC" },
+
+            // Detox/Support (Detox) - Verified from VCH
+            { "id": "onsite", "name": "Onsite Detox (Adjacent to Insite)", "type": "Detox", "lat": 49.2819, "lng": -123.1016, "hours": "24/7 Intake/Assessment", "dayHours": [0, 24], "notes": "Residential withdrawal at 139 East Hastings St. Walk-in available. Source: VCH.ca" },
+            { "id": "vmac", "name": "Vancouver Main Access Centre (VCH)", "type": "Detox", "lat": 49.2730, "lng": -123.1009, "hours": "M-F 9:00am - 4:00pm", "dayHours": [9, 16], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Intake hub. Closed weekends/holidays. Source: VCH.ca" },
+            { "id": "crosstown", "name": "Providence Crosstown Clinic", "type": "Detox", "lat": 49.2814, "lng": -123.1060, "hours": "7:30am - 10:20pm Daily (with breaks)", "dayHours": [7.5, 22.333], "notes": "At 58 West Hastings St. iOAT/OAT. Breaks: 11:20am–12:40pm, etc. Open holidays. Source: VCH.ca" },
+            { "id": "dtesconnections", "name": "DTES Connections Clinic", "type": "Detox", "lat": 49.2815, "lng": -123.0990, "hours": "M-F 9:00am - 5:00pm", "dayHours": [9, 17], "isWeekendClosed": true, "notes": "Addiction medicine at 429 Alexander St. Same-day assessment. Source: VCH.ca" },
+            
+            // Food Security & Shelter (Food) - Verified from UGM, City of Vancouver, VCH
+            { "id": "ugm", "name": "Union Gospel Mission - Main Site", "type": "Food", "lat": 49.2783, "lng": -123.0984, "hours": "24/7 Shelter & Meals (specific times vary)", "dayHours": [0, 24], "notes": "At 601 East Hastings St. Daily meals, high volume on holidays. Source: UGM.ca" },
+            { "id": "salvation", "name": "Salvation Army Harbour Light", "type": "Food", "lat": 49.2802, "lng": -123.1005, "hours": "24/7 Shelter & Meals", "dayHours": [0, 24], "notes": "At 119 East Cordova St. Set meal times. Source: SalvationArmy.ca" },
+            { "id": "carnegie", "name": "Carnegie Community Centre - Cafeteria", "type": "Food", "lat": 49.2811, "lng": -123.0998, "hours": "Breakfast 9-11am, Lunch 12-4pm, Dinner 5-8pm Daily", "dayHours": [9, 20], "notes": "Low-cost at 401 Main St. Accessible. Source: Vancouver.ca" },
+            { "id": "dtesnh", "name": "DTES Neighbourhood House - Meal Program", "type": "Food", "lat": 49.2812, "lng": -123.0965, "hours": "Oatmeal Mon/Wed 10am-12pm; Lunch Wed 12:30-2pm; Dinners Tue/Thu 3:30-6:30pm", "dayHours": [10, 18], "isWeekendClosed": true, "notes": "Free at 573 East Hastings St. Accessible. Source: DTESNH.org" },
+            { "id": "dugout", "name": "The Dugout Drop-In", "type": "Food", "lat": 49.2824, "lng": -123.1030, "hours": "Breakfast M-F 8-9am/Sat-Sun 9-10am; Lunch M-F 12-1pm/Sat-Sun 12:30-1:30pm; Dinner 5-6pm Daily", "dayHours": [8, 18], "notes": "Free at 59 Powell St. Source: CovenantHouseBC.org" },
+            { "id": "doorisopen", "name": "The Door is Open", "type": "Food", "lat": 49.2828, "lng": -123.0956, "hours": "Lunch Thu-Fri 11am, Sat 11am, Sun 12pm", "dayHours": [11, 12], "notes": "Free at 375 Powell St by Catholic Charities. Accessible. Source: CatholicVancouver.ca" },
+
+            // Urgent Care (Urgent) - Verified from VCH
+            { "id": "stpauls", "name": "St. Paul's Hospital Emergency", "type": "Urgent", "lat": 49.2825, "lng": -123.1200, "hours": "24/7 Emergency", "dayHours": [0, 24], "notes": "Full ER at 1081 Burrard St. Always open. Source: VCH.ca" },
+            { "id": "vghtech", "name": "VGH Emergency & Trauma Centre", "type": "Urgent", "lat": 49.2625, "lng": -123.1206, "hours": "24/7 Emergency", "dayHours": [0, 24], "notes": "Trauma at 899 West 12th Ave. Always open. Source: VCH.ca" },
+            { "id": "citycentreupcc", "name": "Vancouver City Centre Urgent and Primary Care Centre", "type": "Urgent", "lat": 49.2780, "lng": -123.1290, "hours": "8:00am - 10:00pm Daily", "dayHours": [8, 22], "notes": "Walk-in non-emergency at 1290 Hornby St. Source: VCH.ca" },
+            { "id": "downtownchc", "name": "Downtown Community Health Centre Primary Care", "type": "Urgent", "lat": 49.2815, "lng": -123.0970, "hours": "M-F 9:00am - 5:00pm", "dayHours": [9, 17], "isWeekendClosed": true, "notes": "At 569 Powell St. For DTES residents. Source: VCH.ca" },
+            { "id": "penderchc", "name": "Pender Community Health Centre Primary Care", "type": "Urgent", "lat": 49.2805, "lng": -123.1065, "hours": "M-F 9:00am - 5:00pm", "dayHours": [9, 17], "isWeekendClosed": true, "notes": "At 59 West Pender St. Walk-in available. Source: VCH.ca" }
+        ];
+
+        let currentLocations = [...RESOURCE_LOCATIONS]; 
+
+        // --- 3. HOLIDAY & DYNAMIC STATUS LOGIC ---
+
+        // Helper function to get the Nth weekday (e.g., Monday=1) of a month in a year
+        function getNthWeekday(year, month, dayOfWeek, nth) {
+          const date = new Date(year, month, 1); // Month is 0-indexed
+          const weekday = date.getDay(); // 0=Sunday, 1=Monday, etc.
+          const daysToAdd = (dayOfWeek - weekday + 7) % 7;
+          date.setDate(1 + daysToAdd + (nth - 1) * 7);
+          return date;
+        }
+
+        // Helper function to adjust if holiday falls on Sunday (move to next Monday, per patterns)
+        function adjustIfSunday(date) {
+          if (date.getDay() === 0) {
+            date.setDate(date.getDate() + 1);
+          }
+          return date;
+        }
+
+        // 1. New Year's Day: January 1
+        function newYearsDay(year) {
+          const date = new Date(year, 0, 1);
+          return adjustIfSunday(date);
+        }
+
+        // 2. Family Day: Third Monday in February
+        function familyDay(year) {
+          const date = getNthWeekday(year, 1, 1, 3); // February (month 1), Monday (1), 3rd
+          return date;
+        }
+
+        // 3. Good Friday: Friday before Easter Sunday (approximate Easter calculation)
+        function goodFriday(year) {
+          // Anonymous Gregorian algorithm for Easter Sunday
+          const a = year % 19;
+          const b = Math.floor(year / 100);
+          const c = year % 100;
+          const d = Math.floor(b / 4);
+          const e = b % 4;
+          const f = Math.floor((b + 8) / 25);
+          const g = Math.floor((b - f + 1) / 3);
+          const h = (19 * a + b - d - g + 15) % 30;
+          const i = Math.floor(c / 4);
+          const k = c % 4;
+          const l = (32 + 2 * e + 2 * i - h - k) % 7;
+          const m = Math.floor((a + 11 * h + 22 * l) / 451);
+          const month = Math.floor((h + l - 7 * m + 114) / 31);
+          const day = ((h + l - 7 * m + 114) % 31) + 1;
+
+          const easter = new Date(year, month - 1, day);
+          const goodFridayDate = new Date(easter);
+          goodFridayDate.setDate(easter.getDate() - 2); // Friday before
+          return goodFridayDate;
+        }
+
+        // 4. Victoria Day: Monday before May 25
+        function victoriaDay(year) {
+          let date = new Date(year, 4, 25); // May 25
+          if (date.getDay() !== 1) { // If not already Monday
+            date.setDate(25 - (date.getDay() || 7) + 1); // Adjust to previous Monday
+          }
+          return date;
+        }
+
+        // 5. Canada Day: July 1
+        function canadaDay(year) {
+          const date = new Date(year, 6, 1);
+          return adjustIfSunday(date);
+        }
+
+        // 6. B.C. Day: First Monday in August
+        function bcDay(year) {
+          const date = getNthWeekday(year, 7, 1, 1); // August (month 7), Monday (1), 1st
+          return date;
+        }
+
+        // 7. Labour Day: First Monday in September
+        function labourDay(year) {
+          const date = getNthWeekday(year, 8, 1, 1); // September (month 8), Monday (1), 1st
+          return date;
+        }
+
+        // 8. National Day for Truth and Reconciliation: September 30
+        function nationalDayForTruthAndReconciliation(year) {
+          const date = new Date(year, 8, 30);
+          return adjustIfSunday(date);
+        }
+
+        // 9. Thanksgiving Day: Second Monday in October
+        function thanksgivingDay(year) {
+          const date = getNthWeekday(year, 9, 1, 2); // October (month 9), Monday (1), 2nd
+          return date;
+        }
+
+        // 10. Remembrance Day: November 11 (fixed, no Sunday adjustment in content patterns)
+        function remembranceDay(year) {
+          return new Date(year, 10, 11);
+        }
+
+        // 11. Christmas Day: December 25
+        function christmasDay(year) {
+          const date = new Date(year, 11, 25);
+          return adjustIfSunday(date);
+        }
+
+        function getStatutoryHolidays(year) {
+          const holidays = [];
+          const pushHoliday = (date) => {
+            holidays.push(`${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
+          };
+
+          pushHoliday(newYearsDay(year));
+          pushHoliday(familyDay(year));
+          pushHoliday(goodFriday(year));
+          pushHoliday(victoriaDay(year));
+          pushHoliday(canadaDay(year));
+          pushHoliday(bcDay(year));
+          pushHoliday(labourDay(year));
+          pushHoliday(nationalDayForTruthAndReconciliation(year));
+          pushHoliday(thanksgivingDay(year));
+          pushHoliday(remembranceDay(year));
+          pushHoliday(christmasDay(year));
+
+          return holidays;
+        }
+
+        function checkIfStatutoryHoliday(date) {
+            const year = date.getFullYear();
+            const todayStr = `${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+            const holidays = getStatutoryHolidays(year);
+            return holidays.includes(todayStr);
+        }
+        
+        function getCurrentStatus(location) {
+            const now = new Date();
+            const currentHour = now.getHours() + now.getMinutes() / 60;
+            const currentDay = now.getDay(); 
+            const isWeekend = currentDay === 0 || currentDay === 6;
+            const isHoliday = checkIfStatutoryHoliday(now);
+
+            let status = {
+                isOpen: true,
+                displayMessage: '24/7 Service',
+                messageColor: 'text-green-600',
+                noteOverride: null
+            };
+
+            // 1. Check for Holiday Closure
+            if (isHoliday && location.isHolidayClosed) {
+                 status.isOpen = false;
+                 status.displayMessage = 'CLOSED for Statutory Holiday';
+                 status.messageColor = 'text-red-700 font-extrabold';
+                 status.noteOverride = `**IMPORTANT:** Facility is typically CLOSED on statutory holidays.`;
+                 return status;
+            }
+
+            // 2. Check for Weekend Closure
+            if (isWeekend && location.isWeekendClosed) {
+                 status.isOpen = false;
+                 status.displayMessage = 'CLOSED - Weekend';
+                 status.messageColor = 'text-red-600';
+                 status.noteOverride = `Facility is typically CLOSED on weekends (Sat/Sun).`;
+                 return status;
+            }
+            
+            // 3. Check for Time-Based Closure
+            if (location.dayHours && location.dayHours.length === 2) {
+                let [openTime, closeTime] = location.dayHours;
+                
+                if (closeTime < openTime) {
+                    // Over-midnight hours
+                    status.isOpen = currentHour >= openTime || currentHour < closeTime;
+                } else {
+                    status.isOpen = currentHour >= openTime && currentHour < closeTime;
+                }
+
+                if (status.isOpen) {
+                    let hoursRemaining;
+                    if (closeTime < openTime && currentHour < closeTime) {
+                        hoursRemaining = Math.floor(closeTime - currentHour);
+                    } else {
+                        hoursRemaining = Math.floor(closeTime - currentHour);
+                    }
+                    // Use the original hours string for display if possible
+                    const closingTimeStr = location.hours.match(/(\d+:\d+[ap]m|\d+[ap]m)/g)?.pop() || (closeTime % 24) + ':00';
+                    status.displayMessage = `OPEN until ${closingTimeStr}.`;
+                    if (hoursRemaining < 2 && hoursRemaining > 0) {
+                         status.displayMessage += ` (Closes soon!)`;
+                         status.messageColor = 'text-orange-500 font-semibold';
+                    } else {
+                         status.messageColor = 'text-green-600';
+                    }
+                } else {
+                    const nextOpenTime = location.hours.match(/(\d+:\d+[ap]m|\d+[ap]m)/g)?.[0] || openTime + ':00';
+                    status.displayMessage = `CLOSED now. Re-opens at ${nextOpenTime}.`;
+                    status.messageColor = 'text-red-600';
+                }
+            } else if (location.hours.toLowerCase().includes('24/7')) {
+                 status.displayMessage = 'OPEN 24/7';
+                 status.messageColor = 'text-green-600 font-bold';
+            }
+            
+            return status;
+        }
+
+        // --- 4. GEOLOCATION & DISTANCE CALCULATIONS ---
+        let map;
+        let markersGroup = L.layerGroup();
+        let routingControl = null;
+        let userLocation = null; 
+        let userMarker = null; 
+        
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of Earth in km
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a =
+                Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return (R * c).toFixed(2); // Distance in kilometers
+        }
+
+        function getUserLocation() {
+            if (!navigator.geolocation) {
+                userLocationStatusElement.textContent = 'Geolocation not supported by your browser.';
+                return;
+            }
+
+            const locateButton = document.getElementById('locateUserButton');
+            locateButton.textContent = 'Finding...';
+            locateButton.disabled = true;
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    userLocation = [position.coords.latitude, position.coords.longitude];
+                    userLocationStatusElement.textContent = `Location found. (Lat: ${userLocation[0].toFixed(3)}, Lng: ${userLocation[1].toFixed(3)})`;
+                    
+                    const userIcon = L.divIcon({
+                        className: 'user-location-icon',
+                        html: '<div class="user-location-icon"></div>',
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    });
+                    
+                    if (userMarker) {
+                        userMarker.setLatLng(userLocation);
+                    } else {
+                        userMarker = L.marker(userLocation, { icon: userIcon })
+                            .bindPopup("<b>You Are Here</b>", { closeButton: false })
+                            .openPopup()
+                            .addTo(map);
+                    }
+                    map.setView(userLocation, 14); 
+                    
+                    refreshMap(); 
+                    
+                    locateButton.innerHTML = '<i class="fas fa-crosshairs mr-2"></i> Location Found';
+                    setTimeout(() => {
+                        locateButton.innerHTML = '<i class="fas fa-crosshairs mr-2"></i> Find Me';
+                        locateButton.disabled = false;
+                    }, 3000);
+                },
+                (error) => {
+                    console.error("Geolocation Error:", error);
+                    userLocationStatusElement.textContent = 'Location denied or unavailable. Directions unavailable.';
+                    locateButton.innerHTML = '<i class="fas fa-crosshairs mr-2"></i> Find Me';
+                    locateButton.disabled = false;
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        }
+
+        // --- 5. MAP, ROUTING, AND MARKER PLOTTING ---
+        function getMarkerColor(type) {
+            switch (type) {
+                case 'Injection Site': return '#10B981'; // Green-500
+                case 'Naloxone': return '#3B82F6'; // Blue-500
+                case 'Detox': return '#F97316'; // Orange-500
+                case 'Food': return '#9333EA'; // Purple-600
+                case 'Urgent': return '#EF4444'; // Red-500
+                default: return '#6B7280'; // Gray
+            }
+        }
+
+        function getStatusDetails(locationId) {
+            const status = latestStatuses[locationId];
+            if (!status) {
+                return { 
+                    html: '<p class="mt-3 text-xs text-gray-500 font-semibold">Status: <span class="text-gray-700">No recent community report.</span></p>',
+                    color: 'text-gray-700',
+                    shortText: 'No report',
+                    likes: 0,
+                    dislikes: 0
+                };
+            }
+
+            const timeAgo = (new Date() - new Date(status.timestamp)) / 1000 / 60; // minutes ago
+            const timeString = timeAgo < 60 
+                ? `${Math.round(timeAgo)} min ago` 
+                : `${Math.round(timeAgo / 60)} hr ago`;
+            
+            let statusText = status.statusType;
+            let statusColor = 'text-yellow-600';
+
+            switch (status.statusType) {
+                case 'stocked':
+                    statusText = 'Stocked/Good Status';
+                    statusColor = 'text-green-600';
+                    break;
+                case 'low':
+                    statusText = 'Low Stock/Short Wait';
+                    statusColor = 'text-orange-500';
+                    break;
+                case 'out':
+                    statusText = 'Closed/Out of Stock (High Risk)';
+                    statusColor = 'text-red-600';
+                    break;
+            }
+
+            return {
+                html: `<p class="mt-3 text-sm font-bold ${statusColor}"><i class="fas fa-user-tag mr-1"></i> Community Status: ${statusText}</p>
+                       <p class="text-xs text-gray-500">Reported ${timeString} by User ID: ${status.reporterId.substring(0, 4)}...</p>
+                       ${status.notes ? `<p class="text-xs text-gray-600 italic mt-1">Note: "${status.notes}"</p>` : ''}`,
+                color: statusColor,
+                shortText: statusText,
+                likes: status.likes || 0,
+                dislikes: status.dislikes || 0
+            };
+        }
+
+
+        function createCustomIcon(color, isOpen) {
+             const opacity = isOpen ? 1 : 0.4;
+             
+             return L.divIcon({
+                className: 'custom-div-icon',
+                html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4); opacity: ${opacity}; ${!isOpen ? 'filter: grayscale(80%);' : ''}"></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+        }
+
+        function plotMarkers(locations, filter, searchTerm) {
+            markersGroup.clearLayers();
+            const normalizedSearchTerm = searchTerm ? searchTerm.toLowerCase() : '';
+
+            // Filter based on type and search term
+            const filteredLocations = locations.filter(loc => 
+                (filter === 'all' || loc.type === filter) &&
+                loc.name.toLowerCase().includes(normalizedSearchTerm)
+            );
+            
+            // 1. Calculate and Sort by Distance if user location is known
+            if (userLocation) {
+                 filteredLocations.forEach(loc => {
+                    loc.distance = calculateDistance(userLocation[0], userLocation[1], loc.lat, loc.lng);
+                });
+                // Sort by distance (closest first)
+                filteredLocations.sort((a, b) => parseFloat(a.distance) - parseFloat(b.distance));
+            }
+
+            filteredLocations.forEach(loc => {
+                const statusInfo = getStatusDetails(loc.id);
+                const operationalStatus = getCurrentStatus(loc);
+                
+                // Icon styling based on operational status
+                const markerIcon = createCustomIcon(getMarkerColor(loc.type), operationalStatus.isOpen);
+                
+                let distanceHtml = '';
+                let directionBtn = '';
+
+                if (userLocation) {
+                    const distance = loc.distance || calculateDistance(userLocation[0], userLocation[1], loc.lat, loc.lng);
+                    distanceHtml = `<p class="font-bold text-gray-800 mt-2"><i class="fas fa-route mr-1 text-red-500"></i> ${distance} km away</p>`;
+                    directionBtn = `<button class="popup-btn direction-btn" data-lat="${loc.lat}" data-lng="${loc.lng}"><i class="fas fa-walking mr-1"></i> Get Walking Directions</button>`;
+                } else {
+                     distanceHtml = '<p class="font-bold text-gray-600 mt-2">Find your location for distance & directions.</p>';
+                }
+                
+                // Operational Status Display
+                const operationalHtml = `
+                    <p class="mt-2 text-sm"><strong>Standard Hours:</strong> ${loc.hours}</p>
+                    <p class="font-bold text-sm mt-1 ${operationalStatus.messageColor}">
+                        <i class="fas ${operationalStatus.isOpen ? 'fa-clock' : 'fa-door-closed'} mr-1"></i> 
+                        System Status: ${operationalStatus.displayMessage}
+                    </p>
+                    ${operationalStatus.noteOverride ? `<p class="text-xs text-red-500 italic mt-1 font-semibold">${operationalStatus.noteOverride}</p>` : ''}
+                    <p class="mt-2 text-gray-500 italic text-xs">${loc.notes}</p>
+                `;
+
+
+                // Feedback Buttons
+                const feedbackBtns = statusInfo.shortText !== 'No report' ? `
+                    <div class="flex flex-wrap items-center mt-3 border-t pt-2">
+                        <span class="text-xs text-gray-600 mr-2">Report accuracy:</span>
+                        <button class="popup-btn like-btn" data-location-id="${loc.id}" data-feedback-type="likes" aria-label="Upvote report accuracy. Current likes: ${statusInfo.likes}">
+                            <i class="fas fa-thumbs-up mr-1"></i> ${statusInfo.likes}
+                        </button>
+                        <button class="popup-btn dislike-btn" data-location-id="${loc.id}" data-feedback-type="dislikes" aria-label="Downvote report accuracy. Current dislikes: ${statusInfo.dislikes}">
+                            <i class="fas fa-thumbs-down mr-1"></i> ${statusInfo.dislikes}
+                        </button>
+                        <button class="popup-btn report-btn ml-auto" data-location-id="${loc.id}" data-feedback-type="report" aria-label="Flag this status report for review">
+                            <i class="fas fa-flag"></i>
+                        </button>
+                    </div>
+                ` : '';
+
+
+                const marker = L.marker([loc.lat, loc.lng], { icon: markerIcon })
+                    .bindPopup(`
+                        <div class="text-sm font-inter">
+                            <h3 class="font-extrabold text-lg mb-1">${loc.name}</h3>
+                            <p class="text-xs text-indigo-600 mb-2">${loc.type}</p>
+                            ${distanceHtml}
+                            ${operationalHtml}
+                            ${statusInfo.html}
+                            ${feedbackBtns}
+                            ${userLocation ? directionBtn : ''}
+                        </div>
+                    `);
+                
+                // Add event listener for the direction and feedback buttons *after* binding the popup
+                marker.on('popupopen', (e) => {
+                    const popupElement = e.popup.getElement();
+
+                    // Directions
+                    const dirBtn = popupElement.querySelector('.direction-btn');
+                    if (dirBtn) {
+                        dirBtn.addEventListener('click', () => {
+                            getDirections(loc.lat, loc.lng, loc.name);
+                        });
+                    }
+
+                    // Feedback (Like/Dislike/Report)
+                    popupElement.querySelectorAll('.like-btn, .dislike-btn, .report-btn').forEach(btn => {
+                        btn.addEventListener('click', () => {
+                            const locationId = btn.dataset.locationId;
+                            const feedbackType = btn.dataset.feedbackType;
+                            addFeedback(locationId, feedbackType);
+                        });
+                    });
+                });
+
+                markersGroup.addLayer(marker);
+            });
+
+            map.addLayer(markersGroup);
+        }
+        
+        function getDirections(destLat, destLng) {
+            if (!userLocation) {
+                userLocationStatusElement.textContent = 'Please find your location first to get directions.';
+                return;
+            }
+
+            // Clear any existing route
+            if (routingControl) {
+                map.removeControl(routingControl);
+            }
+
+            routingControl = L.Routing.control({
+                waypoints: [
+                    L.latLng(userLocation[0], userLocation[1]),
+                    L.latLng(destLat, destLng)
+                ],
+                routeWhileDragging: false,
+                router: L.Routing.osrmv1({
+                    serviceUrl: 'https://router.project-osrm.org/route/v1' 
+                }),
+                lineOptions: {
+                    styles: [{ color: '#EF4444', weight: 6, opacity: 0.8 }] 
+                },
+                profile: 'walking',
+                geocoder: L.Control.Geocoder.nominatim(),
+                language: 'en'
+            }).addTo(map);
+
+            map.closePopup();
+        }
+
+
+        function refreshMap() {
+             // 1. Clear directions line on any map change (filter, search, status update)
+             if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+             }
+
+             const activeFilter = document.querySelector('.filter-button.active');
+             const currentFilter = activeFilter ? activeFilter.dataset.filter : 'all';
+             const searchTerm = document.getElementById('searchBar').value;
+
+             plotMarkers(currentLocations, currentFilter, searchTerm);
+        }
+
+        // --- 6. FIREBASE DATA HANDLERS (STATUS & FEEDBACK) ---
+
+        async function submitReport(event) {
+            event.preventDefault();
+            if (!db || !userId) {
+                displayReportMessage('Error: Database connection failed. Cannot submit report.', 'text-red-500');
+                return;
+            }
+
+            const formData = new FormData(document.getElementById('reportForm'));
+            const timestamp = new Date().toISOString();
+            const locationId = formData.get('location');
+            const locationData = RESOURCE_LOCATIONS.find(l => l.id === locationId);
+            
+            const data = {
+                locationId: locationId,
+                statusType: formData.get('statusType'),
+                notes: formData.get('notes'),
+                timestamp: timestamp,
+                reporterId: userId,
+                locationName: locationData ? locationData.name : 'Unknown Location',
+                likes: 0, 
+                dislikes: 0,
+            };
+
+            const submitBtn = document.getElementById('submitReportBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            try {
+                // Public data collection path for latest status updates
+                const latestStatusDocRef = doc(db, `/artifacts/${appId}/public/data/latest_statuses`, data.locationId);
+                
+                // Use setDoc to create/overwrite the latest status document
+                await setDoc(latestStatusDocRef, data);
+                
+                displayReportMessage('Thank you! Your report has been submitted. Map status updated.', 'text-green-600');
+                document.getElementById('reportForm').reset();
+                
+                setTimeout(() => {
+                    displayReportMessage('', 'text-transparent'); 
+                    toggleModal('reportModal', false); 
+                }, 2000); 
+
+            } catch (e) {
+                console.error("Error submitting report: ", e);
+                displayReportMessage('Error submitting report. Please try again.', 'text-red-600');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Report';
+            }
+        }
+        
+        async function addFeedback(locationId, feedbackType) {
+            if (!db || !userId) {
+                // Using console.error here instead of a distracting UI alert for feedback
+                console.error('Cannot submit feedback: Database not connected.');
+                return;
+            }
+
+            // Reference to the latest status document
+            const locationDocRef = doc(db, `/artifacts/${appId}/public/data/latest_statuses`, locationId);
+            
+            if (feedbackType === 'likes' || feedbackType === 'dislikes') {
+                try {
+                    await updateDoc(locationDocRef, {
+                        [feedbackType]: increment(1)
+                    });
+                    // Refresh the map to show updated counts on all popups
+                    refreshMap(); 
+                } catch (e) {
+                    console.error("Error updating feedback:", e);
+                }
+            } else if (feedbackType === 'report') {
+                try {
+                    // Log the report for moderation (private data log for the app, using auto-ID)
+                    const reportsLogRef = collection(db, `/artifacts/${appId}/public/data/reports_log`);
+                    await addDoc(reportsLogRef, { 
+                        locationId: locationId,
+                        reportedBy: userId,
+                        timestamp: new Date().toISOString(),
+                        reason: 'User flagged status as potentially inaccurate'
+                    });
+                    alertUserMessage('Status Flagged', 'This report has been flagged for review. Thank you.', 'text-orange-500');
+                } catch (e) {
+                     console.error("Error logging report:", e);
+                }
+            }
+        }
+        
+        function alertUserMessage(title, message, colorClass) {
+            // Simple temporary notification system
+            const reportMessage = document.getElementById('reportMessage');
+            reportMessage.classList.remove('hidden', 'text-green-600', 'text-red-600', 'text-orange-500');
+            reportMessage.classList.add(colorClass);
+            reportMessage.innerHTML = `<span class="font-bold">${title}:</span> ${message}`;
+            reportMessage.classList.remove('hidden');
+            setTimeout(() => { reportMessage.classList.add('hidden'); }, 4000);
+        }
+
+        // --- 7. UI INTERACTION & MODALS ---
+        
+        function toggleModal(modalId, show) {
+            const modal = document.getElementById(modalId);
+            const content = document.querySelector(`#${modalId} .modal-content`);
+            
+            if (show) {
+                modal.setAttribute('aria-hidden', 'false');
+                modal.classList.remove('opacity-0', 'invisible');
+                content.classList.remove('scale-95');
+                content.classList.add('scale-100');
+            } else {
+                modal.setAttribute('aria-hidden', 'true');
+                modal.classList.add('opacity-0', 'invisible');
+                content.classList.remove('scale-100');
+                content.classList.add('scale-95');
+            }
+        }
+
+        function setupReportModal() {
+            const select = document.getElementById('locationSelect');
+            select.innerHTML = '';
+            RESOURCE_LOCATIONS.forEach(loc => {
+                const option = document.createElement('option');
+                option.value = loc.id;
+                option.textContent = loc.name;
+                select.appendChild(option);
+            });
+        }
+        
+        function displayReportMessage(message, colorClass) {
+            const reportMessage = document.getElementById('reportMessage');
+            reportMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            reportMessage.classList.add(colorClass);
+            reportMessage.textContent = message;
+            if (message) { reportMessage.classList.remove('hidden'); } else { reportMessage.classList.add('hidden'); }
+        }
+
+        function setupMap() {
+            // Centered on the heart of the DTES
+            map = L.map('map').setView([49.281, -123.100], 15); 
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            // Initial plot
+            refreshMap();
+
+            // --- Geolocation and Filter Listeners ---
+            document.getElementById('locateUserButton').addEventListener('click', getUserLocation);
+
+            // Re-plot markers and clear routing on search/filter
+            document.getElementById('searchBar').addEventListener('input', refreshMap); 
+
+            document.getElementById('filterButtons').addEventListener('click', (e) => {
+                const target = e.target.closest('button');
+                if (target && target.dataset.filter) {
+                    const filter = target.dataset.filter;
+                    
+                    document.querySelectorAll('.filter-button').forEach(btn => {
+                        btn.classList.remove('active');
+                        btn.setAttribute('aria-pressed', 'false');
+                    });
+                    target.classList.add('active');
+                    target.setAttribute('aria-pressed', 'true');
+                    
+                    refreshMap(); 
+                }
+            });
+
+            // --- Control and Modal Listeners ---
+            document.getElementById('emergencyButton').addEventListener('click', () => {
+                const emergencyButton = document.getElementById('emergencyButton');
+                const emergencyMessage = document.getElementById('emergencyMessage');
+
+                emergencyMessage.classList.remove('hidden');
+                emergencyButton.textContent = 'Dialing...';
+                
+                // Simulate a phone call
+                setTimeout(() => {
+                    emergencyMessage.classList.add('hidden');
+                    emergencyButton.innerHTML = '<i class="fas fa-phone-alt mr-2"></i> Call 911';
+                }, 4000);
+            });
+            
+            // Instructions Modal Setup
+            document.getElementById('instructionsButton').addEventListener('click', () => toggleModal('instructionsModal', true));
+            document.getElementById('closeModalButton').addEventListener('click', () => toggleModal('instructionsModal', false));
+            document.getElementById('instructionsModal').addEventListener('click', (e) => { if (e.target === document.getElementById('instructionsModal')) { toggleModal('instructionsModal', false); } });
+
+            // Report Modal Setup
+            document.getElementById('reportStatusButton').addEventListener('click', () => {
+                setupReportModal();
+                toggleModal('reportModal', true);
+            });
+            document.getElementById('closeReportModalButton').addEventListener('click', () => toggleModal('reportModal', false));
+            document.getElementById('reportModal').addEventListener('click', (e) => { if (e.target === document.getElementById('reportModal')) { toggleModal('reportModal', false); } });
+            
+            document.getElementById('reportForm').addEventListener('submit', submitReport);
+            
+            // Map is fully loaded, show the app
+            showApp();
+        }
+        
+        // --- 8. REAL-TIME DATA LISTENER ---
+
+        function listenForCommunityUpdates(dbInstance, currentAppId) {
+            // Listen to the public collection for real-time status updates
+            const latestStatusesCollectionRef = collection(dbInstance, `/artifacts/${currentAppId}/public/data/latest_statuses`);
+
+            onSnapshot(latestStatusesCollectionRef, (snapshot) => {
+                snapshot.forEach((doc) => {
+                    latestStatuses[doc.id] = doc.data();
+                });
+                console.log("Updated latestStatuses from Firestore. Refreshing map.");
+                refreshMap();
+            }, (error) => {
+                console.error("Error listening to latest statuses:", error);
+                loadingStatusText.textContent = `Error: Real-time status feed interrupted. Displaying last known data.`;
+            });
+        }
+
+
+        // --- 9. INITIALIZATION ---
+
+        function initializeMapFeatures(dbInstance, currentUserId, currentAppId) {
+            setupMap();
+
+            if (dbInstance) {
+                console.log(`Firestore is active. User ID: ${currentUserId}. App ID: ${currentAppId}.`);
+                listenForCommunityUpdates(dbInstance, currentAppId);
+
+            } else {
+                 console.warn("Firestore connection not active. Using static data only.");
+            }
+        }
+
+        window.onload = initializeFirebase;
+    </script>
+</body>
+</html>
