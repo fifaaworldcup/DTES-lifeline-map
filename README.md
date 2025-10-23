@@ -1,6 +1,7 @@
 # DTES Lifeline Map: Real-Time Resource Locator
 
-##✨ Overview & Mission
+Check it out at https://fifaaworldcup.github.io/DTESsupport.github.io/
+#✨ Overview & Mission
 
 The DTES Lifeline Map is a dynamic, modern solution designed to streamline the process of locating essential social services, healthcare facilities, and meal programs within Vancouver's Downtown Eastside (DTES) neighborhood.
 
@@ -8,7 +9,7 @@ It aims to provide a fast, intuitive, and highly scalable platform for users see
 
 This project is currently in the Active Development stage, focused on expanding data sources and refining the user experience.
 
-##🚀 Key Features
+#🚀 Key Features
 
 - **Real-Time Map View**: Integrates a map library (e.g., Leaflet or Mapbox) to display geo-located service points instantly.
 - **Service Filtering**: Allows users to filter resources by category (e.g., Food, Shelter, Health, Washrooms, Detox).
