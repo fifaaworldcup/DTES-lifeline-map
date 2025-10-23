@@ -1,8 +1,6 @@
 # DTES Lifeline Map: Real-Time Resource Locator
 
-Check it out at https://fifaaworldcup.github.io/DTESsupport.github.io/
-
-✨ Overview & Mission
+## ✨ Overview & Mission
 
 The DTES Lifeline Map is a dynamic, modern solution designed to streamline the process of locating essential social services, healthcare facilities, and meal programs within Vancouver's Downtown Eastside (DTES) neighborhood.
 
@@ -10,41 +8,38 @@ It aims to provide a fast, intuitive, and highly scalable platform for users see
 
 This project is currently in the Active Development stage, focused on expanding data sources and refining the user experience.
 
-#🚀 Key Features
+## 🚀 Key Features
 
-- **Real-Time Map View**: Integrates a map library (e.g., Leaflet or Mapbox) to display geo-located service points instantly.
-- **Service Filtering**: Allows users to filter resources by category (e.g., Food, Shelter, Health, Washrooms, Detox).
-- **Mobile-Optimized**: Fully responsive interface designed for use on mobile devices by outreach workers and residents.
-- **Data Administration Portal**: A secured interface for partner organizations to update operating hours and service status in real-time.
-- **Route Planning**: Basic functionality to calculate the distance/route to the nearest selected resource.
+- **Real-Time Map View**: Integrates Leaflet for geo-located service points.
+- **Service Filtering**: Filter by category (e.g., Food, Shelter, Health, Naloxone, Detox).
+- **Mobile-Optimized**: Fully responsive for outreach workers and residents.
+- **Community Reporting**: Anonymous status updates via Firebase (optional real-time).
+- **Route Planning**: Walking directions to nearest resource.
 
-🛠️ Setup and Installation (Web App)
+## 🌐 Live Demo
 
-Assuming this is a Node.js/JavaScript-based web application (common for maps), follow these steps to get the project running locally.
+View the app at: https://fifaaworldcup.github.io/DTESsupport.github.io/
 
-### Prerequisites
+## 🛠️ Local Setup
 
-You will need the following software installed:
+This is a static web app—no server required.
 
-- Node.js (v18+)
-- Git
+1. Clone the repo: `git clone https://github.com/fifaaworldcup/DTESsupport.github.io.git`
+2. Open `index.html` in any modern browser (e.g., Chrome).
+- For real-time reports: Add your Firebase config to the `<script>` in index.html (from console.firebase.google.com).
 
-### Installation Steps
+## 📊 Data Sources
 
-1. Clone the repository:
-  
-2. Install dependencies:
-npm install
+Resources verified from official 2025 sources: VCH.ca, BCCDC.ca (TowardTheHeart.com), UGM.ca, SalvationArmy.ca, Vancouver.ca, etc. Last updated: October 2025.
 
-3. Configure Environment Variables:
-Create a file named `.env` in the root directory. This will hold sensitive keys, such as your Mapbox/Leaflet API keys and any Firebase/Firestore configuration.
+## ⚠️ Disclaimer
 
-4. Run the application:
-npm start
+Hours are typical—verify with providers. Not official; for informational use. Community reports are anonymous but moderated.
 
+## 🤝 Contributing
 
-## 🤝 Contribution
-We welcome contributions from developers, UX designers, data curators, and DTES community members. Please see our CONTRIBUTING.md file for detailed guidelines.
-📜 License & Contact
+We welcome devs, designers, data curators, DTES community! See CONTRIBUTING.md.
 
-Distributed under the MIT License. See LICENSE.md for more information.
+## 📜 License
+
+MIT License. See LICENSE.md.
