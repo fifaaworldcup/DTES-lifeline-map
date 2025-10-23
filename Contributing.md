@@ -2,10 +2,14 @@
 
 This project is driven by a mission to improve access to life-saving resources in the Downtown Eastside. We welcome all contributions—whether you are a developer, a designer, an outreach worker, or a local resident.
 
-## Code Contributions
+# Contributing to DTES Lifeline Map
 
-- **Fork and Branch**: Create a fork of the repository and branch off of main.
+1. Fork the repo.
+2. Create branch: `git checkout -b feature/update-data`.
+3. Commit: `git commit -m "Add new shelter data"`.
+4. PR to main—focus on accuracy, UX, or features like washrooms filter.
 
+Thanks! Prioritize DTES community input.
 
 Commit Messages: Use clear, descriptive commit messages (e.g., feat: add real-time status listener or fix: correct leaflet icon path).
 
