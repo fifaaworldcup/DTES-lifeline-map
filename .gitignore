@@ -26,3 +26,15 @@ IMPORTANT: Never commit local environment variables!
 .vscode
 .idea
 *.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Firebase (if testing)
+firebase.json
+.firebaserc
+
+# Temp
+*.log
+node_modules/  # If you add later
