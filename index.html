@@ -328,7 +328,7 @@
 
         // Global variables provided by the Canvas environment (Mandatory use)
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const firebaseConfig = {}; // Static mode - no Firebase
         const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
         // UI elements
@@ -389,13 +389,13 @@
                     const delay = INITIAL_DELAY * Math.pow(2, retryCount);
                     console.log(`Retrying Firebase initialization in ${delay}ms...`);
                     setTimeout(() => initializeFirebase(retryCount + 1), delay);
-                } else {
-                    authStatusElement.textContent = `Error: Connection Failed`;
-                    loadingStatusText.textContent = `Failed to connect to real-time database. Using static data.`;
-                    // Pass null for db if initialization failed
-                    initializeMapFeatures(null, userId || crypto.randomUUID(), appId);
-                    showApp(); 
-                }
+                } } else {
+    authStatusElement.textContent = `Error: Connection Failed`;
+    loadingStatusText.textContent = `Failed to connect to real-time database. Using static data.`;
+    // Pass null for db if initialization failed
+    initializeMapFeatures(null, userId || crypto.randomUUID(), appId);
+    showApp(); // Force show app in static mode
+}
             }
         }
 
