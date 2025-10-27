@@ -87,13 +87,13 @@
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-        crossorigin=""/>
+        crossorigin="anonymous"/>
     <!-- Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" crossorigin="anonymous"/>
     <!-- Leaflet Control Geocoder CSS (Required for Routing) -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" crossorigin="anonymous"/>
     <!-- Font Awesome (for icons) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" crossorigin="anonymous">
 </head>
 <body class="bg-gray-100 min-h-screen">
     
@@ -149,6 +149,9 @@
                     <button data-filter="Urgent" class="filter-button bg-red-600 hover:bg-red-700 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
                         <i class="fas fa-hospital mr-1"></i> Urgent Care
                     </button>
+                    <button data-filter="Washrooms" class="filter-button bg-teal-600 hover:bg-teal-700 text-white py-2 px-3 rounded-lg shadow-md" aria-pressed="false">
+                        <i class="fas fa-restroom mr-1"></i> Washrooms
+                    </button>
                 </div>
             </div>
 
@@ -201,7 +204,7 @@
                     <a href="tel:18006631441" class="hover:text-orange-300 transition block text-base">1-800-663-1441</a> (24/7)
                 </div>
                  <!-- LGBTQ2S+ -->
-                <div class="border-b sm:border-b-0 sm:border-r border-gray-700 pr-4 pb-3 sm:pb-0">
+                <div>
                     <p class="font-semibold text-pink-400 mb-1"><i class="fas fa-transgender mr-2"></i> Trans Lifeline</p>
                     <a href="tel:18773306366" class="hover:text-pink-300 transition block text-base">1-877-330-6366</a> (Peer Support)
                 </div>
@@ -225,7 +228,7 @@
                     <p class="font-semibold text-orange-400 mb-1"><i class="fas fa-pills mr-2"></i> Alcohol & Drug Info Line</p>
                     <a href="tel:18006631441" class="hover:text-orange-300 transition block text-base">1-800-663-1441</a> (24/7)
                 </div>
-                <!-- Crisis Text Line -->
+                 <!-- Crisis Text Line -->
                 <div>
                     <p class="font-semibold text-teal-400 mb-1"><i class="fas fa-sms mr-2"></i> Crisis Text Line</p>
                     <a href="sms:686868" class="hover:text-teal-300 transition block text-base">Text HOME to 686868</a> (24/7)
@@ -233,14 +236,14 @@
             </div>
             <div class="mt-4 text-center text-xs text-gray-400">
                 <p>Data sourced from official providers like VCH, BCCDC, and BC Government. For more helplines, visit <a href="https://www.crisiscentre.bc.ca/" class="underline hover:text-white">Crisis Centre BC</a>.</p>
-            </div>
+                </div>
         </footer>
 
         <!-- Privacy Policy Section -->
         <section class="mt-8 bg-white p-6 shadow-xl rounded-xl">
             <h2 class="text-2xl font-bold text-gray-900 mb-4">Privacy Policy</h2>
             <p class="text-gray-600 text-sm">
-                This app does not collect or store any personal information. User location is processed client-side only for mapping and directions, and is not shared or stored. Community reports are anonymous and stored in Firebase for real-time updates, using only non-identifiable data (e.g., status, notes, timestamp). No tracking cookies or analytics are used. Geolocation requires user consent. For Firebase privacy, see Google's policy. If you have concerns, contact the developer. Last updated: October 19, 2025.
+                This app does not collect or store any personal information. User location is processed client-side only for mapping and directions, and is not shared or stored. Community reports are anonymous and stored in Firebase for real-time updates, using only non-identifiable data (e.g., status, notes, timestamp). No tracking cookies or analytics are used. Geolocation requires user consent. For Firebase privacy, see Google's policy. If you have concerns, contact the developer. Last updated: October 23, 2025.
             </p>
         </section>
     </div>
@@ -315,11 +318,11 @@
     <!-- Leaflet JS (CORE LIBRARY - MUST LOAD FIRST) -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20n6a4o+S6l0blwU3yYpI9rJbFk6tQcDF6rW50c+iEa="
-        crossorigin=""></script>
+        crossorigin="anonymous"></script>
     <!-- Leaflet Control Geocoder JS (Required for L.Control.Geocoder.nominatim()) -->
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script> 
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js" crossorigin="anonymous"></script> 
     <!-- Leaflet Routing Machine JS (Depends on CORE Leaflet) -->
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js" crossorigin="anonymous"></script>
 
     <!-- Firebase JS Modules (Application Logic - MUST LOAD AFTER LIBRARIES) -->
     <script type="module">
@@ -400,171 +403,55 @@
             }
         }
 
-        // --- 2. CORE RESOURCE DATA (Verified from VCH, BCCDC, UGM, etc.) ---
+        // --- 2. CORE RESOURCE DATA ---
         
         const RESOURCE_LOCATIONS = [
-            // Supervised Consumption & Overdose Prevention (Injection Site) - Verified from VCH
-            { "id": "insite", "name": "Insite Supervised Consumption Site", "type": "Injection Site", "lat": 49.2818, "lng": -123.1017, "hours": "9:00am - 3:00am Daily", "dayHours": [9, 3], "notes": "Canada's first SCS at 139 East Hastings St. Co-managed by VCH and PHS. High traffic. Open on holidays. Source: VCH.ca" },
-            { "id": "opspigeon", "name": "Overdose Prevention Site at Overdose Prevention Society", "type": "Injection Site", "lat": 49.2819, "lng": -123.1022, "hours": "9:00am - 10:00pm Daily", "dayHours": [9, 22], "notes": "Community-run at 141 East Hastings St. May shorten on holidays. Source: VCH.ca" },
-            { "id": "molsonops", "name": "Molson Overdose Prevention Site", "type": "Injection Site", "lat": 49.2817, "lng": -123.1012, "hours": "Typically 24/7", "dayHours": [0, 24], "notes": "At 166 East Hastings St (alley). Staffed harm reduction. Source: VCH.ca" },
-            { "id": "powellgetaway", "name": "Overdose Prevention Site at Powell Street Getaway", "type": "Injection Site", "lat": 49.2820, "lng": -123.0930, "hours": "Varies, check site", "dayHours": [0, 24], "notes": "At 450 East Hastings St. Community OPS. Source: VCH.ca" },
-            { "id": "hopetohealth", "name": "Supervised Consumption Site at Hope to Health", "type": "Injection Site", "lat": 49.2809, "lng": -123.0975, "hours": "Varies, check site", "dayHours": [0, 24], "notes": "At 611 Powell St. Part of VCH research clinic. Source: VCH.ca" },
+            // Supervised Consumption & Overdose Prevention (Injection Site)
+            { "id": "insite", "name": "Insite Supervised Consumption Site", "type": "Injection Site", "lat": 49.2818, "lng": -123.1017, "hours": "9:00am - 3:00am Daily", "dayHours": [9, 3], "notes": "Canada's first SCS. Located at 139 East Hastings Street next to Detox. High traffic. Generally open on all holidays." },
+            { "id": "opspigeon", "name": "OPS (Overdose Prevention Site) Pigeon Park", "type": "Injection Site", "lat": 49.2797, "lng": -123.1023, "hours": "9:00am - 10:00pm Daily", "dayHours": [9, 22], "notes": "Community-run site. Hours may be shorter on major holidays. Check community status." },
             
-            // Naloxone Kits & Harm Reduction Supplies (Naloxone) - Verified from TowardTheHeart and VCH
-            { "id": "drp", "name": "Downtown Resource Centre & HR Supplies", "type": "Naloxone", "lat": 49.2801, "lng": -123.1025, "hours": "M-F 9:30am - 4:30pm", "dayHours": [9.5, 16.5], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Free Naloxone and supplies. Closed weekends/holidays. Source: VCH.ca" },
-            { "id": "phsfarm", "name": "PHS Pharmacy (Powell St)", "type": "Naloxone", "lat": 49.2808, "lng": -123.0991, "hours": "8:00am - 10:00pm Daily", "dayHours": [8, 22], "notes": "Harm reduction pharmacy. Reduced on major holidays. Source: VCH.ca" },
-            { "id": "vchhr", "name": "VCH Harm Reduction Outreach DTES", "type": "Naloxone", "lat": 49.2785, "lng": -123.0950, "hours": "Approx 10am-8pm Daily", "dayHours": [10, 20], "notes": "Street outreach near Main & Hastings. Staffing-dependent. Source: VCH.ca" },
-            { "id": "spikesonbikes", "name": "Spikes on Bikes Harm Reduction", "type": "Naloxone", "lat": 49.2810, "lng": -123.1000, "hours": "8:00am - 8:00pm Daily", "dayHours": [8, 20], "notes": "Mobile service for supplies/recovery. Source: TowardTheHeart.com" },
-            { "id": "towardtheheart", "name": "Toward The Heart Naloxone Sites", "type": "Naloxone", "lat": 49.2810, "lng": -123.1000, "hours": "Varies by site", "dayHours": [0, 24], "notes": "Multiple DTES locations for free kits. Find sites at TowardTheHeart.com/site-finder. Source: BCCDC" },
+            // Naloxone Kits & Harm Reduction Supplies (Naloxone)
+            { "id": "drp", "name": "Downtown Resource Centre & HR Supplies", "type": "Naloxone", "lat": 49.2801, "lng": -123.1025, "hours": "M-F, 9:30am - 4:30pm", "dayHours": [9.5, 16.5], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Free Naloxone, safer consumption supplies, and basic care. **CLOSED weekends and most statutory holidays.**" },
+            { "id": "phsfarm", "name": "PHS Pharmacy (Powell St)", "type": "Naloxone", "lat": 49.2808, "lng": -123.0991, "hours": "8:00am - 10:00pm Daily", "dayHours": [8, 22], "notes": "DTES pharmacy focused on harm reduction services. Hours may be reduced on Christmas/New Year's." },
+            { "id": "vchhr", "name": "VCH Harm Reduction Outreach DTES", "type": "Naloxone", "lat": 49.2785, "lng": -123.0950, "hours": "Street Team Varies (Approx 10am-8pm Daily)", "dayHours": [10, 20], "notes": "Street-based outreach. Location is approximate. Look for teams near Main & Hastings. Highly dependent on staffing." },
 
-            // Detox/Support (Detox) - Verified from VCH
-            { "id": "onsite", "name": "Onsite Detox (Adjacent to Insite)", "type": "Detox", "lat": 49.2819, "lng": -123.1016, "hours": "24/7 Intake/Assessment", "dayHours": [0, 24], "notes": "Residential withdrawal at 139 East Hastings St. Walk-in available. Source: VCH.ca" },
-            { "id": "vmac", "name": "Vancouver Main Access Centre (VCH)", "type": "Detox", "lat": 49.2730, "lng": -123.1009, "hours": "M-F 9:00am - 4:00pm", "dayHours": [9, 16], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Intake hub. Closed weekends/holidays. Source: VCH.ca" },
-            { "id": "crosstown", "name": "Providence Crosstown Clinic", "type": "Detox", "lat": 49.2814, "lng": -123.1060, "hours": "7:30am - 10:20pm Daily (with breaks)", "dayHours": [7.5, 22.333], "notes": "At 58 West Hastings St. iOAT/OAT. Breaks: 11:20am–12:40pm, etc. Open holidays. Source: VCH.ca" },
-            { "id": "dtesconnections", "name": "DTES Connections Clinic", "type": "Detox", "lat": 49.2815, "lng": -123.0990, "hours": "M-F 9:00am - 5:00pm", "dayHours": [9, 17], "isWeekendClosed": true, "notes": "Addiction medicine at 429 Alexander St. Same-day assessment. Source: VCH.ca" },
+            // Detox/Support (Detox)
+            { "id": "onsite", "name": "Onsite Detox (Adjacent to Insite)", "type": "Detox", "lat": 49.2819, "lng": -123.1016, "hours": "24/7 Intake/Assessment", "dayHours": [0, 24], "notes": "Residential withdrawal management. Direct referral/walk-in assessment available. Always open." },
+            { "id": "vmac", "name": "Vancouver Main Access Centre (VCH)", "type": "Detox", "lat": 49.2730, "lng": -123.1009, "hours": "M-F, 9:00am - 4:00pm", "dayHours": [9, 16], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Primary VCH intake hub. **CLOSED weekends and ALL statutory holidays.**" },
             
-            // Food Security & Shelter (Food) - Verified from UGM, City of Vancouver, VCH
-            { "id": "ugm", "name": "Union Gospel Mission - Main Site", "type": "Food", "lat": 49.2783, "lng": -123.0984, "hours": "24/7 Shelter & Meals (specific times vary)", "dayHours": [0, 24], "notes": "At 601 East Hastings St. Daily meals, high volume on holidays. Source: UGM.ca" },
-            { "id": "salvation", "name": "Salvation Army Harbour Light", "type": "Food", "lat": 49.2802, "lng": -123.1005, "hours": "24/7 Shelter & Meals", "dayHours": [0, 24], "notes": "At 119 East Cordova St. Set meal times. Source: SalvationArmy.ca" },
-            { "id": "carnegie", "name": "Carnegie Community Centre - Cafeteria", "type": "Food", "lat": 49.2811, "lng": -123.0998, "hours": "Breakfast 9-11am, Lunch 12-4pm, Dinner 5-8pm Daily", "dayHours": [9, 20], "notes": "Low-cost at 401 Main St. Accessible. Source: Vancouver.ca" },
-            { "id": "dtesnh", "name": "DTES Neighbourhood House - Meal Program", "type": "Food", "lat": 49.2812, "lng": -123.0965, "hours": "Oatmeal Mon/Wed 10am-12pm; Lunch Wed 12:30-2pm; Dinners Tue/Thu 3:30-6:30pm", "dayHours": [10, 18], "isWeekendClosed": true, "notes": "Free at 573 East Hastings St. Accessible. Source: DTESNH.org" },
-            { "id": "dugout", "name": "The Dugout Drop-In", "type": "Food", "lat": 49.2824, "lng": -123.1030, "hours": "Breakfast M-F 8-9am/Sat-Sun 9-10am; Lunch M-F 12-1pm/Sat-Sun 12:30-1:30pm; Dinner 5-6pm Daily", "dayHours": [8, 18], "notes": "Free at 59 Powell St. Source: CovenantHouseBC.org" },
-            { "id": "doorisopen", "name": "The Door is Open", "type": "Food", "lat": 49.2828, "lng": -123.0956, "hours": "Lunch Thu-Fri 11am, Sat 11am, Sun 12pm", "dayHours": [11, 12], "notes": "Free at 375 Powell St by Catholic Charities. Accessible. Source: CatholicVancouver.ca" },
+            // Food Security & Shelter (Food)
+            { "id": "ugm", "name": "Union Gospel Mission - Main Site", "type": "Food", "lat": 49.2783, "lng": -123.0984, "hours": "24/7 Shelter & Meals (Check specific meal times)", "dayHours": [0, 24], "notes": "Always open for shelter/basic services. Meal serving times vary, expect high volume on holidays." },
+            { "id": "salvation", "name": "Salvation Army Harbour Light", "type": "Food", "lat": 49.2802, "lng": -123.1005, "hours": "24/7 Shelter & Meals", "dayHours": [0, 24], "notes": "Always open for shelter/basic services. Meals are served at set times." },
+            { "id": "saveonmeats", "name": "Save-On-Meats Lunch Counter", "type": "Food", "lat": 49.2798, "lng": -123.1012, "hours": "M-F, 10:00am - 3:00pm", "dayHours": [10, 15], "isWeekendClosed": true, "isHolidayClosed": true, "notes": "Lunch counter/community token location. **CLOSED weekends and most statutory holidays.**" },
 
-            // Urgent Care (Urgent) - Verified from VCH
-            { "id": "stpauls", "name": "St. Paul's Hospital Emergency", "type": "Urgent", "lat": 49.2825, "lng": -123.1200, "hours": "24/7 Emergency", "dayHours": [0, 24], "notes": "Full ER at 1081 Burrard St. Always open. Source: VCH.ca" },
-            { "id": "vghtech", "name": "VGH Emergency & Trauma Centre", "type": "Urgent", "lat": 49.2625, "lng": -123.1206, "hours": "24/7 Emergency", "dayHours": [0, 24], "notes": "Trauma at 899 West 12th Ave. Always open. Source: VCH.ca" },
-            { "id": "citycentreupcc", "name": "Vancouver City Centre Urgent and Primary Care Centre", "type": "Urgent", "lat": 49.2780, "lng": -123.1290, "hours": "8:00am - 10:00pm Daily", "dayHours": [8, 22], "notes": "Walk-in non-emergency at 1290 Hornby St. Source: VCH.ca" },
-            { "id": "downtownchc", "name": "Downtown Community Health Centre Primary Care", "type": "Urgent", "lat": 49.2815, "lng": -123.0970, "hours": "M-F 9:00am - 5:00pm", "dayHours": [9, 17], "isWeekendClosed": true, "notes": "At 569 Powell St. For DTES residents. Source: VCH.ca" },
-            { "id": "penderchc", "name": "Pender Community Health Centre Primary Care", "type": "Urgent", "lat": 49.2805, "lng": -123.1065, "hours": "M-F 9:00am - 5:00pm", "dayHours": [9, 17], "isWeekendClosed": true, "notes": "At 59 West Pender St. Walk-in available. Source: VCH.ca" }
+            // Urgent Care (Urgent)
+            { "id": "stpauls", "name": "St. Paul's Hospital Emergency", "type": "Urgent", "lat": 49.2825, "lng": -123.1200, "hours": "24/7 Emergency", "dayHours": [0, 24], "notes": "Full emergency services. Always open." },
+            { "id": "vghtech", "name": "VGH Emergency & Trauma Centre", "type": "Urgent", "lat": 49.2625, "lng": -123.1206, "hours": "24/7 Emergency", "dayHours": [0, 24], "notes": "Major trauma centre. Always open." }
         ];
 
         let currentLocations = [...RESOURCE_LOCATIONS]; 
 
         // --- 3. HOLIDAY & DYNAMIC STATUS LOGIC ---
 
-        // Helper function to get the Nth weekday (e.g., Monday=1) of a month in a year
-        function getNthWeekday(year, month, dayOfWeek, nth) {
-          const date = new Date(year, month, 1); // Month is 0-indexed
-          const weekday = date.getDay(); // 0=Sunday, 1=Monday, etc.
-          const daysToAdd = (dayOfWeek - weekday + 7) % 7;
-          date.setDate(1 + daysToAdd + (nth - 1) * 7);
-          return date;
-        }
-
-        // Helper function to adjust if holiday falls on Sunday (move to next Monday, per patterns)
-        function adjustIfSunday(date) {
-          if (date.getDay() === 0) {
-            date.setDate(date.getDate() + 1);
-          }
-          return date;
-        }
-
-        // 1. New Year's Day: January 1
-        function newYearsDay(year) {
-          const date = new Date(year, 0, 1);
-          return adjustIfSunday(date);
-        }
-
-        // 2. Family Day: Third Monday in February
-        function familyDay(year) {
-          const date = getNthWeekday(year, 1, 1, 3); // February (month 1), Monday (1), 3rd
-          return date;
-        }
-
-        // 3. Good Friday: Friday before Easter Sunday (approximate Easter calculation)
-        function goodFriday(year) {
-          // Anonymous Gregorian algorithm for Easter Sunday
-          const a = year % 19;
-          const b = Math.floor(year / 100);
-          const c = year % 100;
-          const d = Math.floor(b / 4);
-          const e = b % 4;
-          const f = Math.floor((b + 8) / 25);
-          const g = Math.floor((b - f + 1) / 3);
-          const h = (19 * a + b - d - g + 15) % 30;
-          const i = Math.floor(c / 4);
-          const k = c % 4;
-          const l = (32 + 2 * e + 2 * i - h - k) % 7;
-          const m = Math.floor((a + 11 * h + 22 * l) / 451);
-          const month = Math.floor((h + l - 7 * m + 114) / 31);
-          const day = ((h + l - 7 * m + 114) % 31) + 1;
-
-          const easter = new Date(year, month - 1, day);
-          const goodFridayDate = new Date(easter);
-          goodFridayDate.setDate(easter.getDate() - 2); // Friday before
-          return goodFridayDate;
-        }
-
-        // 4. Victoria Day: Monday before May 25
-        function victoriaDay(year) {
-          let date = new Date(year, 4, 25); // May 25
-          if (date.getDay() !== 1) { // If not already Monday
-            date.setDate(25 - (date.getDay() || 7) + 1); // Adjust to previous Monday
-          }
-          return date;
-        }
-
-        // 5. Canada Day: July 1
-        function canadaDay(year) {
-          const date = new Date(year, 6, 1);
-          return adjustIfSunday(date);
-        }
-
-        // 6. B.C. Day: First Monday in August
-        function bcDay(year) {
-          const date = getNthWeekday(year, 7, 1, 1); // August (month 7), Monday (1), 1st
-          return date;
-        }
-
-        // 7. Labour Day: First Monday in September
-        function labourDay(year) {
-          const date = getNthWeekday(year, 8, 1, 1); // September (month 8), Monday (1), 1st
-          return date;
-        }
-
-        // 8. National Day for Truth and Reconciliation: September 30
-        function nationalDayForTruthAndReconciliation(year) {
-          const date = new Date(year, 8, 30);
-          return adjustIfSunday(date);
-        }
-
-        // 9. Thanksgiving Day: Second Monday in October
-        function thanksgivingDay(year) {
-          const date = getNthWeekday(year, 9, 1, 2); // October (month 9), Monday (1), 2nd
-          return date;
-        }
-
-        // 10. Remembrance Day: November 11 (fixed, no Sunday adjustment in content patterns)
-        function remembranceDay(year) {
-          return new Date(year, 10, 11);
-        }
-
-        // 11. Christmas Day: December 25
-        function christmasDay(year) {
-          const date = new Date(year, 11, 25);
-          return adjustIfSunday(date);
-        }
-
         function getStatutoryHolidays(year) {
-          const holidays = [];
-          const pushHoliday = (date) => {
-            holidays.push(`${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
-          };
+            const holidays = [];
+            const pushHoliday = (date) => {
+                holidays.push(`${year}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`);
+            };
 
-          pushHoliday(newYearsDay(year));
-          pushHoliday(familyDay(year));
-          pushHoliday(goodFriday(year));
-          pushHoliday(victoriaDay(year));
-          pushHoliday(canadaDay(year));
-          pushHoliday(bcDay(year));
-          pushHoliday(labourDay(year));
-          pushHoliday(nationalDayForTruthAndReconciliation(year));
-          pushHoliday(thanksgivingDay(year));
-          pushHoliday(remembranceDay(year));
-          pushHoliday(christmasDay(year));
+            pushHoliday(newYearsDay(year));
+            pushHoliday(familyDay(year));
+            pushHoliday(goodFriday(year));
+            pushHoliday(victoriaDay(year));
+            pushHoliday(canadaDay(year));
+            pushHoliday(bcDay(year));
+            pushHoliday(labourDay(year));
+            pushHoliday(nationalDayForTruthAndReconciliation(year));
+            pushHoliday(thanksgivingDay(year));
+            pushHoliday(remembranceDay(year));
+            pushHoliday(christmasDay(year));
 
-          return holidays;
+            return holidays;
         }
 
         function checkIfStatutoryHoliday(date) {
@@ -781,8 +668,8 @@
              return L.divIcon({
                 className: 'custom-div-icon',
                 html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 8px rgba(0,0,0,0.4); opacity: ${opacity}; ${!isOpen ? 'filter: grayscale(80%);' : ''}"></div>`,
-                iconSize: [24, 24],
-                iconAnchor: [12, 12]
+                iconSize: [18, 18],
+                iconAnchor: [9, 9]
             });
         }
 
@@ -792,7 +679,7 @@
 
             // Filter based on type and search term
             const filteredLocations = locations.filter(loc => 
-                (filter === 'all' || loc.type === filter) &&
+                (filter === 'all' or loc.type === filter) &&
                 loc.name.toLowerCase().includes(normalizedSearchTerm)
             );
             
@@ -944,7 +831,7 @@
         async function submitReport(event) {
             event.preventDefault();
             if (!db || !userId) {
-                displayReportMessage('Error: Database connection failed. Cannot submit report.', 'text-red-500');
+                displayReportMessage('Error: Database connection failed. Cannot submit report.', 'text-red-600');
                 return;
             }
 
@@ -1079,7 +966,7 @@
 
         function setupMap() {
             // Centered on the heart of the DTES
-            map = L.map('map').setView([49.281, -123.100], 15); 
+            map = L.map('map').setView([49.281, -123.102], 15); 
 
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 maxZoom: 19,
