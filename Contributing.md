@@ -1,34 +1,33 @@
-# Contributing to the DTES Lifeline Map
-
-This project is driven by a mission to improve access to life-saving resources in the Downtown Eastside. We welcome all contributions—whether you are a developer, a designer, an outreach worker, or a local resident.
-
 # Contributing to DTES Lifeline Map
 
+This project is driven by a mission to improve access to life-saving resources in the Downtown Eastside. We welcome all contributions—whether you are a developer, designer, outreach worker, or local resident.
+
+## How to Contribute
 1. Fork the repo.
-2. Create branch: `git checkout -b feature/update-data`.
+2. Create a branch: `git checkout -b feature/update-data`.
 3. Commit: `git commit -m "Add new shelter data"`.
-4. PR to main—focus on accuracy, UX, or features like washrooms filter.
+4. Push and PR to main—focus on accuracy, UX, or features like washroom filter.
 
 Thanks! Prioritize DTES community input.
 
-Commit Messages: Use clear, descriptive commit messages (e.g., feat: add real-time status listener or fix: correct leaflet icon path).
+### Commit Messages
+Use clear, descriptive messages (e.g., `feat: add real-time status listener` or `fix: correct leaflet icon path`).
 
-Code Standards:
-
+### Code Standards
 - Use modern JavaScript (ES6+).
-- Ensure your code is well-commented, especially complex logic around Firebase or Leaflet.
-- Maintain full responsiveness and accessibility (A11Y) in all UI components, as the primary users will be on mobile devices in challenging conditions.
+- Comment complex logic (e.g., Firebase, Leaflet).
+- Ensure full responsiveness and accessibility (A11Y) for mobile users in challenging conditions.
 
-Pull Requests (PRs): Submit PRs targeting the main branch. Ensure your PR is linked to an existing issue.
+### Pull Requests (PRs)
+- Target the `main` branch.
+- Link to an existing issue.
+- Include a clear description of changes.
 
 ## Reporting Issues and Bugs
-
-If you find a bug or have a suggestion, please open an issue in the GitHub repository.
-
-For Bugs: Include clear steps to reproduce the issue, what you expected, and what actually happened.
-
-For Feature Requests: Clearly articulate the problem and how the proposed feature would benefit users (e.g., "It is difficult to see which sites are open after 9 PM. A time slider would help.").
+Open an issue on GitHub. For bugs, provide:
+- Steps to reproduce.
+- Expected vs. actual behavior.
+For feature requests, articulate the problem and benefit (e.g., "A time slider would help see 9 PM availability.").
 
 ## Community Data Curation and Verification
-
-Data quality is paramount to the mission. If you are an outreach worker or service provider interested in contributing verified resource data or helping to moderate the live status updates, please contact the project maintainers directly (see README.md) for access to the secure admin panel and data standards guide.
+Data quality is critical. Outreach workers or providers can contribute verified data or moderate status updates. Contact @fifaaworldcup via GitHub for admin access and the data standards guide.
