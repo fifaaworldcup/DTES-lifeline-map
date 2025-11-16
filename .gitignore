@@ -9,7 +9,41 @@ lerna-debug.log*
 /jspm_packages
 
 # Testing
-/coverage
+/coverage# IDE and Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+.cache/
+
+# Environment variables
+.env
+.env.local
+
+# Build outputs (if using build tools later)
+dist/
+build/
+
+# Node modules (if you add npm later)
+node_modules/
+
+# Jekyll (GitHub Pages default)
+_site/
+.jekyll-cache/
+
+# Backup files
+*.bak
+*.backup
 /.nyc_output
 /.jest_cache
 
