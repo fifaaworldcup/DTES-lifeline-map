@@ -1,3 +1,73 @@
+# Contributing to Vancouver DTES Lifeline Map
+
+Thank you for your interest in contributing to **DTES Lifeline Map**!  
+This community project relies on volunteers like you to maintain and improve this vital resource.
+
+## 🤝 How to Contribute
+
+### 1. Reporting Issues
+
+**Found incorrect information?**
+- Open an issue on GitHub with details
+- Include the resource name and the correct information
+- Provide source verification if possible
+
+**Bug reports**
+- Describe the issue clearly
+- Include steps to reproduce
+- Mention browser/device information
+- Add screenshots if helpful
+
+---
+
+## 2. Adding New Resources
+
+### **To add a new service location:**
+
+#### **1. Verify the Resource**
+- Confirm the service is in the **DTES area**
+- Verify hours and contact info
+- Ensure it is a **public service**
+
+#### **2. Prepare the Information**
+```javascript
+{
+  name: "Service Name",
+  lat: 49.2811,
+  lng: -123.1005,
+  type: "Category",
+  description: "Brief description of services",
+  hours: "Operating hours",
+  phone: "xxx-xxx-xxxx",
+  address: "Street address",
+  status: "open/closed/unknown"
+}
+
+### **Code Style Guidelines**
+- Use **ES6+ JavaScript features**
+- Follow existing naming conventions
+- Add comments for complex logic
+- Ensure **accessibility** (ARIA labels, keyboard navigation)
+- Test on multiple devices and browsers
+
+---
+
+## 4. Translation Improvements
+
+To add or improve translations:
+
+**Current languages:** English, Chinese, Spanish, French, Portuguese, Hindi, Punjabi
+
+### **Adding a New Language**
+```javascript
+const translations = {
+  // ... existing languages
+  newLangCode: {
+    title: "Translated Title",
+    subtitle: "Translated subtitle",
+    // ... all other keys
+  }
+};
 
 Also update the **language selector** in the UI.
 
