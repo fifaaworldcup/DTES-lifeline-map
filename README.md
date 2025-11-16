@@ -68,9 +68,8 @@ All resource information is verified and regularly updated from:
 
 ## 🤝 Community Impact
 
-- Serves over 1,000 unique users monthly
-- Critical resource for DTES community members
-- Used by outreach workers, healthcare providers, and social service agencies
+- Critical resources for DTES community members
+- Used by outreach workers, healthcare providers, community members and social service agencies
 - Reduces barriers to accessing life-saving services
 
 ## 🛠️ Technical Stack
@@ -91,12 +90,6 @@ The app includes 24/7 crisis hotlines:
 - Kids Help Phone: 1-800-668-6868
 - And many more...
 
-## 🏆 Recognition
-
-- Featured in Vancouver Coastal Health community resources
-- Recognized by harm reduction organizations
-- Used by municipal outreach programs
-- Open source community project of the month (October 2025)
 
 ## 📄 License
 
