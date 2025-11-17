@@ -12,9 +12,6 @@ An offline-capable web application that provides instant access to harm reductio
 - **Emergency Features**: Quick access to emergency services and naloxone instructions
 - **Mobile Responsive**: Works on all devices
 
-## Live Demo
-
-View the live application at: [https://yourusername.github.io/dtes-lifeline-map](https://yourusername.github.io/dtes-lifeline-map)
 
 ## Getting Started
 
