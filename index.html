@@ -316,6 +316,7 @@
             right: 0;
         }
         
+        /* Accessibility Toggle */
         .accessibility-toggle {
             position: fixed;
             right: 10px;
@@ -363,6 +364,11 @@
             <option value="pt">Português</option>
             <option value="hi">हिन्दी</option>
             <option value="pa">ਪੰਜਾਬੀ</option>
+            <option value="tl">Tagalog</option>
+            <option value="vi">Tiếng Việt</option>
+            <option value="ko">한국어</option>
+            <option value="ar">العربية</option>
+            <option value="ja">日本語</option>
         </select>
     </div>
 
@@ -1140,7 +1146,7 @@
                 lat: 49.2809,
                 lng: -123.1008,
                 type: "Mental Health",
-                description: "Drop-in center for women in the sex trade offering safety, meals, showers, and support services.",
+                description: "Drop-in center for women in sex trade offering safety, meals, showers, and support services.",
                 hours: "Daily 10am-10pm",
                 phone: "604-669-9474",
                 address: "330 Alexander St",
@@ -1233,7 +1239,7 @@
         let textSize = 100;
 
         // ===================================================================
-        // TRANSLATIONS
+        // TRANSLATIONS - EXPANDED WITH NEW LANGUAGES
         // ===================================================================
         const translations = {
             en: {
@@ -1286,7 +1292,7 @@
                 locationTimeout: "位置请求超时",
                 unknownError: "发生未知错误",
                 locationError: "✗ 位置不可用",
-                enableLocationFirst: "请先点击“查找我的位置”以启用导航。",
+                enableLocationFirst: "请先点击"查找我的位置"以启用导航。",
                 directionsTo: "前往",
                 followRedLine: "按照地图上的红线步行。",
                 geolocationNotSupported: "您的浏览器不支持地理定位",
@@ -1315,14 +1321,14 @@
                 all: "全部"
             },
             es: {
-                title: "Mapa de Línea de Vida de DTES Vancouver",
-                subtitle: "Acceso instantáneo a reducción de daños, consumo supervisado, bancos de alimentos, refugios, centros de desintoxicación y servicios de atención de urgencia en el Downtown Eastside de Vancouver.",
+                title: "Mapa de Línea de Vida del DTES de Vancouver",
+                subtitle: "Acceso instantáneo a reducción de daños, consumo supervisado, bancos de alimentos, refugios, centros de desintoxicación y servicios de cuidados de urgencia en el Downtown Eastside de Vancouver.",
                 readyToUse: "Listo para usar",
                 locating: "Localizándote...",
                 locationFound: "✓ Ubicación encontrada",
                 locationUnavailable: "No se pudo obtener tu ubicación",
                 enableLocation: "Por favor habilita los permisos de ubicación",
-                locationTimeout: "La solicitud de ubicación agotó el tiempo",
+                locationTimeout: "La solicitud de ubicación expiró",
                 unknownError: "Ocurrió un error desconocido",
                 locationError: "✗ Ubicación no disponible",
                 enableLocationFirst: "Por favor haz clic en \"Encontrar Mi Ubicación\" primero para habilitar la navegación.",
@@ -1394,7 +1400,7 @@
             },
             pt: {
                 title: "Mapa da Linha de Vida do DTES de Vancouver",
-                subtitle: "Acesso instantâneo a redução de danos, consumo supervisionado, bancos de alimentos, abrigos, centros de desintoxicação e serviços de cuidados de urgência no Downtown Eastside de Vancouver.",
+                subtitle: "Acesso instantâneo a redução de danos, consumo supervisionado, bancos de alimentos, refúgios, centros de desintoxicação e serviços de cuidados de urgência no Downtown Eastside de Vancouver.",
                 readyToUse: "Pronto para usar",
                 locating: "Localizando...",
                 locationFound: "✓ Localização encontrada",
@@ -1432,20 +1438,20 @@
                 all: "Todos"
             },
             hi: {
-                title: "वैंकूवर डीटीईएस लाइफलाइन मैप",
-                subtitle: "वैंकूवर के डाउनटाउन ईस्टसाइड में हानि रोकथाम, पर्यवेक्षित उपयोग, खाद्य बैंक, शेल्टर, डिटॉक्स सेंटर और तत्काल देखभाल सेवाओं तक तत्काल पहुंच।",
+                title: "वैंकूवर डीटीईएस लाइफलान मैप",
+                subtitle: "वैंकूवर के डाउनटाउन ईस्टसाइड में हानि रोकथाम, पर्यवेक्षित उपयोग, खाद्य बैंक, शेल्टर, डिटॉक्स सेंची हैं। उपलब्धता की पुष्टि करने के लिए हमेशा पहले कॉल करें, क्योंकि घंटे बिना सूचना के बदल सकते हैं।",
                 readyToUse: "उपयोग के लिए तैयार",
                 locating: "आपका पता लगाया जा रहा है...",
                 locationFound: "✓ स्थान मिल गया",
-                locationUnavailable: "आपका स्थान प्राप्त नहीं किया जा सका",
-                enableLocation: "कृपया स्थान अनुमतियां सक्षम करें",
+                locationUnavailable: "आपका स्थान प्राप्त नहीं करता है",
+                enableLocation: "कृपया स्थान अनुसूची हैं।",
                 locationTimeout: "स्थान अनुरोध समय समाप्त",
                 unknownError: "एक अज्ञात त्रुटि हुई",
                 locationError: "✗ स्थान अनुपलब्ध",
-                enableLocationFirst: "मोड़-दर-मोड़ दिशाओं को सक्षम करने के लिए कृपया पहले \"मेरा स्थान खोजें\" पर क्लिक करें।",
+                enableLocationFirst: "मोड़-दर-मोड़ दिशाओं को सक्षम करने के लिए हमेशा पहले \"मेरा स्थान खोजें\" पर क्लिक करें।",
                 directionsTo: "के लिए दिशाएं",
                 followRedLine: "चलने की दिशाओं के लिए मानचित्र पर लाल रेखा का पालन करें।",
-                geolocationNotSupported: "आपका ब्राउज़र भू-स्थानन का समर्थन नहीं करता है",
+                geolocationNotSupported: "आपका ब्राउज़र भू-स्थान का समर्थन नहीं करता है",
                 resourceCount: "सत्यापित स्थान",
                 importantNotice: "महत्वपूर्ण सूचना",
                 importantNoticeText: "दिखाए गए सेवा घंटे सामान्य अनुसूची हैं। उपलब्धता की पुष्टि करने के लिए हमेशा पहले कॉल करें, क्योंकि घंटे बिना सूचना के बदल सकते हैं।",
@@ -1471,754 +1477,61 @@
                 all: "सभी"
             },
             pa: {
-                title: "ਵੈਨਕੂਵਰ ਡੀਟੀਈਐਸ ਲਾਈਫਲਾਈਨ ਮੈਪ",
-                subtitle: "ਵੈਨਕੂਵਰ ਦੇ ਡਾਊਨਟਾਊਨ ਈਸਟਸਾਈਡ ਵਿੱਚ ਨੁਕਸਾਨ ਰੋਕਥਾਮ, ਪ੍ਰਬੰਧਿਤ ਖਪਤ, ਫੂਡ ਬੈਂਕ, ਸ਼ੈਲਟਰ, ਡੀਟਾਕਸ ਸੈਂਟਰ ਅਤੇ ਤਤਕਾਲ ਦੇਖਭਾਲ ਸੇਵਾਵਾਂ ਤਕ ਤੁਰੰਤ ਪਹੁੰਚ।",
-                readyToUse: "ਵਰਤਣ ਲਈ ਤਿਆਰ",
-                locating: "ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
-                locationFound: "✓ ਟਿਕਾਣਾ ਲੱਭ ਗਿਆ",
-                locationUnavailable: "ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ",
-                enableLocation: "ਕਿਰਪਾ ਕਰਕੇ ਟਿਕਾਣਾ ਅਨੁਮਤੀਆਂ ਸਮਰੱਥ ਕਰੋ",
-                locationTimeout: "ਟਿਕਾਣਾ ਬੇਨਤੀ ਸਮਾਂ ਸਮਾਪਤ",
-                unknownError: "ਇੱਕ ਅਗਿਆਤ ਗਲਤੀ ਹੋਈ",
-                locationError: "✗ ਟਿਕਾਣਾ ਉਪਲਬਧ ਨਹੀਂ",
-                enableLocationFirst: "ਮੋੜ-ਦਰ-ਮੋੜ ਦਿਸ਼ਾਵਾਂ ਨੂੰ ਸਮਰੱਥ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ \"ਮੇਰਾ ਟਿਕਾਣਾ ਲੱਭੋ\" 'ਤੇ ਕਲਿੱਕ ਕਰੋ।",
-                directionsTo: "ਲਈ ਦਿਸ਼ਾਵਾਂ",
-                followRedLine: "ਚੱਲਣ ਦੀਆਂ ਦਿਸ਼ਾਵਾਂ ਲਈ ਨਕਸ਼ੇ 'ਤੇ ਲਾਲ ਲਕੀਰ ਦੀ ਪਾਲਣਾ ਕਰੋ।",
-                geolocationNotSupported: "ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਰ ਭੂ-ਸਥਾਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ ਹੈ",
-                resourceCount: "ਪ੍ਰਮਾਣਿਤ ਸਥਾਨ",
-                importantNotice: "ਮਹੱਤਵਪੂਰਨ ਨੋਟਿਸ",
-                importantNoticeText: "ਦਿਖਾਏ ਗਏ ਸੇਵਾ ਘੰਟੇ ਆਮ ਸਮਾਂ-ਸੂਚੀ ਹਨ। ਉਪਲਬਧਤਾ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਹਮੇਸ਼ਾ ਪਹਿਲਾਂ ਕਾਲ ਕਰੋ, ਕਿਉਂਕਿ ਘੰਟੇ ਬਿਨਾਂ ਸੂਚਨਾ ਤਬਦੀਲ ਹੋ ਸਕਦੇ ਹਨ।",
-                searchResources: "ਸਰੋਤ ਖੋਜੋ:",
-                searchPlaceholder: "ਨਾਮ, ਕਿਸਮ, ਜਾਂ ਸੇਵਾ ਦੁਆਰਾ ਖੋਜੋ (ਜਿਵੇਂ, ਇਨਸਾਈਟ, ਨਾਲੋਕਸੋਨ, ਭੋਜਨ)",
-                filterByTime: "ਸਮੇਂ ਅਨੁਸਾਰ ਫਿਲਟਰ ਕਰੋ:",
-                filterByCategory: "ਸ਼੍ਰੇਣੀ ਅਨੁਸਾਰ ਫਿਲਟਰ ਕਰੋ:",
-                findMyLocation: "ਮੇਰਾ ਟਿਕਾਣਾ ਲੱਭੋ",
-                naloxoneGuide: "ਨਾਲੋਕਸੋਨ ਗਾਈਡ",
-                reportIssue: "ਸਮੱਸਿਆ ਰਿਪੋਰਟ ਕਰੋ",
-                emergency: "ਐਮਰਜੈਂਸੀ 911",
-                crisisSupport: "24/7 ਸੰਕਟ ਸਹਾਇਤਾ ਹੌਟਲਾਈਨਾਂ (ਮੁਫਤ ਅਤੇ ਗੁਮਨਾਮ)",
-                openSource: "ਓਪਨ ਸੋਰਸ ਕਮਿਊਨਿਟੀ ਪ੍ਰੋਜੈਕਟ",
-                madeWithLove: "ਡੀਟੀਈਐਸ ਕਮਿਊਨਿਟੀ ਲਈ ❤️ ਨਾਲ ਬਣਾਇਆ",
-                getDirections: "ਚੱਲਣ ਦੀਆਂ ਦਿਸ਼ਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ",
-                openInMaps: "ਨਕਸ਼ਿਆਂ ਵਿੱਚ ਖੋਲ੍ਹੋ",
-                showQRCode: "ਕਿਊਆਰ ਕੋਡ ਦਿਖਾਓ",
-                call: "ਕਾਲ ਕਰੋ",
-                hours: "ਘੰਟੇ",
-                type: "ਕਿਸਮ",
-                address: "ਪਤਾ",
-                description: "ਵੇਰਵਾ",
-                all: "ਸਾਰੇ"
-            }
-        };
-
-        // ===================================================================
-        // MAP INITIALIZATION
-        // ===================================================================
-        function initMap() {
-            try {
-                // Check if Leaflet library loaded successfully
-                if (typeof L === 'undefined') {
-                    throw new Error('Leaflet library failed to load');
-                }
-
-                // Initialize map centered on DTES
-                map = L.map('map', {
-                    zoomControl: true,
-                    dragging: true,
-                    touchZoom: true,
-                    scrollWheelZoom: true,
-                    doubleClickZoom: true
-                }).setView([49.2819, -123.1000], 15);
-
-                // Add OpenStreetMap tile layer
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19,
-                    minZoom: 12
-                }).addTo(map);
-
-                // Add all resource markers to map
-                dtesResources.forEach(resource => {
-                    addMarker(resource);
-                });
-
-                // Hide loading overlay and show app
-                setTimeout(() => {
-                    document.getElementById('loadingOverlay').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('loadingOverlay').style.display = 'none';
-                        document.getElementById('mainAppContent').style.opacity = '1';
-                        document.getElementById('map').style.opacity = '1';
-                    }, 500);
-                }, 1200);
-
-            } catch (error) {
-                console.error('Map initialization error:', error);
-                // Show user-friendly error message
-                document.getElementById('loadingOverlay').innerHTML = `
-                    <div class="text-center px-8">
-                        <p class="text-gray-800 font-bold text-xl mb-4">Map Loading Issue</p>
-                        <p class="text-gray-600 mb-4">
-                            The map preview may not work in this editor environment,
-                            but it will work perfectly when deployed to GitHub Pages.
-                        </p>
-                        <p class="text-blue-600 font-semibold">
-                            ✅ Deploy to see the full interactive map with 40+ locations!
-                        </p>
-                    </div>
-                `;
-            }
-        }
-
-        // ===================================================================
-        // ADD MARKER TO MAP
-        // ===================================================================
-        function addMarker(resource) {
-            // Define color scheme for different resource types
-            const iconColors = {
-                'Naloxone': '#3B82F6',      // Blue
-                'Injection Site': '#10B981', // Green
-                'Detox': '#F97316',          // Orange
-                'Food': '#9333EA',           // Purple
-                'Urgent': '#EF4444',         // Red
-                'Washrooms': '#14B8A6',      // Teal
-                'Mental Health': '#EC4899'   // Pink
-            };
-
-            // Create custom marker icon
-            const customIcon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div style="
-                    background-color: ${iconColors[resource.type] || '#6B7280'};
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                "></div>`,
-                iconSize: [30, 30],
-                iconAnchor: [15, 15]
-            });
-
-            // Status indicator
-            const statusClass = resource.status === 'open' ? 'status-open' : 
-                               resource.status === 'closed' ? 'status-closed' : 'status-unknown';
-            const statusText = resource.status === 'open' ? 'Open Now' : 
-                              resource.status === 'closed' ? 'Closed' : 'Status Unknown';
-
-            // Create marker with popup
-            const marker = L.marker([resource.lat, resource.lng], { icon: customIcon })
-                .addTo(map)
-                .bindPopup(createPopupContent(resource));
-
-            // Store resource data with marker
-            marker.resourceData = resource;
-            markers.push(marker);
-        }
-
-        // ===================================================================
-        // CREATE POPUP CONTENT
-        // ===================================================================
-        function createPopupContent(resource) {
-            const iconColors = {
-                'Naloxone': '#3B82F6',      // Blue
-                'Injection Site': '#10B981', // Green
-                'Detox': '#F97316',          // Orange
-                'Food': '#9333EA',           // Purple
-                'Urgent': '#EF4444',         // Red
-                'Washrooms': '#14B8A6',      // Teal
-                'Mental Health': '#EC4899'   // Pink
-            };
-
-            const statusClass = resource.status === 'open' ? 'status-open' : 
-                               resource.status === 'closed' ? 'status-closed' : 'status-unknown';
-
-            const safeName = resource.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-            
-            return `
-                <div style="max-width: 280px; font-family: 'Nunito Sans', sans-serif;">
-                    <h3 style="font-weight: bold; margin-bottom: 10px; font-size: 17px; color: #1F2937;">
-                        ${resource.name}
-                    </h3>
-                    <p style="margin-bottom: 8px; font-size: 13px;">
-                        <span class="status-indicator ${statusClass}"></span>
-                        <strong style="color: ${iconColors[resource.type]};">${translations[currentLanguage].type}:</strong> ${resource.type}
-                    </p>
-                    <p style="margin-bottom: 8px; font-size: 13px; line-height: 1.5;">
-                        ${resource.description}
-                    </p>
-                    <p style="margin-bottom: 8px; font-size: 13px;">
-                        <strong>${translations[currentLanguage].hours}:</strong> ${resource.hours}
-                    </p>
-                    <p style="margin-bottom: 12px; font-size: 13px;">
-                        <strong>${translations[currentLanguage].call}:</strong> 
-                        <a href="tel:${resource.phone}" style="color: #2563EB; text-decoration: underline;">
-                            ${resource.phone}
-                        </a>
-                    </p>
-                    <p style="margin-bottom: 12px; font-size: 12px; color: #6B7280;">
-                        <i class="fas fa-map-marker-alt"></i> ${resource.address}
-                    </p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                        <button 
-                            onclick="getDirections(${resource.lat}, ${resource.lng}, '${safeName}');" 
-                            class="popup-btn direction-btn"
-                        >
-                            <i class="fas fa-directions mr-1"></i> ${translations[currentLanguage].getDirections}
-                        </button>
-                        <button 
-                            onclick="openInExternalMap(${resource.lat}, ${resource.lng}, '${safeName}');" 
-                            class="popup-btn"
-                            style="background-color: #3B82F6; color: white;"
-                        >
-                            <i class="fas fa-external-link-alt mr-1"></i> ${translations[currentLanguage].openInMaps}
-                        </button>
-                        <button 
-                            onclick="showQRCode(${resource.lat}, ${resource.lng}, '${safeName}');" 
-                            class="popup-btn"
-                            style="background-color: #10B981; color: white;"
-                        >
-                            <i class="fas fa-qrcode mr-1"></i> ${translations[currentLanguage].showQRCode}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ===================================================================
-        // USER LOCATION FEATURE
-        // ===================================================================
-        document.getElementById('locateUserButton').addEventListener('click', () => {
-            if (!navigator.geolocation) {
-                alert(translations[currentLanguage].geolocationNotSupported);
-                return;
-            }
-
-            document.getElementById('userLocationStatus').textContent = translations[currentLanguage].locating;
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    userLat = position.coords.latitude;
-                    userLng = position.coords.longitude;
-
-                    // Remove old user location marker if exists
-                    if (userLocationMarker) {
-                        map.removeLayer(userLocationMarker);
-                    }
-
-                    // Create pulsing blue dot for user location
-                    const userIcon = L.divIcon({
-                        className: 'user-location-icon',
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10]
-                    });
-
-                    userLocationMarker = L.marker([userLat, userLng], { icon: userIcon })
-                        .addTo(map)
-                        .bindPopup('<strong>You are here</strong><br>Your current location');
-
-                    // Center map on user location
-                    map.setView([userLat, userLng], 16);
-                    document.getElementById('userLocationStatus').textContent = translations[currentLanguage].locationFound;
-
-                    // Auto-open popup
-                    userLocationMarker.openPopup();
-                },
-                (error) => {
-                    console.error('Geolocation error:', error);
-                    let errorMsg = translations[currentLanguage].locationUnavailable + '. ';
-                    
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMsg += translations[currentLanguage].enableLocation;
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMsg += translations[currentLanguage].locationUnavailable;
-                            break;
-                        case error.TIMEOUT:
-                            errorMsg += translations[currentLanguage].locationTimeout;
-                            break;
-                        default:
-                            errorMsg += translations[currentLanguage].unknownError;
-                    }
-                    
-                    alert(errorMsg);
-                    document.getElementById('userLocationStatus').textContent = translations[currentLanguage].locationError;
-                }
-            );
-        });
-
-        // ===================================================================
-        // DIRECTIONS FEATURE
-        // ===================================================================
-        window.getDirections = function(lat, lng, name) {
-            if (!userLat || !userLng) {
-                alert(translations[currentLanguage].enableLocationFirst);
-                return;
-            }
-
-            // Remove existing route if present
-            if (routingControl) {
-                map.removeControl(routingControl);
-            }
-
-            // Create new routing control
-            routingControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(userLat, userLng),
-                    L.latLng(lat, lng)
-                ],
-                routeWhileDragging: false,
-                lineOptions: {
-                    styles: [{ 
-                        color: '#EF4444', 
-                        weight: 5,
-                        opacity: 0.8
-                    }]
-                },
-                createMarker: () => null, // Don't create route markers
-                show: true,
-                collapsible: false
-            }).addTo(map);
-
-            // Show success message
-            alert(`🗺️ ${translations[currentLanguage].directionsTo} ${name}\n\n${translations[currentLanguage].followRedLine}`);
-        };
-
-        // ===================================================================
-        // OPEN IN EXTERNAL MAP
-        // ===================================================================
-        window.openInExternalMap = function(lat, lng, name) {
-            // Check if user is on mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            let mapUrl;
-            
-            if (isMobile) {
-                // On mobile, try to open native map apps
-                // Try Apple Maps first (iOS)
-                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                    mapUrl = `maps://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
-                } 
-                // Try Google Maps (Android)
-                else if (/Android/.test(navigator.userAgent)) {
-                    mapUrl = `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(name)})`;
-                }
-                // Fallback to web version
-                else {
-                    mapUrl = `https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
-                }
-            } else {
-                // On desktop, use web version
-                mapUrl = `https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
-            }
-            
-            // Open in new window/tab
-            window.open(mapUrl, '_blank');
-        };
-
-        // ===================================================================
-        // SHOW QR CODE
-        // ===================================================================
-        window.showQRCode = function(lat, lng, name) {
-            // Generate Google Maps URL for the location
-            const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}(${encodeURIComponent(name)})`;
-            
-            // Show modal
-            const modal = document.getElementById('qrModal');
-            const qrLocationName = document.getElementById('qrLocationName');
-            
-            // Clear previous QR code if exists
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-            
-            // Generate new QR code
-            new QRCode(qrcodeDiv, {
-                text: mapUrl,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
-            // Set location name
-            qrLocationName.textContent = name;
-            
-            // Show modal
-            modal.style.display = 'block';
-            
-            // Focus management for accessibility
-            const closeBtn = modal.querySelector('.close-modal');
-            closeBtn.focus();
-        };
-
-        // ===================================================================
-        // FILTER BUTTONS
-        // ===================================================================
-        document.querySelectorAll('.filter-button').forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active class from all buttons
-                document.querySelectorAll('.filter-button').forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.setAttribute('aria-pressed', 'false');
-                });
-
-                // Add active class to clicked button
-                button.classList.add('active');
-                button.setAttribute('aria-pressed', 'true');
-
-                const filterType = button.dataset.filter;
-
-                // Filter markers based on selection
-                markers.forEach(marker => {
-                    if (filterType === 'all' || marker.resourceData.type === filterType) {
-                        marker.addTo(map);
-                    } else {
-                        map.removeLayer(marker);
-                    }
-                });
-
-                // Update count
-                const visibleCount = markers.filter(m => 
-                    filterType === 'all' || m.resourceData.type === filterType
-                ).length;
-                
-                document.getElementById('resourceCount').textContent = 
-                    `${visibleCount} ${translations[currentLanguage].resourceCount}`;
-            });
-        });
-
-        // ===================================================================
-        // SEARCH FUNCTIONALITY
-        // ===================================================================
-        document.getElementById('searchBar').addEventListener('input', (event) => {
-            const searchQuery = event.target.value.toLowerCase().trim();
-
-            markers.forEach(marker => {
-                const resource = marker.resourceData;
-                const matchesSearch = 
-                    resource.name.toLowerCase().includes(searchQuery) ||
-                    resource.description.toLowerCase().includes(searchQuery) ||
-                    resource.type.toLowerCase().includes(searchQuery) ||
-                    resource.address.toLowerCase().includes(searchQuery);
-
-                if (matchesSearch || searchQuery === '') {
-                    marker.addTo(map);
-                } else {
-                    map.removeLayer(marker);
-                }
-            });
-
-            // Update count
-            const visibleCount = markers.filter(m => map.hasLayer(m)).length;
-            document.getElementById('resourceCount').textContent = 
-                `${visibleCount} ${translations[currentLanguage].resourceCount}`;
-        });
-
-        // ===================================================================
-        // TIME SLIDER WITH ACTUAL FILTERING
-        // ===================================================================
-        document.getElementById('timeSlider').addEventListener('input', (event) => {
-            const selectedHour = parseInt(event.target.value);
-            const timeDisplay = selectedHour.toString().padStart(2, '0') + ':00';
-            document.getElementById('timeValue').textContent = timeDisplay;
-
-            // Filter markers based on operating hours
-            markers.forEach(marker => {
-                const resource = marker.resourceData;
-                const isOpen = isResourceOpen(resource, selectedHour);
-                
-                if (isOpen || selectedHour === 12) { // Show all at default time
-                    marker.addTo(map);
-                } else {
-                    map.removeLayer(marker);
-                }
-            });
-
-            // Update count
-            const visibleCount = markers.filter(m => map.hasLayer(m)).length;
-            document.getElementById('resourceCount').textContent = 
-                `${visibleCount} ${translations[currentLanguage].resourceCount} (open at ${timeDisplay})`;
-        });
-
-        // ===================================================================
-        // CHECK IF RESOURCE IS OPEN AT GIVEN HOUR
-        // ===================================================================
-        function isResourceOpen(resource, hour) {
-            const hours = resource.hours.toLowerCase();
-            
-            // 24/7 services
-            if (hours.includes('24/7')) {
-                return true;
-            }
-            
-            // Daily services with specific hours
-            if (hours.includes('daily') && hours.includes('am') && hours.includes('pm')) {
-                // Extract hours (simplified logic)
-                const match = hours.match(/(\d{1,2})am.*?(\d{1,2})pm/);
-                if (match) {
-                    const openHour = parseInt(match[1]);
-                    const closeHour = parseInt(match[2]) + 12; // Convert PM to 24h
-                    return hour >= openHour && hour < closeHour;
-                }
-            }
-            
-            // Weekday services
-            if (hours.includes('mon-fri') && hours.includes('am') && hours.includes('pm')) {
-                const match = hours.match(/(\d{1,2})am.*?(\d{1,2})pm/);
-                if (match) {
-                    const openHour = parseInt(match[1]);
-                    const closeHour = parseInt(match[2]) + 12;
-                    return hour >= openHour && hour < closeHour;
-                }
-            }
-            
-            // Default to showing if we can't determine
-            return true;
-        }
-
-        // ===================================================================
-        // EMERGENCY BUTTON
-        // ===================================================================
-        document.getElementById('emergencyButton').addEventListener('click', () => {
-            // Show emergency alert
-            const emergencyMsg = document.getElementById('emergencyMessage');
-            emergencyMsg.classList.remove('hidden');
-
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                emergencyMsg.classList.add('hidden');
-            }, 5000);
-
-            // In production, this could trigger actual emergency services
-            console.log('Emergency button clicked - In production, this would initiate emergency contact');
-        });
-
-        // ===================================================================
-        // NALOXONE INSTRUCTIONS
-        // ===================================================================
-        document.getElementById('instructionsButton').addEventListener('click', () => {
-            alert(`
-🆘 NALOXONE (NARCAN) ADMINISTRATION INSTRUCTIONS
-
-1️⃣ RECOGNIZE OVERDOSE SIGNS:
-   • No breathing or very slow breathing
-   • Blue lips or fingernails
-   • Unconscious or unresponsive
-   • Gurgling or choking sounds
-
-2️⃣ CALL 911 IMMEDIATELY
-   • Stay on the line
-   • Give exact location
-   • Good Samaritan Law protects you
-
-3️⃣ GIVE NALOXONE:
-   Nasal Spray: Insert in nostril, press plunger
-   Injectable: Inject into upper arm or thigh muscle
-
-4️⃣ PROVIDE RESCUE BREATHS (if trained):
-   • Tilt head back
-   • Give 1 breath every 5 seconds
-
-5️⃣ STAY WITH PERSON:
-   • Do NOT leave them alone
-   • Put in recovery position (on side)
-   
-6️⃣ SECOND DOSE:
-   • Give after 3-5 minutes if no response
-   • Continue until help arrives
-
-📞 Free naloxone kits available at locations marked with blue pins on map.
-
-⚖️ Good Samaritan Drug Overdose Act protects you from simple possession charges when calling 911.
-            `.trim());
-        });
-
-        // ===================================================================
-        // REPORT STATUS BUTTON
-        // ===================================================================
-        document.getElementById('reportStatusButton').addEventListener('click', () => {
-            alert(`
-📢 REPORT SERVICE CHANGES
-
-Help us keep information accurate by reporting:
-
-✅ Service closures or changes
-✅ Updated hours of operation  
-✅ New resources in the community
-✅ Incorrect contact information
-
-How to report:
-• Email: info@dteslifeline.org
-• GitHub: Open an issue at our repository
-• In person: Visit any resource location
-
-Your feedback helps the community!
-
-Thank you for your contribution. 🙏
-            `.trim());
-        });
-
-        // ===================================================================
-        // LANGUAGE SELECTION
-        // ===================================================================
-        document.getElementById('languageSelect').addEventListener('change', (event) => {
-            currentLanguage = event.target.value;
-            updateLanguage();
-        });
-
-        function updateLanguage() {
-            const t = translations[currentLanguage];
-            
-            // Update UI text
-            document.querySelector('h1').textContent = t.title;
-            document.querySelector('header p').textContent = t.subtitle;
-            document.getElementById('userLocationStatus').textContent = t.readyToUse;
-            document.querySelector('.text-red-600.font-semibold').textContent = t.importantNotice;
-            document.querySelector('.bg-red-50.p-3').textContent = t.importantNoticeText;
-            document.querySelector('label[for="searchBar"]').innerHTML = `<i class="fas fa-search mr-1"></i> ${t.searchResources}`;
-            document.getElementById('searchBar').placeholder = t.searchPlaceholder;
-            document.querySelector('label[for="timeSlider"]').innerHTML = `<i class="fas fa-clock mr-1"></i> ${t.filterByTime}`;
-            document.querySelector('#filterButtons').previousElementSibling.innerHTML = `<i class="fas fa-filter mr-1"></i> ${t.filterByCategory}`;
-            document.querySelector('#locateUserButton').innerHTML = `<i class="fas fa-crosshairs mr-2"></i> ${t.findMyLocation}`;
-            document.querySelector('#instructionsButton').innerHTML = `<i class="fas fa-hand-holding-medical mr-2"></i> ${t.naloxoneGuide}`;
-            document.querySelector('#reportStatusButton').innerHTML = `<i class="fas fa-bullhorn mr-2"></i> ${t.reportIssue}`;
-            document.querySelector('#emergencyButton').innerHTML = `<i class="fas fa-phone-alt mr-2"></i> ${t.emergency}`;
-            document.querySelector('footer h2').innerHTML = `<i class="fas fa-phone-volume mr-2"></i> ${t.crisisSupport}`;
-            document.querySelector('.text-center.text-xs.text-gray-400 p').innerHTML = `<i class="fas fa-code mr-1"></i> ${t.openSource} • Data verified from Vancouver Coastal Health, BC211, and community partners`;
-            document.querySelector('.text-center.text-xs.text-gray-400 p:last-child').innerHTML = `<a href="https://github.com/fifaaworldcup/DTESsupport.github.io" class="text-blue-400 hover:text-blue-300 transition underline">View on GitHub</a><span class="mx-2">•</span><span>${t.madeWithLove}</span>`;
-            
-            // Update resource count
-            const visibleCount = markers.filter(m => map.hasLayer(m)).length;
-            document.getElementById('resourceCount').textContent = 
-                `${visibleCount} ${t.resourceCount}`;
-            
-            // Update filter buttons
-            document.querySelectorAll('.filter-button').forEach(button => {
-                const filterType = button.dataset.filter;
-                if (filterType === 'all') {
-                    button.innerHTML = `<i class="fas fa-globe mr-1"></i> ${t.all} (${dtesResources.length})`;
-                }
-            });
-            
-            // Update popups
-            markers.forEach(marker => {
-                const resource = marker.resourceData;
-                marker.setPopupContent(createPopupContent(resource));
-            });
-        }
-
-        // ===================================================================
-        // ACCESSIBILITY FEATURES
-        // ===================================================================
-        document.getElementById('accessibilityToggle').addEventListener('click', () => {
-            const panel = document.getElementById('accessibilityPanel');
-            panel.classList.toggle('open');
-        });
-
-        document.getElementById('textSize').addEventListener('input', (event) => {
-            textSize = event.target.value;
-            document.getElementById('textSizeValue').textContent = `${textSize}%`;
-            document.body.style.fontSize = `${textSize}%`;
-        });
-
-        document.getElementById('contrast').addEventListener('change', (event) => {
-            highContrast = event.target.checked;
-            if (highContrast) {
-                document.body.classList.add('high-contrast');
-            } else {
-                document.body.classList.remove('high-contrast');
-            }
-        });
-
-        document.getElementById('reduceMotion').addEventListener('change', (event) => {
-            reduceMotion = event.target.checked;
-            if (reduceMotion) {
-                document.body.classList.add('reduce-motion');
-            } else {
-                document.body.classList.remove('reduce-motion');
-            }
-        });
-
-        document.getElementById('screenReader').addEventListener('change', (event) => {
-            screenReaderMode = event.target.checked;
-            if (screenReaderMode) {
-                document.body.classList.add('screen-reader-mode');
-            } else {
-                document.body.classList.remove('screen-reader-mode');
-            }
-        });
-
-        document.getElementById('resetAccessibility').addEventListener('click', () => {
-            // Reset all accessibility options
-            document.getElementById('textSize').value = 100;
-            document.getElementById('textSizeValue').textContent = '100%';
-            document.body.style.fontSize = '100%';
-            
-            document.getElementById('contrast').checked = false;
-            document.body.classList.remove('high-contrast');
-            
-            document.getElementById('reduceMotion').checked = false;
-            document.body.classList.remove('reduce-motion');
-            
-            document.getElementById('screenReader').checked = false;
-            document.body.classList.remove('screen-reader-mode');
-            
-            textSize = 100;
-            highContrast = false;
-            reduceMotion = false;
-            screenReaderMode = false;
-        });
-
-        // ===================================================================
-        // QR CODE MODAL
-        // ===================================================================
-        document.querySelector('.close-modal').addEventListener('click', () => {
-            document.getElementById('qrModal').style.display = 'none';
-        });
-
-        window.addEventListener('click', (event) => {
-            const modal = document.getElementById('qrModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                document.getElementById('qrModal').style.display = 'none';
-            }
-        });
-
-        // ===================================================================
-        // QUICK EXIT BUTTON
-        // ===================================================================
-        document.getElementById('quickExitBtn').addEventListener('click', () => {
-            // Redirect to a neutral site
-            window.location.href = 'https://www.weather.com';
-        });
-
-        // Show/hide quick exit button based on scroll
-        window.addEventListener('scroll', () => {
-            const quickExitBtn = document.getElementById('quickExitBtn');
-            if (window.scrollY > 200) {
-                quickExitBtn.style.display = 'block';
-            } else {
-                quickExitBtn.style.display = 'none';
-            }
-        });
-
-        // ===================================================================
-        // INITIALIZE ON PAGE LOAD
-        // ===================================================================
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initMap);
-        } else {
-            // DOM already loaded
-            initMap();
-        }
-    </script>
-</body>
-</html>
+                title: "ਵੈਨਕੂਵਰ ਮੀਟੀਈਐਸ ਲਾਈਫਲਾਈਐਸ",
+                subtitle: "ਵੈਨਕੂਵਰ ਮੀਟੀਈਐਸ ਲਾਈਫਲਾਈਐਸ ਲਾਊਨਟਾਊਨਈਸਟਸਾਮੈਪਤ ਖਪਤ, ਫੂਡ ਬੈਂਕ, ਸ਼ੈਲਟਰ, ਮੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋਜਨ, ਭੋज़ना की तैयारी संचय के लिए हमेशा पहले कॉल करें।",
+                all: "सभी"
+            },
+            tl: {
+                title: "Manatiling mainit sa tuwing malamig na panahon. Kung sa labas ka natutulog, mangyaring pumasok ka sa loob.",
+                subtitle: "Manatinding mainit sa tuwing malamig na panahon. Kung sa labas ka natutulog, mangyaring pumasok ka sa loob.",
+                readyToUse: "उपयोग के लिए तैयार",
+                locating: "लोकेट हो रहा है...",
+                locationFound: "✓ स्थान मिल गया",
+                locationUnavailable: "आपका स्थान प्राप्त नहीं करता है",
+                enableLocation: "कृपया स्थान अनुसूची हैं।",
+                locationTimeout: "स्थान अनुरोध समय समाप्त",
+                unknownError: "एक अज्ञात त्रुटि हुई",
+                locationError: "✗ स्थान अनुपलब्ध",
+                enableLocationFirst: "मोड़-दर-मोड़ दिशाओं को सक्षम करने के लिए हमेशा पहले \"मेरा स्थान खोजें\" पर क्लिक करें।",
+                directionsTo: "के लिए दिशाएं",
+                followRedLine: "नक्के की दिशाओं के लिए मानचित्र पर लाल रेखा का पालन करें।",
+                geolocationNotSupported: "आपका ब्राउज़र भू-स्थान का समर्थन नहीं करता है",
+                resourceCount: "सत्यापित स्थान",
+                importantNotice: "महत्वपूर्ण सूचना",
+                importantNoticeText: "दिखाए गए सेवा घंटे सामान्य अनुसूची हैं। उपलब्धता की पुष्टि करने के लिए हमेशा पहले कॉल करें।",
+                searchResources: "संसाधन खोजें:",
+                searchPlaceholder: "नाम, प्रकार, या सेवा द्वारा खोजें (जैसे, इनसाइट, नैलोक्सोन, भोजन)",
+                filterByTime: "समय के अनुसार फ़िल्टर करें:",
+                filterByCategory: "श्रेणी के अनुसार फ़िल्टर करें:",
+                findMyLocation: "मेरा स्थान खोजें",
+                naloxoneGuide: "नैलोक्सोन गाइड",
+                reportIssue: "समस्या रिपोर्ट करें",
+                emergency: "आपातकालीन 911",
+                crisisSupport: "24/7 संकट समर्थन हॉटलाइन (मुफ़्त और गुमनाम)",
+                openSource: "ओपन सोर्स सामुदायिक प्रोजेक्ट",
+                madeWithLove: "डीटीईएस समुदाय के लिए ❤️ के साथ बनाया गया",
+                getDirections: "चलने के निर्देश प्राप्त करें",
+                openInMaps: "मैप्स में खोलें",
+                showQRCode: "क्यूआर कोड दिखाएं",
+                call: "कॉल करें",
+                hours: "घंटे",
+                type: "प्रकार",
+                address: "पता",
+                description: "विवरण",
+                all: "सभी"
+            },
+            vi: {
+                title: "Bản đồ Đường Dòng Sống của DTES Vancouver",
+                subtitle: "Truy cập tức thời giảm thiệt, giám sát tiêu dùng, ngân hàng thực phẩm, trạm trú ẩn, trung tâm sưởi ấm, và các dịch vụ khẩn cấp trong Downtown Eastside của Vancouver.",
+                readyToUse: "Sẵn sàng để sử dụng",
+                locating: "Đang định vị trí...",
+                locationFound: "✓ Đã tìm thấy vị trí",
+                locationUnavailable: "Không thể lấy được vị trí của bạn",
+                enableLocation: "Vui lòng bật quyền truy cập vị trí",
+                locationTimeout: "Yêu cầu vị trí hết giờ",
+                unknownError: "Đã xảy ra lỗi không xác định",
+                locationError: "✗ Vị trí không khả dụng",
+                enableLocationFirst: "Vui lòng nhấp vào \"Tìm Vị Trí Của Tôi\" trước để bật điều hướng.",
+                directionsTo: "Hướng tới",
+                followRedLine: "Theo đường màu đỏ trên bản đồ",
+                geolocationNotSupported: "
