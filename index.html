@@ -7,25 +7,15 @@
     <meta name="description" content="DTES Lifeline Map - Offline capable resource locator for Vancouver.">
     <title>Vancouver DTES Lifeline Map - Real-Time Resource Locator</title>
     
+    <!-- Inline all critical resources to avoid loading issues -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231D4ED8'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'>DTES</text></svg>">
     <link rel="manifest" href="data:application/json,{%22name%22:%22DTES%20Lifeline%20Map%22,%22short_name%22:%22DTES%20Map%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%231D4ED8%22,%22description%22:%22Offline-capable%20resource%20map%20for%20Vancouver's%20DTES.%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231D4ED8'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'>DTES</text></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22},{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%231D4ED8'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='128' font-family='Arial'>DTES</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}">
     
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
-    
     <style>
+        /* Import fonts */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        /* CSS Variables */
         :root {
             --primary: #1D4ED8;
             --primary-dark: #1E40AF;
@@ -49,6 +39,13 @@
             --gray-900: #111827;
         }
         
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
             background: linear-gradient(135deg, var(--gray-50) 0%, var(--white) 100%);
@@ -63,6 +60,7 @@
             padding: 1rem;
         }
         
+        /* Map styles */
         #map { 
             height: 60vh; 
             width: 100%; 
@@ -72,12 +70,14 @@
             border: 2px solid var(--gray-200);
             transition: all 0.3s ease;
             background: var(--white);
+            z-index: 10;
         }
         
         #map:hover {
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
         }
         
+        /* Popup styles */
         .leaflet-popup-content { 
             margin: 0; 
             line-height: 1.5; 
@@ -132,9 +132,10 @@
             box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
         }
         
+        /* Filter button styles */
         .filter-button { 
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            box-shadow: 0 4px 6px rgba(0, 0, 0.07); 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07); 
             border: 2px solid transparent; 
             position: relative;
             overflow: hidden;
@@ -164,9 +165,10 @@
         
         .filter-button:hover { 
             transform: translateY(-3px); 
-            box-shadow: 0 8px 25px rgba(0, 0, 0.15);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
         }
         
+        /* User location marker */
         .user-location-icon { 
             background: linear-gradient(135deg, var(--info) 0%, #2563EB 100%);
             width: 24px; 
@@ -193,6 +195,7 @@
             } 
         }
         
+        /* Loading overlay */
         #loadingOverlay { 
             position: fixed; 
             top: 0; 
@@ -222,6 +225,7 @@
             100% { transform: rotate(360deg); } 
         }
         
+        /* Modal styles */
         .qr-modal { 
             display: none; 
             position: fixed; 
@@ -278,6 +282,7 @@
             background: var(--gray-100);
         }
         
+        /* Status indicator */
         .status-indicator { 
             display: inline-block; 
             width: 8px; 
@@ -301,6 +306,7 @@
             box-shadow: 0 0 10px var(--warning);
         }
         
+        /* Quick exit button */
         #quickExitBtn { 
             position: fixed; 
             bottom: 2rem; 
@@ -322,6 +328,7 @@
             box-shadow: 0 15px 35px rgba(239, 68, 68, 0.4);
         }
         
+        /* Accessibility panel */
         .accessibility-panel { 
             position: fixed; 
             right: -400px; 
@@ -329,7 +336,7 @@
             width: 400px; 
             height: 100%; 
             background: var(--white); 
-            box-shadow: -10px 0 30px rgba(0, 0, 0.1); 
+            box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1); 
             z-index: 1000; 
             transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             padding: 2rem; 
@@ -351,15 +358,16 @@
             padding: 1rem; 
             cursor: pointer; 
             z-index: 999; 
-            box-shadow: -5px 0 15px rgba(0, 0, 0.2);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
         }
         
         .accessibility-toggle:hover {
             transform: translateY(-50%) translateX(-5px);
-            box-shadow: -8px 0 20px rgba(0, 0, 0.3);
+            box-shadow: -8px 0 20px rgba(0, 0, 0, 0.3);
         }
         
+        /* Language selector */
         .language-selector { 
             position: absolute; 
             top: 1rem; 
@@ -373,7 +381,7 @@
             border-radius: 0.5rem;
             padding: 0.5rem 1rem;
             font-weight: 500;
-            box-shadow: 0 4px 6px rgba(0, 0, 0.07);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
             transition: all 0.2s ease;
         }
         
@@ -388,11 +396,12 @@
             box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.2);
         }
         
+        /* Header card */
         .header-card {
             background: var(--white);
             border-radius: 1rem;
             padding: 2rem;
-            box-shadow: 0 10px 15px rgba(0, 0, 0.08);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--gray-100);
             margin-bottom: 2rem;
             position: relative;
@@ -415,15 +424,17 @@
             100% { transform: translateX(100%); }
         }
         
+        /* Filter card */
         .filter-card {
             background: var(--white);
             border-radius: 1rem;
             padding: 2rem;
-            box-shadow: 0 10px 15px rgba(0, 0, 0.08);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.08);
             border: 1px solid var(--gray-100);
             margin-bottom: 2rem;
         }
         
+        /* Search input */
         .search-input {
             width: 100%;
             padding: 1rem 1.25rem;
@@ -441,6 +452,7 @@
             transform: translateY(-1px);
         }
         
+        /* Time slider */
         .time-slider {
             width: 100%;
             height: 8px;
@@ -468,6 +480,7 @@
             box-shadow: 0 4px 12px rgba(29, 78, 216, 0.4);
         }
         
+        /* Action button */
         .action-button {
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: var(--white);
@@ -500,6 +513,7 @@
             box-shadow: 0 12px 24px rgba(29, 78, 216, 0.3);
         }
         
+        /* Emergency alert */
         .emergency-alert {
             background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
             border: 2px solid var(--danger);
@@ -521,13 +535,14 @@
             }
         }
         
+        /* Footer */
         .footer {
             background: linear-gradient(135deg, var(--gray-800) 0%, var(--gray-900) 100%);
             color: var(--white);
             border-radius: 1rem;
             padding: 2rem;
             margin-top: 2rem;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0.1);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
         }
         
         .hotline-card {
@@ -541,7 +556,7 @@
         .hotline-card:hover {
             background: rgba(255, 255, 255, 0.1);
             transform: translateY(-2px);
-            box-shadow: 0 8px 16px rgba(0, 0, 0.2);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
         
         /* Accessibility improvements */
@@ -564,19 +579,6 @@
             outline: 3px solid var(--primary); 
             outline-offset: 2px; 
             border-radius: 0.25rem;
-        }
-        
-        /* Screen reader only content */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
         }
         
         /* Responsive design */
@@ -922,15 +924,18 @@
             <p>
                 <a href="https://github.com/fifaaworldcup/DTESsupport.github.io" class="text-blue-400 hover:text-blue-300 transition underline">View on GitHub</a>
                 <span class="mx-2">•</span>
-                <span>Made with ❤️ for the DTES community</span>
+                <span>Made with ❤️ for DTES community</span>
             </p>
         </div>
     </footer>
     
 </div>
 
+<!-- Load Leaflet and QRCode libraries from CDN -->
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
 <script>
 // ===================================================================
@@ -1020,10 +1025,10 @@ const translations = {
     fr: {title: "Carte de Ligne de Vie DTES", subtitle: "Accès instantané à la réduction des méfaits, à la consommation supervisée, aux banques alimentaires", readyToUse: "Prêt à utiliser", resourceCount: "emplacements vérifiés", type: "Type", hours: "Heures", call: "Appeler", getDirections: "Obtenir l'Itinéraire", openInMaps: "Ouvrir dans Maps", showQRCode: "Afficher le Code QR", locating: "Localisation en cours...", locationFound: "Position trouvée!", locationUnavailable: "Position non disponible", enableLocation: "Veuillez activer les services de localisation", locationTimeout: "Délai de demande de localisation dépassé", unknownError: "Une erreur inconnue s'est produite", locationError: "Erreur de localisation", enableLocationFirst: "Veuillez d'abord activer votre position en cliquant sur 'Trouver Ma Position'", geolocationNotSupported: "La géolocalisation n'est pas prise en charge", directionsTo: "Itinéraire vers", followRedLine: "Suivez la ligne rouge sur la carte"},
     pt: {title: "Mapa de Linha de Vida DTES", subtitle: "Acesso instantâneo à redução de danos, consumo supervisionado, bancos de alimentos", readyToUse: "Pronto para usar", resourceCount: "locais verificados", type: "Tipo", hours: "Horário", call: "Ligar", getDirections: "Obter Direções", openInMaps: "Abrir no Maps", showQRCode: "Mostrar Código QR", locating: "Localizando...", locationFound: "Localização encontrada!", locationUnavailable: "Localização indisponível", enableLocation: "Ative os serviços de localização", locationTimeout: "Solicitação de localização expirou", unknownError: "Ocorreu um erro desconhecido", locationError: "Erro de localização", enableLocationFirst: "Ative sua localização primeiro", geolocationNotSupported: "A geolocalização não é suportada", directionsTo: "Direções para", followRedLine: "Siga a linha vermelha no mapa"},
     hi: {title: "वैंकूवर DTES लाइफलाइन मानचित्र", subtitle: "हानि कम करने, पर्यवेक्षित खपत, खाद्य बैंकों तक तुरंत पहुंच", readyToUse: "उपयोग के लिए तैयार", resourceCount: "सत्यापित स्थान", type: "प्रकार", hours: "घंटे", call: "कॉल करें", getDirections: "दिशा-निर्देश", openInMaps: "मानचित्र में खोलें", showQRCode: "QR कोड", locating: "स्थान का पता लगाया जा रहा है...", locationFound: "स्थान मिला!", locationUnavailable: "स्थान उपलब्ध नहीं", enableLocation: "स्थान सेवाएं सक्षम करें", locationTimeout: "स्थान अनुरोध समाप्त", unknownError: "अज्ञात त्रुटि", locationError: "स्थान त्रुटि", enableLocationFirst: "पहले अपना स्थान सक्षम करें", geolocationNotSupported: "जियोलोकेशन समर्थित नहीं", directionsTo: "की दिशा", followRedLine: "लाल रेखा का अनुसरण करें"},
-    pa: {title: "ਵੈਨਕੂਵਰ DTES ਲਾਈਫਲਾਈਨ ਨਕਸ਼ਾ", subtitle: "ਨੁਕਸਾਨ ਘਟਾਉਣ, ਨਿਗਰਾਨੀ ਵਾਲੀ ਖਪਤ, ਭੋਜਨ ਬੈਂਕਾਂ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ", readyToUse: "ਵਰਤਣ ਲਈ ਤਿਆਰ", resourceCount: "ਤਸਦੀਕਸ਼ੁਦਾ ਸਥਾਨ", type: "ਕਿਸਮ", hours: "ਸਮਾਂ", call: "ਕਾਲ", getDirections: "ਦਿਸ਼ਾ-ਨਿਰਦੇਸ਼", openInMaps: "ਨਕਸ਼ੇ ਵਿੱਚ ਖੋਲ੍ਹੋ", showQRCode: "QR ਕੋਡ", locating: "ਸਥਾਨ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...", locationFound: "ਸਥਾਨ ਮਿਲਿਆ!", locationUnavailable: "ਸਥਾਨ ਉਪਲਬਧ ਨਹੀਂ", enableLocation: "ਸਥਾਨ ਸੇਵਾਵਾਂ ਸਮਰੱਥ ਕਰੋ", locationTimeout: "ਸਥਾਨ ਬੇਨਤੀ ਸਮਾਪਤ", unknownError: "ਅਣਜਾਣ ਗਲਤੀ", locationError: "ਸਥਾਨ ਗਲਤੀ", enableLocationFirst: "ਪਹਿਲਾਂ ਆਪਣੀ ਸਥਿਤੀ ਸਮਰੱਥ ਕਰੋ", geolocationNotSupported: "ਜੀਓਲੋਕੇਸ਼ਨ ਸਮਰਥਿਤ ਨਹੀਂ", directionsTo: "ਦੀ ਦਿਸ਼ਾ", followRedLine: "ਲਾਲ ਲਾਈਨ ਦਾ ਪਾਲਣ ਕਰੋ"},
+    pa: {title: "ਵੈਨਕੂਵਰ DTES ਲਾਈਫਲਾਈਨ ਨਕਸ਼ਾ", subtitle: "ਨੁਕਸਾਨ ਘਟਾਉਣ, ਨਿਗਰਾਨੀ ਵਾਲੀ ਖਪਤ, ਭੋਜਨ ਬੈਂਕਾਂ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ", readyToUse: "ਵਰਤਣ ਲੈ ਤਿਆਰ", resourceCount: "ਤਸਦੀਕਸ਼ੁਦਾ ਸਥਾਨ", type: "ਕਿਸਮ", hours: "ਸਮਾਂ", call: "ਕਾਲ", getDirections: "ਦਿਸ਼ਾ-ਨਿਰਦੇਸ਼", openInMaps: "ਨਕਸ਼ੇ ਵਿੱਚ ਖੋਲ੍ਹੋ", showQRCode: "QR ਕੋਡ", locating: "ਸਥਾਨ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...", locationFound: "ਸਥਾਨ ਮਿਲਿਆ!", locationUnavailable: "ਸਥਾਨ ਉਪਲਬਧ ਨਹੀਂ", enableLocation: "ਸਥਾਨ ਸੇਵਾਂ ਸਮਰੱਥ ਕਰੋ", locationTimeout: "ਸਥਾਨ ਬੇਨਤੀ ਸਮਾਪਤ", unknownError: "ਅਣਜਾਣ ਗਲਤੀ", locationError: "ਸਥਾਨ ਗਲਤੀ", enableLocationFirst: "ਪਹਿਲਾਂ ਆਪਣੀ ਸਥਿਤੀ ਸਮਰੱਥ ਕਰੋ", geolocationNotSupported: "ਜੀਓਲੋਕਿਸ਼ਨ ਸਮਰਥਿਤ ਨਹੀਂ", directionsTo: "ਦੀ ਦਿਸ਼ਾ", followRedLine: "ਲਾਲ ਲਾਈਨ ਦਾ ਪਾਲਣ ਕਰੋ"},
     de: {title: "Vancouver DTES Lifeline-Karte", subtitle: "Sofortiger Zugang zu Schadensminderung, überwachtem Konsum, Lebensmittelbanken", readyToUse: "Einsatzbereit", resourceCount: "verifizierte Standorte", type: "Typ", hours: "Öffnungszeiten", call: "Anrufen", getDirections: "Wegbeschreibung", openInMaps: "In Karten öffnen", showQRCode: "QR-Code anzeigen", locating: "Standort wird ermittelt...", locationFound: "Standort gefunden!", locationUnavailable: "Standort nicht verfügbar", enableLocation: "Standortdienste aktivieren", locationTimeout: "Standortanfrage abgelaufen", unknownError: "Unbekannter Fehler", locationError: "Standortfehler", enableLocationFirst: "Bitte aktivieren Sie zuerst Ihren Standort", geolocationNotSupported: "Geolokalisierung wird nicht unterstützt", directionsTo: "Wegbeschreibung zu", followRedLine: "Folgen Sie der roten Linie auf der Karte"},
     vi: {title: "Bản Đồ Đường Sống DTES Vancouver", subtitle: "Truy cập tức thì giảm tác hại, tiêu dùng có giám sát, ngân hàng thực phẩm", readyToUse: "Sẵn sàng sử dụng", resourceCount: "địa điểm đã xác minh", type: "Loại", hours: "Giờ", call: "Gọi", getDirections: "Lấy Chỉ Dẫn", openInMaps: "Mở trong Bản Đồ", showQRCode: "Hiển Thị Mã QR", locating: "Đang định vị...", locationFound: "Đã tìm thấy vị trí!", locationUnavailable: "Vị trí không khả dụng", enableLocation: "Vui lòng bật dịch vụ định vị", locationTimeout: "Yêu cầu định vị hết hạn", unknownError: "Đã xảy ra lỗi không xác định", locationError: "Lỗi định vị", enableLocationFirst: "Vui lòng bật vị trí của bạn trước bằng cách nhấp vào 'Tìm Vị Trí Của Tôi'", geolocationNotSupported: "Trình duyệt của bạn không hỗ trợ định vị địa lý", directionsTo: "Chỉ đường đến", followRedLine: "Theo dòng màu đỏ trên bản đồ"},
-    bn: {title: "ভ্যানকুভার DTES লাইফলাইন মানচিত্র", subtitle: "ক্ষতি হ্রাস, ত্তবাবধানে সেবন, খাদ্য ব্যাংক, আশ্রয়কেন্দ্র এবং জরুরি যত্ন পরিষেবাগুলিতে তাত্ক্ষণিক অ্যাক্সেস", readyToUse: "ব্যবহারের জন্য প্রস্তুত", resourceCount: "যাচাইকৃত স্থান", type: "ধরন", hours: "সময়", call: "কল করুন", getDirections: "নির্দেশনা পান", openInMaps: "মানচিত্রে খুলুন", showQRCode: "কিউআর কোড দেখান", locating: "অবস্থান সনাক্ত করা হচ্ছে...", locationFound: "অবস্থান পাওয়া গেছে!", locationUnavailable: "অবস্থান পাওয়া যাচ্ছে না", enableLocation: "অনুগ্রহ করে অবস্থান পরিষেবা সক্ষম করুন", locationTimeout: "অবস্থানের অনুরোধের সময় শেষ", unknownError: "অজানা ত্রুটি ঘটেছে", locationError: "অবস্থান ত্রুটি", enableLocationFirst: "অনুগ্রহ করে প্রথমে 'আমার অবস্থান খুঁজুন'-এ ক্লিক করে আপনার অবস্থান সক্ষম করুন", geolocationNotSupported: "আপনার ব্রাউজার ভূ-অবস্থান সমর্থন করে না", directionsTo: "এর দিকে নির্দেশনা", followRedLine: "আপনার গন্তব্যে পৌঁছানোর জন্য মানচিত্রে লাল লাইন অনুসরণ করুন"},
+    bn: {title: "ভ্যানকুভার DTES লাইফলাইন মানচিত্র", subtitle: "ক্ষতি হ্রাস, ত্তবাবধানে সেবন, খাদ্য ব্যাংক, আশ্রয়কেন্দ্র এবং জরুরি যত্ন পরিষেবাগুলিতে তাত্ক্ষণিক অ্যাক্সেস", readyToUse: "ব্যবহারের জন্য প্রস্তুত", resourceCount: "যাচাইকৃত স্থান", type: "ধরন", hours: "সময়", call: "কল করুন", getDirections: "নির্দেশনা পান", openInMaps: "মানচিত্রে খুলুন", showQRCode: "কিউআর কোড দেখান", locating: "অবস্থান সনাক্ত করা হচ্ছে...", locationFound: "অবস্থান পাওয়া গেছে!", locationUnavailable: "অবস্থান পাওয়া যাচ্ছে না", enableLocation: "অনুগ্রহ করে অবস্থান পরিষেবা সক্ষম করুন", locationTimeout: "অবস্থানের অনুরোধের সময় শেষ", unknownError: "অজানা ত্রুটি", locationError: "অবস্থান ত্রুটি", enableLocationFirst: "অনুগ্রহ করে প্রথমে 'আমার অবস্থান খুঁজুন'-এ ক্লিক করে আপনার অবস্থান সক্ষম করুন", geolocationNotSupported: "আপনার ব্রাউজার ভূ-অবস্থান সমর্থন করে না", directionsTo: "এর দিকে নির্দেশনা", followRedLine: "আপনার গন্তব্যে পৌঁছানোর জন্য মানচিত্রে লাল লাইন অনুসরণ করুন"},
     tl: {title: "Vancouver DTES Lifeline Map", subtitle: "Agad na access sa harm reduction, supervised consumption, food banks, shelters, detox centers, at urgent care services", readyToUse: "Handa na gamitin", resourceCount: "mga verified na lokasyon", type: "Uri", hours: "Oras", call: "Tawagan", getDirections: "Kumuha ng Mga Direksyon", openInMaps: "Buksan sa Maps", showQRCode: "Ipakita ang QR Code", locating: "Naghahanap ng lokasyon mo...", locationFound: "Nahanap ang lokasyon!", locationUnavailable: "Hindi available ang lokasyon", enableLocation: "Mangyaring i-enable ang mga serbisyo ng lokasyon", locationTimeout: "Na-time out ang request ng lokasyon", unknownError: "Nagkaroon ng hindi kilalang error", locationError: "Error sa lokasyon", enableLocationFirst: "Mangyaring i-enable muna ang iyong lokasyon sa pamamagitan ng pag-click sa 'Hanapin Ang Aking Lokasyon'", geolocationNotSupported: "Hindi suportado ng iyong browser ang geolocation", directionsTo: "Mga direksyon papuntang", followRedLine: "Sundan ang pulang linya sa mapa upang makarating sa iyong destinasyon"},
     ar: {title: "خريطة خط الحياة DTES فانكوفر", subtitle: "وصول فوري إلى خدمات الحد من الأضرار، الاستهلاك الخاضع للإشراف، بنوك الطعام، الملاجئ، مراكز إزالة السموم، وخدمات الرعاية العاجلة", readyToUse: "جاهز للاستخدام", resourceCount: "مواقع موثقة", type: "النوع", hours: "الساعات", call: "اتصل", getDirections: "احصل على الاتجاهات", openInMaps: "فتح في الخرائط", showQRCode: "عرض رمز الاستجابة السريعة", locating: "تحديد موقعك...", locationFound: "تم العثور على الموقع!", locationUnavailable: "الموقع غير متاح", enableLocation: "يرجى تمكين خدمات الموقع", locationTimeout: "انتهت مهلة طلب الموقع", unknownError: "حدث خطأ غير معروف", locationError: "خطأ في الموقع", enableLocationFirst: "يرجى تمكين موقعك أولاً بالنقر على "العثور على موقعي"", geolocationNotSupported: "الجيولوكاشن غير مدعوم من قبل متصفحك", directionsTo: "الاتجاهات إلى", followRedLine: "اتبع الخط الأحمر على الخريطة للوصول إلى وجهتك"},
     fa: {title: "نقشه خط حیات DTES ونکوور", subtitle: "دسترسی فوری به کاهش آسیب، مصرف تحت نظارت، بانک‌های مواد غذایی، پناهگاه‌ها، مراکز سم‌زدایی، وخدمات مراقبت فوری", readyToUse: "آماده استفاده", resourceCount: "مکان‌های تأیید شده", type: "نوع", hours: "ساعات", call: "تماس", getDirections: "دریافت مسیرها", openInMaps: "باز کردن در نقشه‌ها", showQRCode: "نمایش کد QR", locating: "در حال پیدا کردن موقعیت شما...", locationFound: "موقعیت پیدا شد!", locationUnavailable: "موقعیت در دسترس نیست", enableLocation: "لطفاً خدمات موقعیت مکانی را فعال کنید", locationTimeout: "زمان درخواست موقعیت به پایان رسید", unknownError: "خطای ناشناخته رخ داد", locationError: "خطای موقعیت مکانی", enableLocationFirst: "لطفاً ابتدا با کلیک بر روی "پیدا کردن موقعیت من" موقعیت خود را فعال کنید", geolocationNotSupported: "موقعیت جغرافیایی توسط مرورگر شما پشتیبانی نمی‌شود", directionsTo: "مسیرها به سمت", followRedLine: "خط قرمز روی نقشه را برای رسیدن به مقصد خود دنبال کنید"}
@@ -1123,7 +1128,7 @@ function addMarker(resource) {
             height: 36px;
             border-radius: 50%;
             border: 3px solid white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1266,4 +1271,606 @@ document.getElementById('locateUserButton').addEventListener('click', () => {
                 .addTo(map)
                 .bindPopup('<strong style="font-size: 16px;">📍 You are here</strong><br><span style="font-size: 14px;">Your current location</span>');
 
-            // Center map on user location with
+            // Center map on user location with smooth animation
+            map.flyTo([userLat, userLng], 16, {
+                duration: 1.5
+            });
+            
+            statusElement.innerHTML = '<i class="fas fa-check-circle mr-2 text-green-500"></i> Location found!';
+
+            // Auto-open popup
+            setTimeout(() => {
+                userLocationMarker.openPopup();
+            }, 800);
+        },
+        (error) => {
+            console.error('Geolocation error:', error);
+            let errorMsg = translations[currentLanguage].locationUnavailable + '. ';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg += translations[currentLanguage].enableLocation;
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg += translations[currentLanguage].locationUnavailable;
+                    break;
+                case error.TIMEOUT:
+                    errorMsg += translations[currentLanguage].locationTimeout;
+                    break;
+                default:
+                    errorMsg += translations[currentLanguage].unknownError;
+            }
+            
+            alert(errorMsg);
+            statusElement.innerHTML = '<i class="fas fa-exclamation-circle mr-2 text-red-500"></i> ' + translations[currentLanguage].locationError;
+        }
+    );
+});
+
+// ===================================================================
+// DIRECTIONS FEATURE
+// ===================================================================
+window.getDirections = function(lat, lng, name) {
+    if (!userLat || !userLng) {
+        alert(translations[currentLanguage].enableLocationFirst);
+        return;
+    }
+
+    // Remove existing route if present
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
+
+    // Create new routing control
+    routingControl = L.Routing.control({
+        waypoints: [
+            L.latLng(userLat, userLng),
+            L.latLng(lat, lng)
+        ],
+        routeWhileDragging: false,
+        lineOptions: {
+            styles: [{ 
+                color: '#EF4444', 
+                weight: 5,
+                opacity: 0.8
+            }]
+        },
+        createMarker: () => null, // Don't create route markers
+        show: true,
+        collapsible: false,
+        addWaypoints: false,
+        fitSelectedRoutes: false,
+        showAlternatives: false
+    }).addTo(map);
+
+    // Show success message
+    alert(`🗺️ ${translations[currentLanguage].directionsTo} ${name}\n\n${translations[currentLanguage].followRedLine}`);
+};
+
+// ===================================================================
+// OPEN IN EXTERNAL MAP
+// ===================================================================
+window.openInExternalMap = function(lat, lng, name) {
+    // Check if user is on mobile device
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    let mapUrl;
+    
+    if (isMobile) {
+        // On mobile, try to open native map apps
+        // Try Apple Maps first (iOS)
+        if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            mapUrl = `maps://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
+        } 
+        // Try Google Maps (Android)
+        else if (/Android/.test(navigator.userAgent)) {
+            mapUrl = `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(name)})`;
+        }
+        // Fallback to web version
+        else {
+            mapUrl = `https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
+        }
+    } else {
+        // On desktop, use web version
+        mapUrl = `https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
+    }
+    
+    // Open in new window/tab
+    window.open(mapUrl, '_blank');
+};
+
+// ===================================================================
+// SHOW QR CODE
+// ===================================================================
+window.showQRCode = function(lat, lng, name) {
+    // Generate Google Maps URL for location
+    const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}(${encodeURIComponent(name)})`;
+    
+    // Show modal
+    const modal = document.getElementById('qrModal');
+    const qrLocationName = document.getElementById('qrLocationName');
+    
+    // Clear previous QR code if exists
+    const qrcodeDiv = document.getElementById('qrcode');
+    qrcodeDiv.innerHTML = '';
+    
+    // Generate new QR code
+    new QRCode(qrcodeDiv, {
+        text: mapUrl,
+        width: 200,
+        height: 200,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+    });
+    
+    // Set location name
+    qrLocationName.textContent = name;
+    
+    // Show modal
+    modal.style.display = 'block';
+    
+    // Focus management for accessibility
+    const closeBtn = modal.querySelector('.close-modal');
+    closeBtn.focus();
+};
+
+// ===================================================================
+// FILTER BUTTONS
+// ===================================================================
+document.querySelectorAll('.filter-button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+        });
+
+        // Add active class to clicked button
+        button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
+
+        const filterType = button.dataset.filter;
+
+        // Filter markers based on selection
+        markers.forEach(marker => {
+            if (filterType === 'all' || marker.resourceData.type === filterType) {
+                marker.addTo(map);
+            } else {
+                map.removeLayer(marker);
+            }
+        });
+
+        // Update count
+        const visibleCount = markers.filter(m => 
+            filterType === 'all' || m.resourceData.type === filterType
+        ).length;
+        
+        document.getElementById('resourceCount').textContent = 
+            `${visibleCount} ${translations[currentLanguage].resourceCount}`;
+    });
+});
+
+// ===================================================================
+// SEARCH FUNCTIONALITY
+// ===================================================================
+document.getElementById('searchBar').addEventListener('input', (event) => {
+    const searchQuery = event.target.value.toLowerCase().trim();
+
+    markers.forEach(marker => {
+        const resource = marker.resourceData;
+        const matchesSearch = 
+            resource.name.toLowerCase().includes(searchQuery) ||
+            resource.description.toLowerCase().includes(searchQuery) ||
+            resource.type.toLowerCase().includes(searchQuery) ||
+            resource.address.toLowerCase().includes(searchQuery);
+
+        if (matchesSearch || searchQuery === '') {
+            marker.addTo(map);
+        } else {
+            map.removeLayer(marker);
+        }
+    });
+
+    // Update count
+    const visibleCount = markers.filter(m => map.hasLayer(m)).length;
+    document.getElementById('resourceCount').textContent = 
+        `${visibleCount} ${translations[currentLanguage].resourceCount}`;
+});
+
+// ===================================================================
+// TIME SLIDER WITH ACTUAL FILTERING
+// ===================================================================
+document.getElementById('timeSlider').addEventListener('input', (event) => {
+    const selectedHour = parseInt(event.target.value);
+    const timeDisplay = selectedHour.toString().padStart(2, '0') + ':00';
+    document.getElementById('timeValue').textContent = timeDisplay;
+
+    // Filter markers based on operating hours
+    markers.forEach(marker => {
+        const resource = marker.resourceData;
+        const isOpen = isResourceOpen(resource, selectedHour);
+        
+        if (isOpen || selectedHour === 12) { // Show all at default time
+            marker.addTo(map);
+        } else {
+            map.removeLayer(marker);
+        }
+    });
+
+    // Update count
+    const visibleCount = markers.filter(m => map.hasLayer(m)).length;
+    document.getElementById('resourceCount').textContent = 
+        `${visibleCount} ${translations[currentLanguage].resourceCount} (open at ${timeDisplay})`;
+});
+
+// ===================================================================
+// CHECK IF RESOURCE IS OPEN AT GIVEN HOUR
+// ===================================================================
+function isResourceOpen(resource, hour) {
+    const hours = resource.hours.toLowerCase();
+    
+    // 24/7 services
+    if (hours.includes('24/7')) {
+        return true;
+    }
+    
+    // Daily services with specific hours
+    if (hours.includes('daily') && hours.includes('am') && hours.includes('pm')) {
+        // Extract hours (simplified logic)
+        const match = hours.match(/(\d{1,2})am.*?(\d{1,2})pm/);
+        if (match) {
+            const openHour = parseInt(match[1]);
+            const closeHour = parseInt(match[2]) + 12; // Convert PM to 24h
+            return hour >= openHour && hour < closeHour;
+        }
+    }
+    
+    // Weekday services
+    if (hours.includes('mon-fri') && hours.includes('am') && hours.includes('pm')) {
+        const match = hours.match(/(\d{1,2})am.*?(\d{1,2})pm/);
+        if (match) {
+            const openHour = parseInt(match[1]);
+            const closeHour = parseInt(match[2]) + 12; // Convert PM to 24h
+            return hour >= openHour && hour < closeHour;
+        }
+    }
+    
+    // Default to showing if we can't determine
+    return true;
+}
+
+// ===================================================================
+// EMERGENCY BUTTON
+// ===================================================================
+document.getElementById('emergencyButton').addEventListener('click', () => {
+    // Show emergency alert
+    const emergencyMsg = document.getElementById('emergencyMessage');
+    emergencyMsg.classList.remove('hidden');
+
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        emergencyMsg.classList.add('hidden');
+    }, 5000);
+
+    // In production, this could trigger actual emergency services
+    console.log('Emergency button clicked - In production, this would initiate emergency contact');
+});
+
+// ===================================================================
+// NALOXONE INSTRUCTIONS
+// ===================================================================
+document.getElementById('instructionsButton').addEventListener('click', () => {
+    alert(`
+🆘 NALOXONE (NARCAN) ADMINISTRATION INSTRUCTIONS
+
+1️⃣ RECOGNIZE OVERDOSE SIGNS:
+   • No breathing or very slow breathing
+   • Blue lips or fingernails
+   • Unconscious or unresponsive
+   • Gurgling or choking sounds
+
+2️⃣ CALL 911 IMMEDIATELY
+   • Stay on the line
+   • Give exact location
+   • Good Samaritan Law protects you
+
+3️⃣ GIVE NALOXONE:
+   Nasal Spray: Insert in nostril, press plunger
+   Injectable: Inject into upper arm or thigh muscle
+
+4️⃣ PROVIDE RESCUE BREATHS (if trained):
+   • Tilt head back
+   • Give 1 breath every 5 seconds
+
+5️⃣ STAY WITH PERSON:
+   • Do NOT leave them alone
+   • Put in recovery position (on side)
+   
+6️⃣ SECOND DOSE:
+   • Give after 3-5 minutes if no response
+   • Continue until help arrives
+
+📞 Free naloxone kits available at locations marked with blue pins on map.
+
+⚖️ Good Samaritan Drug Overdose Act protects you from simple possession charges when calling 911.
+            `.trim());
+});
+
+// ===================================================================
+// REPORT STATUS BUTTON
+// ===================================================================
+document.getElementById('reportStatusButton').addEventListener('click', () => {
+    alert(`
+📢 REPORT SERVICE CHANGES
+
+Help us keep information accurate by reporting:
+
+✅ Service closures or changes
+✅ Updated hours of operation  
+✅ New resources in community
+✅ Incorrect contact information
+
+How to report:
+• Email: info@dteslifeline.org
+• GitHub: Open an issue at our repository
+• In person: Visit any resource location
+
+Your feedback helps the community!
+
+Thank you for your contribution. 🙏
+            `.trim());
+});
+
+// ===================================================================
+// LANGUAGE SELECTION
+// ===================================================================
+document.getElementById('languageSelect').addEventListener('change', (event) => {
+    currentLanguage = event.target.value;
+    updateLanguage();
+});
+
+function updateLanguage() {
+    const t = translations[currentLanguage];
+    
+    // Update UI text
+    document.querySelector('h1').textContent = t.title;
+    document.querySelector('header p').textContent = t.subtitle;
+    document.getElementById('userLocationStatus').textContent = t.readyToUse;
+    
+    // Update resource count
+    const visibleCount = markers.filter(m => map.hasLayer(m)).length;
+    document.getElementById('resourceCount').textContent = 
+        `${visibleCount} ${t.resourceCount}`;
+    
+    // Update filter buttons
+    document.querySelectorAll('.filter-button').forEach(button => {
+        const filterType = button.dataset.filter;
+        if (filterType === 'all') {
+            button.innerHTML = `<i class="fas fa-globe mr-2"></i> ${t.all || 'All'} (${dtesResources.length})`;
+        }
+    });
+    
+    // Update popups
+    markers.forEach(marker => {
+        const resource = marker.resourceData;
+        marker.setPopupContent(createPopupContent(resource));
+    });
+}
+
+// ===================================================================
+// ACCESSIBILITY FEATURES
+// ===================================================================
+document.getElementById('accessibilityToggle').addEventListener('click', () => {
+    const panel = document.getElementById('accessibilityPanel');
+    panel.classList.toggle('open');
+});
+
+document.getElementById('textSize').addEventListener('input', (event) => {
+    textSize = event.target.value;
+    document.getElementById('textSizeValue').textContent = `${textSize}%`;
+    document.body.style.fontSize = `${textSize}%`;
+});
+
+document.getElementById('contrast').addEventListener('change', (event) => {
+    highContrast = event.target.checked;
+    if (highContrast) {
+        document.body.classList.add('high-contrast');
+    } else {
+        document.body.classList.remove('high-contrast');
+    }
+});
+
+document.getElementById('reduceMotion').addEventListener('change', (event) => {
+    reduceMotion = event.target.checked;
+    if (reduceMotion) {
+        document.body.classList.add('reduce-motion');
+    } else {
+        document.body.classList.remove('reduce-motion');
+    }
+});
+
+document.getElementById('screenReader').addEventListener('change', (event) => {
+    screenReaderMode = event.target.checked;
+    if (screenReaderMode) {
+        document.body.classList.add('screen-reader-mode');
+    } else {
+        document.body.classList.remove('screen-reader-mode');
+    }
+});
+
+document.getElementById('resetAccessibility').addEventListener('click', () => {
+    // Reset all accessibility options
+    document.getElementById('textSize').value = 100;
+    document.getElementById('textSizeValue').textContent = '100%';
+    document.body.style.fontSize = '100%';
+    
+    document.getElementById('contrast').checked = false;
+    document.body.classList.remove('high-contrast');
+    
+    document.getElementById('reduceMotion').checked = false;
+    document.body.classList.remove('reduce-motion');
+    
+    document.getElementById('screenReader').checked = false;
+    document.body.classList.remove('screen-reader-mode');
+    
+    textSize = 100;
+    highContrast = false;
+    reduceMotion = false;
+    screenReaderMode = false;
+});
+
+// ===================================================================
+// QR CODE MODAL
+// ===================================================================
+document.querySelector('.close-modal').addEventListener('click', () => {
+    document.getElementById('qrModal').style.display = 'none';
+});
+
+window.addEventListener('click', (event) => {
+    const modal = document.getElementById('qrModal');
+    if (event.target === modal) {
+        modal.style.display = 'none';
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        document.getElementById('qrModal').style.display = 'none';
+    }
+});
+
+// ===================================================================
+// QUICK EXIT BUTTON
+// ===================================================================
+document.getElementById('quickExitBtn').addEventListener('click', () => {
+    // Redirect to a neutral site
+    window.location.href = 'https://www.weather.com';
+});
+
+// Show/hide quick exit button based on scroll
+window.addEventListener('scroll', () => {
+    const quickExitBtn = document.getElementById('quickExitBtn');
+    if (window.scrollY > 200) {
+        quickExitBtn.style.display = 'block';
+    } else {
+        quickExitBtn.style.display = 'none';
+    }
+});
+
+// ===================================================================
+// PWA SERVICE WORKER REGISTRATION
+// ===================================================================
+function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+        // We create the service worker script as a string
+        const swScript = `
+            const CACHE_NAME = 'dtes-lifeline-cache-v1';
+            // Base64 for a 1x1 grey PNG tile for offline fallback
+            const OFFLINE_TILE_B64 = 'iVBORw0KGgoAAAANSUhEUgAAAQAAAAEAAQMAAABJtFzPAAAAA1BMVEXu7u7lBvE7AAAAMklEQVR4nO3BgQAAAADDoPlTX+EAVQEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAyg8AAGwAAdQBeTwAAAAASUVORK5CYII=';
+            
+            // These are the core files for the app shell
+            const urlsToCache = [
+                'https://cdn.tailwindcss.com',
+                'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap',
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+                'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css',
+                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+                'https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js',
+                'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js',
+                'https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js',
+                'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
+                // The main HTML file is cached automatically by the browser with the SW
+                // We will cache map tiles dynamically as they are requested
+            ];
+
+            // Install event: cache the app shell
+            self.addEventListener('install', event => {
+                event.waitUntil(
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            console.log('Opened cache');
+                            // Add all essential assets to cache
+                            return cache.addAll(urlsToCache);
+                        })
+                );
+            });
+
+            // Fetch event: handle requests
+            self.addEventListener('fetch', event => {
+                const requestUrl = new URL(event.request.url);
+
+                // Cache-first strategy for most assets
+                event.respondWith(
+                    caches.match(event.request)
+                        .then(response => {
+                            if (response) {
+                                return response; // Return from cache
+                            }
+
+                            // Special handling for map tiles
+                            // Fetch from network, then add to cache for offline use
+                            if (requestUrl.hostname.includes('tile.openstreetmap.org')) {
+                                return fetch(event.request)
+                                    .then(networkResponse => {
+                                        const responseToCache = networkResponse.clone();
+                                        caches.open(CACHE_NAME)
+                                            .then(cache => {
+                                                cache.put(event.request, responseToCache);
+                                            });
+                                        return networkResponse;
+                                    })
+                                    .catch(() => {
+                                        // Failed to fetch from network (user is offline)
+                                        // Return the offline placeholder tile
+                                        console.log('Failed to fetch map tile, serving offline tile.');
+                                        // Convert base64 to Blob
+                                        const byteCharacters = atob(OFFLINE_TILE_B64);
+                                        const byteArrays = [];
+                                        for (let offset = 0; offset < byteCharacters.length; offset += 512) {
+                                            const slice = byteCharacters.slice(offset, offset + 512);
+                                            const byteNumbers = new Array(slice.length);
+                                            for (let i = 0; i < slice.length; i++) {
+                                                byteNumbers[i] = slice.charCodeAt(i);
+                                            }
+                                            const byteArray = new Uint8Array(byteNumbers);
+                                            byteArrays.push(byteArray);
+                                        }
+                                        const blob = new Blob(byteArrays, {type: 'image/png'});
+                                        return new Response(blob, { headers: { 'Content-Type': 'image/png' } });
+                                    });
+                            }
+
+                            // For other requests, just fetch from network
+                            return fetch(event.request);
+                        })
+                );
+            });
+
+            // Activate event: clean up old caches
+            self.addEventListener('activate', event => {
+                const cacheWhitelist = [CACHE_NAME];
+                event.waitUntil(
+                    caches.keys().then(cacheNames => {
+                        return Promise.all(
+                            cacheNames.map(cacheName => {
+                                if (cacheWhitelist.indexOf(cacheName) === -1) {
+                                    return caches.delete(cacheName);
+                                }
+                            })
+                        );
+                    })
+                );
+            });
+        `;
+
+        try {
+            // Create a Blob from the script string
+            const swBlob = new Blob([swScript], { type: 'application/javascript' });
+            // Create an object URL for the Blob
+            const swUrl = URL.createObjectURL(swBlob);
+            
+            // Register the service worker
+            navigator.serviceWorker.register(swUrl)
+                .
