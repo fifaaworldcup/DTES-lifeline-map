@@ -1,2007 +1,935 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1D4ED8">
+    <meta name="description" content="DTES Lifeline Map - Offline capable resource locator for Vancouver.">
     <title>Vancouver DTES Lifeline Map - Real-Time Resource Locator</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231D4ED8'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'>DTES</text></svg>">
+    <link rel="manifest" href="data:application/json,{%22name%22:%22DTES%20Lifeline%20Map%22,%22short_name%22:%22DTES%20Map%22,%22start_url%22:%22.%22,%22display%22:%22standalone%22,%22background_color%22:%22%23ffffff%22,%22theme_color%22:%22%231D4ED8%22,%22description%22:%22Offline-capable%20resource%20map%20for%20Vancouver's%20DTES.%22,%22icons%22:[{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' fill='%231D4ED8'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='48' font-family='Arial'>DTES</text></svg>%22,%22sizes%22:%22192x192%22,%22type%22:%22image/svg+xml%22},{%22src%22:%22data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%231D4ED8'/><text x='50%' y='50%' text-anchor='middle' dy='.3em' fill='white' font-size='128' font-family='Arial'>DTES</text></svg>%22,%22sizes%22:%22512x512%22,%22type%22:%22image/svg+xml%22}]}">
     
-    <!-- Custom Styles -->
+    <!-- Inline critical CSS to avoid loading issues -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&display=swap');
         
-        body { 
-            font-family: 'Nunito Sans', sans-serif; 
-            margin: 0;
-            padding: 0;
+        * {
+            box-sizing: border-box;
         }
         
-        /* Map Container */
+        body { 
+            font-family: 'Nunito Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background-color: #f9fafb;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
         #map { 
             height: 70vh; 
             width: 100%; 
             min-height: 400px; 
+            border-radius: 0.75rem; 
+            transition: opacity 0.5s; 
+            background-color: #e5e7eb;
+            border: 2px solid #d1d5db;
+        }
+        
+        .fallback-map {
+            display: none;
+            padding: 2rem;
+            background: white;
             border-radius: 0.75rem;
-            transition: opacity 0.5s;
-            background-color: #f3f4f6;
-        }
-        
-        /* Leaflet Popup Custom Styles */
-        .leaflet-popup-content {
-            margin: 13px 19px;
-            line-height: 1.4;
-        }
-        
-        .leaflet-popup-content-wrapper {
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-        
-        .leaflet-popup-content .popup-btn {
-            padding: 0.4rem 0.7rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: 10px;
-            margin-right: 5px;
-            font-size: 0.85rem;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .leaflet-popup-content .popup-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-        }
-        
-        .direction-btn {
-            background-color: #EF4444;
-            color: white;
-            width: 100%;
-            margin-top: 12px !important;
-        }
-        
-        .direction-btn:hover {
-            background-color: #DC2626;
-        }
-        
-        /* Filter Button Styles */
-        .filter-button {
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            border: 2px solid transparent;
-        }
-        
-        .filter-button.active {
-            box-shadow: 0 0 0 3px #1D4ED8, 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-color: #1D4ED8;
-            background-color: #1D4ED8 !important;
-            transform: scale(1.05);
-        }
-        
-        .filter-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-        
-        /* User Location Marker - Pulsing Blue Dot */
-        .user-location-icon {
-            background-color: #3B82F6;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
-            animation: pulse 1.5s infinite;
-        }
-        
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(59, 130, 246, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
-            }
-        }
-        
-        /* Loading Overlay */
-        #loadingOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.98);
-            z-index: 1010;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: opacity 0.5s;
-        }
-        
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border-left-color: #1D4ED8;
-            animation: spin 1s ease infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Dark Mode Support */
-        body.dark {
-            background-color: #1a202c;
-            color: #e2e8f0;
-        }
-        
-        body.dark .bg-white {
-            background-color: #2d3748;
-        }
-        
-        body.dark .text-gray-600 {
-            color: #cbd5e0;
-        }
-        
-        /* High Contrast Mode */
-        body.high-contrast {
-            filter: contrast(1.5);
-        }
-        
-        body.high-contrast .bg-white {
-            background-color: #000000;
-            color: #ffffff;
-        }
-        
-        body.high-contrast .text-gray-900 {
-            color: #ffffff;
-        }
-        
-        body.high-contrast .text-gray-600 {
-            color: #ffffff;
-        }
-        
-        body.high-contrast .text-gray-500 {
-            color: #ffffff;
-        }
-        
-        body.high-contrast .border-gray-200 {
-            border-color: #ffffff;
-        }
-        
-        body.high-contrast .border-gray-300 {
-            border-color: #ffffff;
-        }
-        
-        body.high-contrast .border-gray-700 {
-            border-color: #ffffff;
-        }
-        
-        /* Reduce Motion */
-        body.reduce-motion * {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-        }
-        
-        /* Accessibility Features */
-        .sr-only {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            padding: 0;
-            margin: -1px;
-            overflow: hidden;
-            clip: rect(0, 0, 0, 0);
-            white-space: nowrap;
-            border-width: 0;
-        }
-        
-        /* Focus Styles for Keyboard Navigation */
-        *:focus {
-            outline: 2px solid #3B82F6;
-            outline-offset: 2px;
-        }
-        
-        /* QR Code Modal */
-        .qr-modal {
-            display: none;
-            position: fixed;
-            z-index: 1050;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.5);
-        }
-        
-        .qr-modal-content {
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 400px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        
-        .close-modal {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        
-        .close-modal:hover,
-        .close-modal:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-        
-        /* Service Status Indicator */
-        .status-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            margin-right: 5px;
-        }
-        
-        .status-open {
-            background-color: #10B981;
-        }
-        
-        .status-closed {
-            background-color: #EF4444;
-        }
-        
-        .status-unknown {
-            background-color: #F59E0B;
-        }
-        
-        /* Quick Exit Button */
-        #quickExitBtn {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #EF4444;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 1000;
-            display: none;
-        }
-        
-        /* Language Selector */
-        .language-selector {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            z-index: 1000;
-        }
-        
-        /* Accessibility Panel */
-        .accessibility-panel {
-            position: fixed;
-            right: -300px;
-            top: 0;
-            width: 300px;
-            height: 100%;
-            background-color: white;
-            box-shadow: -2px 0 5px rgba(0,0,0,0.2);
-            z-index: 1000;
-            transition: right 0.3s ease;
-            padding: 20px;
+            border: 2px solid #d1d5db;
+            max-height: 70vh;
             overflow-y: auto;
         }
         
-        .accessibility-panel.open {
-            right: 0;
+        .resource-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
         
-        .accessibility-toggle {
-            position: fixed;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: #1D4ED8;
-            color: white;
-            border-radius: 5px 0 0 5px;
-            padding: 10px;
-            cursor: pointer;
-            z-index: 999;
+        .resource-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
+        
+        .resource-type {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+        
+        .type-naloxone { background-color: #3b82f6; }
+        .type-injection { background-color: #10b981; }
+        .type-detox { background-color: #f97316; }
+        .type-food { background-color: #9333ea; }
+        .type-shelter { background-color: #b45309; }
+        .type-urgent { background-color: #ef4444; }
+        .type-washrooms { background-color: #14b8a6; }
+        .type-mental { background-color: #ec4899; }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .btn-primary { background-color: #1d4ed8; color: white; }
+        .btn-primary:hover { background-color: #1e40af; }
+        .btn-secondary { background-color: #6b7280; color: white; }
+        .btn-secondary:hover { background-color: #4b5563; }
+        .btn-danger { background-color: #dc2626; color: white; }
+        .btn-danger:hover { background-color: #b91c1c; }
+        
+        .filter-button { 
+            transition: all 0.2s ease-in-out; 
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); 
+            border: 2px solid transparent; 
+        }
+        
+        .filter-button.active { 
+            box-shadow: 0 0 0 3px #1D4ED8, 0 2px 4px rgba(0, 0, 0, 0.1); 
+            border-color: #1D4ED8; 
+            background-color: #1D4ED8 !important; 
+            transform: scale(1.05); 
+        }
+        
+        .filter-button:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+        }
+        
+        #loadingOverlay { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0; 
+            background: rgba(255, 255, 255, 0.98); 
+            z-index: 1010; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            transition: opacity 0.5s; 
+        }
+        
+        .spinner { 
+            border: 4px solid rgba(0, 0, 0, 0.1); 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            border-left-color: #1D4ED8; 
+            animation: spin 1s ease infinite; 
+        }
+        
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+        
+        .header {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #1d4ed8;
+            box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+        }
+        
+        .grid {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .grid-cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-cols-4 { grid-template-columns: repeat(4, 1fr); }
+        .grid-cols-5 { grid-template-columns: repeat(5, 1fr); }
+        
+        @media (max-width: 768px) {
+            .grid-cols-2,
+            .grid-cols-3,
+            .grid-cols-4,
+            .grid-cols-5 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .text-center { text-align: center; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .font-bold { font-weight: 700; }
+        .font-semibold { font-weight: 600; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mt-2 { margin-top: 0.5rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .rounded { border-radius: 0.375rem; }
+        .shadow-lg { box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1); }
+        
+        .hidden { display: none; }
+        .opacity-0 { opacity: 0; }
+        .transition-opacity { transition: opacity 0.5s; }
+        
+        .status-indicator { 
+            display: inline-block; 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            margin-right: 5px; 
+        }
+        
+        .status-open { background-color: #10B981; }
+        .status-closed { background-color: #EF4444; }
+        .status-unknown { background-color: #F59E0B; }
+        
+        /* Font Awesome fallback icons */
+        .icon::before {
+            display: inline-block;
+            font-style: normal;
+            font-variant: normal;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        .icon-search::before { content: "🔍"; }
+        .icon-clock::before { content: "🕐"; }
+        .icon-filter::before { content: "🎯"; }
+        .icon-location::before { content: "📍"; }
+        .icon-medical::before { content: "🏥"; }
+        .icon-report::before { content: "📢"; }
+        .icon-emergency::before { content: "🚨"; }
+        .icon-phone::before { content: "📞"; }
+        .icon-directions::before { content: "🧭"; }
+        .icon-external::before { content: "🔗"; }
+        .icon-qr::before { content: "📱"; }
     </style>
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin=""/>
-    
-    <!-- Leaflet Routing Machine CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
-    
-    <!-- QRCode.js for QR code generation -->
-    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" role="status" aria-live="polite">
+    <div class="spinner mb-4"></div>
+    <div class="text-2xl font-bold text-gray-800">DTES Lifeline Map</div>
+    <div class="text-sm text-gray-500 mt-2">Loading 60+ community resources...</div>
+</div>
+
+<!-- Main App Content -->
+<div id="mainAppContent" class="container opacity-0 transition-opacity">
     
-    <!-- Initial Loading Overlay -->
-    <div id="loadingOverlay" role="status" aria-live="polite">
-        <div class="spinner mb-4"></div>
-        <p class="text-2xl font-bold text-gray-800">DTES Lifeline Map</p>
-        <p class="text-sm text-gray-500 mt-2">Loading 40+ community resources...</p>
-    </div>
+    <!-- Header -->
+    <header class="header">
+        <h1 class="text-4xl font-bold mb-2">Vancouver DTES Lifeline Map</h1>
+        <p class="text-gray-600 mb-2">Instant access to harm reduction, supervised consumption, food banks, shelters, detox centers, and urgent care services in Vancouver's Downtown Eastside.</p>
+        <p class="text-sm text-gray-500 mb-2">
+            <span id="userLocationStatus" class="font-semibold text-gray-700">Ready to use</span>
+            <span class="mx-2">|</span>
+            <span id="resourceCount" class="text-blue-600 font-semibold">60 verified locations</span>
+            <span class="mx-2">|</span>
+            <span>Data from VCH, BC211, Community Partners</span>
+        </p>
+        <div class="text-xs text-red-600 font-semibold mt-3 bg-red-50 p-3 rounded-lg border border-red-200" role="alert">
+            ⚠️ Important Notice: Service hours shown are typical schedules. Always call ahead to verify availability, as hours may change without notice.
+        </div>
+    </header>
 
-    <!-- Language Selector -->
-    <div class="language-selector">
-        <select id="languageSelect" class="bg-white border border-gray-300 rounded px-3 py-1 text-sm" aria-label="Select Language">
-            <option value="en">English</option>
-            <option value="zh">中文</option>
-            <option value="es">Español</option>
-            <option value="fr">Français</option>
-            <option value="pt">Português</option>
-            <option value="hi">हिन्दी</option>
-            <option value="pa">ਪੰਜਾਬੀ</option>
-        </select>
-    </div>
-
-    <!-- Accessibility Toggle Button -->
-    <div class="accessibility-toggle" id="accessibilityToggle" aria-label="Accessibility Options">
-        <i class="fas fa-universal-access"></i>
-    </div>
-    
-    <!-- Accessibility Panel -->
-    <div class="accessibility-panel" id="accessibilityPanel" role="dialog" aria-labelledby="accessibilityTitle">
-        <h3 id="accessibilityTitle" class="text-lg font-bold mb-4">Accessibility Options</h3>
-        
+    <!-- Search and Filters -->
+    <div class="filters-section">
         <div class="mb-4">
-            <label for="textSize" class="block text-sm font-medium mb-2">Text Size</label>
-            <input type="range" id="textSize" min="100" max="150" value="100" class="w-full" aria-label="Text size">
-            <span id="textSizeValue" class="text-sm">100%</span>
+            <label for="searchBar" class="block text-sm font-medium text-gray-700 mb-2">
+                <span class="icon icon-search"></span> Search Resources:
+            </label>
+            <input id="searchBar" type="text" placeholder="Search by name, type, or service (e.g., Insite, naloxone, food)" class="search-box" aria-label="Search resources">
         </div>
         
         <div class="mb-4">
-            <label for="contrast" class="block text-sm font-medium mb-2">High Contrast</label>
-            <input type="checkbox" id="contrast" class="mr-2" aria-label="High contrast mode">
-            <span class="text-sm">Enable high contrast mode</span>
-        </div>
-        
-        <div class="mb-4">
-            <label for="reduceMotion" class="block text-sm font-medium mb-2">Reduce Motion</label>
-            <input type="checkbox" id="reduceMotion" class="mr-2" aria-label="Reduce motion">
-            <span class="text-sm">Reduce animations and transitions</span>
-        </div>
-        
-        <div class="mb-4">
-            <label for="screenReader" class="block text-sm font-medium mb-2">Screen Reader Mode</label>
-            <input type="checkbox" id="screenReader" class="mr-2" aria-label="Screen reader mode">
-            <span class="text-sm">Optimize for screen readers</span>
-        </div>
-        
-        <button id="resetAccessibility" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded" aria-label="Reset accessibility settings">
-            Reset to Default
-        </button>
-    </div>
-
-    <!-- QR Code Modal -->
-    <div id="qrModal" class="qr-modal" role="dialog" aria-labelledby="qrTitle" aria-modal="true">
-        <div class="qr-modal-content">
-            <span class="close-modal" role="button" aria-label="Close QR code modal">&times;</span>
-            <h3 id="qrTitle" class="text-lg font-bold mb-4">Location QR Code</h3>
-            <p class="mb-4">Scan this code to get directions on your phone</p>
-            <div id="qrcode"></div>
-            <p class="mt-4 text-sm text-gray-600" id="qrLocationName"></p>
-        </div>
-    </div>
-
-    <!-- Quick Exit Button -->
-    <button id="quickExitBtn" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-lg" aria-label="Quick exit to weather site">
-        <i class="fas fa-times mr-2"></i> Quick Exit
-    </button>
-
-    <!-- Main Application Content -->
-    <div class="container mx-auto p-4 md:p-8 opacity-0 transition-opacity duration-500" id="mainAppContent">
-        
-        <!-- Header -->
-        <header class="bg-white p-6 shadow-xl rounded-xl mb-6">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-2">
-                Vancouver DTES Lifeline Map
-            </h1>
-            <p class="text-gray-600 mb-2">
-                Instant access to harm reduction, supervised consumption, food banks, shelters, 
-                detox centers, and urgent care services in Vancouver's Downtown Eastside.
-            </p>
-            <p class="text-sm text-gray-500 mb-2">
-                <span id="userLocationStatus" class="font-semibold text-gray-700">Ready to use</span> | 
-                <span id="resourceCount" class="text-blue-600 font-semibold">40 verified locations</span> | 
-                <span class="text-gray-500">Data from VCH, BC211, Community Partners</span>
-            </p>
-            <div class="text-xs text-red-600 font-semibold mt-3 bg-red-50 p-3 rounded-lg border border-red-200" role="alert">
-                <i class="fas fa-exclamation-triangle mr-2"></i>
-                <strong>Important Notice:</strong> Service hours shown are typical schedules. 
-                Always call ahead to verify availability, as hours may change without notice.
-            </div>
-        </header>
-
-        <!-- Controls and Filters Section -->
-        <div class="grid grid-cols-1 gap-4 mb-6">
-            
-            <!-- Search and Filter Block -->
-            <div class="bg-white p-5 shadow-lg rounded-xl border border-gray-200">
-                
-                <!-- Search Bar and Time Slider -->
-                <div class="flex flex-col md:flex-row gap-4 mb-4">
-                    <div class="flex-grow">
-                        <label for="searchBar" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-search mr-1"></i> Search Resources:
-                        </label>
-                        <input 
-                            type="text" 
-                            id="searchBar" 
-                            placeholder="Search by name, type, or service (e.g., Insite, naloxone, food)" 
-                            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
-                            aria-label="Search resources"
-                        >
-                    </div>
-                    <div class="flex-shrink-0 min-w-[200px]">
-                        <label for="timeSlider" class="block text-sm font-medium text-gray-700 mb-2">
-                            <i class="fas fa-clock mr-1"></i> Filter by Time:
-                        </label>
-                        <input 
-                            type="range" 
-                            id="timeSlider" 
-                            min="0" 
-                            max="23" 
-                            value="12" 
-                            class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                            aria-label="Filter by time of day"
-                        >
-                        <div class="text-center mt-1">
-                            <span id="timeValue" class="text-sm font-semibold text-gray-600">12:00</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Category Filter Buttons -->
-                <div class="mb-2">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">
-                        <i class="fas fa-filter mr-1"></i> Filter by Category:
-                    </h3>
-                </div>
-                <div id="filterButtons" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 gap-3">
-                    <button 
-                        data-filter="all" 
-                        class="filter-button bg-gray-600 hover:bg-gray-700 text-white py-2.5 px-3 rounded-lg active"
-                        aria-pressed="true"
-                    >
-                        <i class="fas fa-globe mr-1"></i> All (40)
-                    </button>
-                    <button 
-                        data-filter="Naloxone" 
-                        class="filter-button bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-kit-medical mr-1"></i> Naloxone
-                    </button>
-                    <button 
-                        data-filter="Injection Site" 
-                        class="filter-button bg-green-500 hover:bg-green-600 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-syringe mr-1"></i> Sites
-                    </button>
-                    <button 
-                        data-filter="Detox" 
-                        class="filter-button bg-orange-500 hover:bg-orange-600 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-house-medical-flag mr-1"></i> Detox
-                    </button>
-                    <button 
-                        data-filter="Food" 
-                        class="filter-button bg-purple-600 hover:bg-purple-700 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-utensils mr-1"></i> Food
-                    </button>
-                    <button 
-                        data-filter="Urgent" 
-                        class="filter-button bg-red-600 hover:bg-red-700 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-hospital mr-1"></i> Urgent
-                    </button>
-                    <button 
-                        data-filter="Washrooms" 
-                        class="filter-button bg-teal-600 hover:bg-teal-700 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-restroom mr-1"></i> Washrooms
-                    </button>
-                    <button 
-                        data-filter="Mental Health" 
-                        class="filter-button bg-pink-600 hover:bg-pink-700 text-white py-2.5 px-3 rounded-lg"
-                        aria-pressed="false"
-                    >
-                        <i class="fas fa-brain mr-1"></i> Mental
-                    </button>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                <button 
-                    id="locateUserButton" 
-                    class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-200 ease-in-out transform hover:scale-105"
-                    aria-label="Find my location"
-                >
-                    <i class="fas fa-crosshairs mr-2"></i> Find My Location
-                </button>
-                <button 
-                    id="instructionsButton" 
-                    class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-200 ease-in-out transform hover:scale-105"
-                    aria-label="Naloxone instructions"
-                >
-                    <i class="fas fa-hand-holding-medical mr-2"></i> Naloxone Guide
-                </button>
-                <button 
-                    id="reportStatusButton" 
-                    class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-200 ease-in-out transform hover:scale-105"
-                    aria-label="Report service status"
-                >
-                    <i class="fas fa-bullhorn mr-2"></i> Report Issue
-                </button>
-                <button 
-                    id="emergencyButton" 
-                    class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg transition duration-200 ease-in-out transform hover:scale-105"
-                    aria-label="Emergency call"
-                >
-                    <i class="fas fa-phone-alt mr-2"></i> Emergency 911
-                </button>
-            </div>
-        </div>
-
-        <!-- Emergency Alert Message (Hidden by Default) -->
-        <div 
-            id="emergencyMessage" 
-            class="hidden bg-red-200 border-2 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-4 font-bold"
-            role="alert"
-        >
-            <span class="block sm:inline">
-                <i class="fas fa-exclamation-circle mr-2"></i>
-                EMERGENCY: Please call 911 immediately for medical emergencies. 
-                (This button demonstrates the emergency feature)
+            <span class="text-sm font-semibold text-gray-700 mb-3">
+                <span class="icon icon-filter"></span> Filter by Category:
             </span>
         </div>
         
-        <!-- Interactive Map Container -->
-        <div id="map" class="shadow-2xl border-4 border-white" role="application" aria-label="Interactive map showing resource locations"></div>
-
-        <!-- Crisis Support Footer -->
-        <footer class="mt-6 bg-gray-800 text-white p-6 rounded-xl shadow-lg">
-            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
-                <i class="fas fa-phone-volume mr-2"></i>
-                24/7 Crisis Support Hotlines (Free & Anonymous)
-            </h2>
-            
-            <!-- Crisis Hotlines Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 text-sm">
-                
-                <!-- BC Crisis Line -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-teal-400 mb-2">
-                        <i class="fas fa-headset mr-2"></i> BC Crisis Line
-                    </p>
-                    <a href="tel:310-6789" class="hover:text-teal-300 transition block text-lg font-bold">
-                        310-6789
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">No area code needed • 24/7</p>
-                </div>
-                
-                <!-- Suicide Crisis Helpline -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-red-400 mb-2">
-                        <i class="fas fa-heartbeat mr-2"></i> Suicide Crisis
-                    </p>
-                    <a href="tel:988" class="hover:text-red-300 transition block text-lg font-bold">
-                        988
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">24/7 call or text</p>
-                </div>
-                
-                <!-- Indigenous Crisis Line -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-yellow-400 mb-2">
-                        <i class="fas fa-leaf mr-2"></i> KUU-US Indigenous
-                    </p>
-                    <a href="tel:1-800-588-8717" class="hover:text-yellow-300 transition block text-lg font-bold">
-                        1-800-588-8717
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Indigenous crisis support</p>
-                </div>
-                
-                <!-- Kids Help Phone -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-blue-400 mb-2">
-                        <i class="fas fa-child mr-2"></i> Kids Help Phone
-                    </p>
-                    <a href="tel:1-800-668-6868" class="hover:text-blue-300 transition block text-lg font-bold">
-                        1-800-668-6868
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Youth support 24/7</p>
-                </div>
-                
-                <!-- ADIRS -->
-                <div>
-                    <p class="font-semibold text-orange-400 mb-2">
-                        <i class="fas fa-pills mr-2"></i> ADIRS
-                    </p>
-                    <a href="tel:1-800-663-1441" class="hover:text-orange-300 transition block text-lg font-bold">
-                        1-800-663-1441
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Alcohol & Drug info</p>
-                </div>
-            </div>
-            
-            <!-- Additional Hotlines -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 text-sm mt-5">
-                
-                <!-- Poison Control -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-green-400 mb-2">
-                        <i class="fas fa-vial mr-2"></i> Poison Control
-                    </p>
-                    <a href="tel:1-800-567-8911" class="hover:text-green-300 transition block text-lg font-bold">
-                        1-800-567-8911
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">24/7 poison emergencies</p>
-                </div>
-                
-                <!-- Seniors Distress Line -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-purple-400 mb-2">
-                        <i class="fas fa-user-friends mr-2"></i> Seniors Distress
-                    </p>
-                    <a href="tel:604-872-1234" class="hover:text-purple-300 transition block text-lg font-bold">
-                        604-872-1234
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Seniors crisis support</p>
-                </div>
-                
-                <!-- Victim Support Line -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-indigo-400 mb-2">
-                        <i class="fas fa-hands-helping mr-2"></i> Victim Support
-                    </p>
-                    <a href="tel:1-866-396-8010" class="hover:text-indigo-300 transition block text-lg font-bold">
-                        1-866-396-8010
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Victim services</p>
-                </div>
-                
-                <!-- Trans Lifeline -->
-                <div class="border-r border-gray-700 pr-4">
-                    <p class="font-semibold text-pink-400 mb-2">
-                        <i class="fas fa-transgender mr-2"></i> Trans Lifeline
-                    </p>
-                    <a href="tel:1-877-330-6366" class="hover:text-pink-300 transition block text-lg font-bold">
-                        1-877-330-6366
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Trans support 24/7</p>
-                </div>
-                
-                <!-- 2-1-1 -->
-                <div>
-                    <p class="font-semibold text-cyan-400 mb-2">
-                        <i class="fas fa-info-circle mr-2"></i> 2-1-1
-                    </p>
-                    <a href="tel:211" class="hover:text-cyan-300 transition block text-lg font-bold">
-                        211
-                    </a>
-                    <p class="text-xs text-gray-400 mt-1">Community services</p>
-                </div>
-            </div>
-            
-            <!-- Footer Info -->
-            <div class="text-center text-xs text-gray-400 mt-6 pt-4 border-t border-gray-700">
-                <p class="mb-2">
-                    <i class="fas fa-code mr-1"></i> Open source community project • 
-                    Data verified from Vancouver Coastal Health, BC211, and community partners
-                </p>
-                <p>
-                    <a href="https://github.com/fifaaworldcup/DTESsupport.github.io" 
-                       class="text-blue-400 hover:text-blue-300 transition underline">
-                        View on GitHub
-                    </a>
-                    <span class="mx-2">•</span>
-                    <span>Made with ❤️ for the DTES community</span>
-                </p>
-            </div>
-        </footer>
+        <div id="filterButtons" class="grid grid-cols-3 md:grid-cols-5 gap-3 mb-4">
+            <button data-filter="all" class="filter-button btn btn-secondary active" aria-pressed="true">
+                <span class="icon icon-filter"></span> All (60)
+            </button>
+            <button data-filter="Naloxone" class="filter-button btn btn-primary" aria-pressed="false">
+                <span class="icon icon-medical"></span> Naloxone
+            </button>
+            <button data-filter="Injection Site" class="filter-button btn btn-primary" aria-pressed="false">
+                💉 Sites
+            </button>
+            <button data-filter="Detox" class="filter-button btn btn-primary" aria-pressed="false">
+                🏥 Detox
+            </button>
+            <button data-filter="Food" class="filter-button btn btn-primary" aria-pressed="false">
+                🍽️ Food
+            </button>
+            <button data-filter="Shelter" class="filter-button btn btn-primary" aria-pressed="false">
+                🛏️ Shelter
+            </button>
+            <button data-filter="Urgent" class="filter-button btn btn-danger" aria-pressed="false">
+                🚨 Urgent
+            </button>
+            <button data-filter="Washrooms" class="filter-button btn btn-primary" aria-pressed="false">
+                🚻 Washrooms
+            </button>
+            <button data-filter="Mental Health" class="filter-button btn btn-primary" aria-pressed="false">
+                🧠 Mental
+            </button>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <button id="locateUserButton" class="btn btn-primary">
+                <span class="icon icon-location"></span> Find My Location
+            </button>
+            <button id="instructionsButton" class="btn btn-primary">
+                <span class="icon icon-medical"></span> Naloxone Guide
+            </button>
+            <button id="reportStatusButton" class="btn btn-secondary">
+                <span class="icon icon-report"></span> Report Issue
+            </button>
+            <button id="emergencyButton" class="btn btn-danger">
+                <span class="icon icon-emergency"></span> Emergency 911
+            </button>
+        </div>
     </div>
 
-    <!-- JavaScript Libraries -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    
-    <!-- Main Application JavaScript -->
-    <script>
-        // ===================================================================
-        // DTES RESOURCES DATABASE (40+ Verified Locations)
-        // Data verified November 2025 from official sources
-        // ===================================================================
+    <!-- Map Container -->
+    <div id="mapContainer">
+        <div id="map" role="application" aria-label="Interactive map showing resource locations"></div>
+        <div id="fallbackMap" class="fallback-map">
+            <h2 class="text-2xl font-bold mb-4">📍 DTES Community Resources</h2>
+            <p class="mb-4">Map temporarily unavailable. Here's a list of all resources:</p>
+            <div id="resourceList"></div>
+        </div>
+    </div>
+
+    <!-- Emergency Message -->
+    <div id="emergencyMessage" class="hidden bg-red-200 border-2 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-4 font-bold" role="alert">
+        <span class="block sm:inline">
+            🚨 EMERGENCY: Please call 911 immediately for medical emergencies. (This button demonstrates the emergency feature)
+        </span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="mt-6 bg-gray-800 text-white p-6 rounded-lg">
+        <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
+            📞 24/7 Crisis Support Hotlines (Free & Anonymous)
+        </h2>
         
-        const dtesResources = [
-            // ================= SUPERVISED CONSUMPTION SITES =================
-            {
-                name: "Insite (Supervised Consumption)",
-                lat: 49.2811,
-                lng: -123.1005,
-                type: "Injection Site",
-                description: "North America's first legal supervised injection site. Medical supervision, sterile supplies, overdose prevention, and healthcare referrals.",
-                hours: "24/7",
-                phone: "604-685-7677",
-                address: "139 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "Overdose Prevention Site - 58 W Hastings",
-                lat: 49.2813,
-                lng: -123.1052,
-                type: "Injection Site",
-                description: "Safe consumption site with medical supervision, naloxone distribution, peer support workers, and harm reduction supplies.",
-                hours: "Daily 10am-2am",
-                phone: "604-682-2245",
-                address: "58 W Hastings St",
-                status: "open"
-            },
-            {
-                name: "Dr. Peter Centre",
-                lat: 49.2656,
-                lng: -123.1377,
-                type: "Injection Site",
-                description: "Day health program with supervised consumption, meals, primary care, and support services for people living with HIV/AIDS.",
-                hours: "Mon-Fri 8:30am-4pm",
-                phone: "604-646-5700",
-                address: "1110 Comox St",
-                status: "unknown"
-            },
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
+            <div>
+                <div class="font-semibold text-teal-400 mb-2">🎧 BC Crisis Line</div>
+                <a href="tel:310-6789" class="hover:text-teal-300 transition block text-lg font-bold">310-6789</a>
+                <div class="text-xs text-gray-400">No area code needed • 24/7</div>
+            </div>
             
-            // ================= NALOXONE DISTRIBUTION SITES =================
-            {
-                name: "Downtown Eastside Community Health Centre",
-                lat: 49.2808,
-                lng: -123.0996,
-                type: "Naloxone",
-                description: "Free naloxone kits and training, primary healthcare, mental health services, addiction support, and community programs.",
-                hours: "Mon-Fri 8:30am-4:30pm",
-                phone: "604-569-3949",
-                address: "569 Powell St",
-                status: "open"
-            },
-            {
-                name: "Vancouver Native Health Society",
-                lat: 49.2804,
-                lng: -123.1003,
-                type: "Naloxone",
-                description: "Indigenous-focused primary care, naloxone distribution, cultural support programs, traditional healing, and addiction counseling.",
-                hours: "Mon-Fri 8:30am-5pm",
-                phone: "604-254-9949",
-                address: "441 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "Vancouver Area Network of Drug Users (VANDU)",
-                lat: 49.2815,
-                lng: -123.0997,
-                type: "Naloxone",
-                description: "Peer-run organization offering naloxone training, advocacy, drug checking services, and community support by people with lived experience.",
-                hours: "Mon-Fri 10am-6pm",
-                phone: "604-683-8595",
-                address: "380 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "Lookout Health Outreach",
-                lat: 49.2822,
-                lng: -123.0995,
-                type: "Naloxone",
-                description: "Street outreach team providing naloxone distribution, wound care, health supplies, and connections to services.",
-                hours: "Daily 9am-5pm (mobile)",
-                phone: "604-253-2028",
-                address: "Mobile outreach team",
-                status: "unknown"
-            },
+            <div>
+                <div class="font-semibold text-red-400 mb-2">💓 Suicide Crisis</div>
+                <a href="tel:988" class="hover:text-red-300 transition block text-lg font-bold">988</a>
+                <div class="text-xs text-gray-400">24/7 call or text</div>
+            </div>
             
-            // ================= DETOX & TREATMENT CENTERS =================
-            {
-                name: "Vancouver Detox Centre",
-                lat: 49.2839,
-                lng: -123.1012,
-                type: "Detox",
-                description: "Medical detoxification for alcohol and drugs. 24/7 walk-in service, crisis support, and referrals to ongoing treatment.",
-                hours: "24/7",
-                phone: "604-675-3700",
-                address: "947 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "Bloom Group Detox",
-                lat: 49.2801,
-                lng: -123.0689,
-                type: "Detox",
-                description: "Community-based withdrawal management with supportive environment, counseling, and transition planning.",
-                hours: "24/7",
-                phone: "604-216-5668",
-                address: "2425 Commercial Dr",
-                status: "open"
-            },
-            {
-                name: "BC Centre on Substance Use",
-                lat: 49.2822,
-                lng: -123.1213,
-                type: "Detox",
-                description: "Provincial center for addiction medicine, clinical research, treatment coordination, and healthcare provider training.",
-                hours: "Mon-Fri 8:30am-4:30pm",
-                phone: "778-945-7619",
-                address: "400-1045 Howe St",
-                status: "open"
-            },
+            <div>
+                <div class="font-semibold text-yellow-400 mb-2">🍃 KUU-US Indigenous</div>
+                <a href="tel:1-800-588-8717" class="hover:text-yellow-300 transition block text-lg font-bold">1-800-588-8717</a>
+                <div class="text-xs text-gray-400">Indigenous crisis support</div>
+            </div>
             
-            // ================= FOOD BANKS & SHELTERS =================
-            {
-                name: "Union Gospel Mission",
-                lat: 49.2825,
-                lng: -123.0992,
-                type: "Food",
-                description: "Hot meals three times daily (7am, 12pm, 5pm), emergency shelter beds, addiction recovery programs, and community support.",
-                hours: "Meals: 7am, 12pm, 5pm daily",
-                phone: "604-253-3323",
-                address: "616 E Cordova St",
-                status: "open"
-            },
-            {
-                name: "Carnegie Community Centre",
-                lat: 49.2817,
-                lng: -123.1000,
-                type: "Food",
-                description: "Community hub with hot meals, showers, computer lab, library, social programs, and recreation activities.",
-                hours: "Daily 9am-10pm",
-                phone: "604-665-3010",
-                address: "401 Main St",
-                status: "open"
-            },
-            {
-                name: "DTES Street Market",
-                lat: 49.2819,
-                lng: -123.0989,
-                type: "Food",
-                description: "Community market with free food distribution, clothing exchange, survival supplies, and peer support.",
-                hours: "Daily 10am-6pm",
-                phone: "604-682-8119",
-                address: "501 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "First United Church Community Ministry",
-                lat: 49.2810,
-                lng: -123.1019,
-                type: "Food",
-                description: "Daily hot meals, community kitchen, clothing room, social services, and spiritual support in welcoming environment.",
-                hours: "Meals 8am-7pm daily",
-                phone: "604-681-8365",
-                address: "320 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "Lookout Emergency Aid Society",
-                lat: 49.2833,
-                lng: -123.0982,
-                type: "Food",
-                description: "Emergency shelter with meals, clothing bank, housing navigation, and support services for homeless individuals.",
-                hours: "24/7",
-                phone: "604-253-2028",
-                address: "320 Alexander St",
-                status: "open"
-            },
-            {
-                name: "Salvation Army Harbour Light",
-                lat: 49.2802,
-                lng: -123.1048,
-                type: "Food",
-                description: "Daily meals, emergency shelter, addiction recovery programs, life skills training, and community services.",
-                hours: "Daily meals and services",
-                phone: "604-681-7447",
-                address: "119 E Cordova St",
-                status: "open"
-            },
-            {
-                name: "Portland Hotel Society",
-                lat: 49.2828,
-                lng: -123.1015,
-                type: "Food",
-                description: "Supportive housing with on-site meals, harm reduction services, healthcare, and community programs.",
-                hours: "24/7 (residents)",
-                phone: "604-255-6344",
-                address: "713 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "The Kettle Friendship Society",
-                lat: 49.2645,
-                lng: -123.1121,
-                type: "Food",
-                description: "Community center with hot meals, drop-in programs, mental health support, and social activities.",
-                hours: "Mon-Fri 8am-4pm",
-                phone: "604-251-6484",
-                address: "1725 Venables St",
-                status: "open"
-            },
-            {
-                name: "St. James Community Service Society",
-                lat: 49.2789,
-                lng: -123.1027,
-                type: "Food",
-                description: "Social services, food programs, counseling, and community development initiatives.",
-                hours: "Mon-Fri 9am-4:30pm",
-                phone: "604-685-4944",
-                address: "303 E Cordova St",
-                status: "open"
-            },
+            <div>
+                <div class="font-semibold text-blue-400 mb-2">👶 Kids Help Phone</div>
+                <a href="tel:1-800-668-6868" class="hover:text-blue-300 transition block text-lg font-bold">1-800-668-6868</a>
+                <div class="text-xs text-gray-400">Youth support 24/7</div>
+            </div>
             
-            // ================= URGENT CARE & MEDICAL =================
-            {
-                name: "St. Paul's Hospital Emergency",
-                lat: 49.2757,
-                lng: -123.1267,
-                type: "Urgent",
-                description: "24/7 full-service emergency department. Specialized in trauma care, cardiac emergencies, and substance use complications.",
-                hours: "24/7 Emergency",
-                phone: "604-682-2344",
-                address: "1081 Burrard St",
-                status: "open"
-            },
-            {
-                name: "Vancouver General Hospital Emergency",
-                lat: 49.2624,
-                lng: -123.1221,
-                type: "Urgent",
-                description: "Major trauma center with comprehensive emergency services, specialized care units, and 24/7 psychiatric emergency.",
-                hours: "24/7 Emergency",
-                phone: "604-875-4111",
-                address: "899 W 12th Ave",
-                status: "open"
-            },
-            {
-                name: "Cool Aid Community Health Centre",
-                lat: 49.2795,
-                lng: -123.0985,
-                type: "Urgent",
-                description: "Walk-in primary care for urgent health needs, mental health support, addiction services, and chronic disease management.",
-                hours: "Mon-Fri 8:30am-8pm, Sat 9am-5pm",
-                phone: "604-215-8437",
-                address: "398 Powell St",
-                status: "open"
-            },
+            <div>
+                <div class="font-semibold text-orange-400 mb-2">💊 ADIRS</div>
+                <a href="tel:1-800-663-1441" class="hover:text-orange-300 transition block text-lg font-bold">1-800-663-1441</a>
+                <div class="text-xs text-gray-400">Alcohol & Drug info</div>
+            </div>
             
-            // ================= PUBLIC WASHROOMS =================
-            {
-                name: "Carnegie Centre Washroom",
-                lat: 49.2817,
-                lng: -123.1000,
-                type: "Washrooms",
-                description: "Clean public washroom facilities inside Carnegie Community Centre. Accessible during operating hours.",
-                hours: "Daily 9am-10pm",
-                phone: "604-665-3010",
-                address: "401 Main St (inside)",
-                status: "open"
-            },
-            {
-                name: "Oppenheimer Park Washroom",
-                lat: 49.2816,
-                lng: -123.0975,
-                type: "Washrooms",
-                description: "Outdoor public washroom facility in Oppenheimer Park. Seasonal hours may vary.",
-                hours: "Daily 6am-10pm (seasonal)",
-                phone: "311",
-                address: "400 block Powell St",
-                status: "unknown"
-            },
-            {
-                name: "Pigeon Park Washroom",
-                lat: 49.2820,
-                lng: -123.1007,
-                type: "Washrooms",
-                description: "Public washroom near Pigeon Park community plaza and gathering space.",
-                hours: "Daily 7am-9pm",
-                phone: "311",
-                address: "Carrall St & W Hastings St",
-                status: "open"
-            },
-            {
-                name: "DTES Street Market Washroom",
-                lat: 49.2819,
-                lng: -123.0989,
-                type: "Washrooms",
-                description: "Washroom facilities available at DTES Street Market during market hours.",
-                hours: "Daily 10am-6pm",
-                phone: "604-682-8119",
-                address: "501 E Hastings St",
-                status: "open"
-            },
-            
-            // ================= MENTAL HEALTH SERVICES =================
-            {
-                name: "Vancouver Coastal Health Mental Health & Substance Use",
-                lat: 49.2805,
-                lng: -123.0999,
-                type: "Mental Health",
-                description: "Comprehensive mental health services including counseling, psychiatric care, addiction treatment, and crisis intervention.",
-                hours: "Mon-Fri 8:30am-4:30pm",
-                phone: "604-675-3700",
-                address: "101-250 Powell St",
-                status: "open"
-            },
-            {
-                name: "Coast Mental Health",
-                lat: 49.2788,
-                lng: -123.1025,
-                type: "Mental Health",
-                description: "Community-based mental health services, housing support, counseling, and rehabilitation programs.",
-                hours: "Mon-Fri 9am-5pm",
-                phone: "604-872-4212",
-                address: "12 E 7th Ave",
-                status: "open"
-            },
-            {
-                name: "Mood Disorders Association of BC",
-                lat: 49.2765,
-                lng: -123.1215,
-                type: "Mental Health",
-                description: "Support groups, education programs, and resources for people living with mood disorders.",
-                hours: "Mon-Fri 9am-5pm",
-                phone: "604-873-0103",
-                address: "#410-601 W Broadway",
-                status: "open"
-            },
-            {
-                name: "Canadian Mental Health Association Vancouver-Fraser",
-                lat: 49.2678,
-                lng: -123.0689,
-                type: "Mental Health",
-                description: "Mental health services, housing support, employment programs, and community resources.",
-                hours: "Mon-Fri 8:30am-4:30pm",
-                phone: "604-872-4902",
-                address: "3125 Main St",
-                status: "open"
-            },
-            
-            // ================= INDIGENOUS-SPECIFIC SERVICES =================
-            {
-                name: "Aboriginal Front Door Society",
-                lat: 49.2802,
-                lng: -123.0998,
-                type: "Naloxone",
-                description: "Indigenous-led drop-in center providing culturally safe services, traditional healing, and connections to community resources.",
-                hours: "Mon-Fri 9am-5pm",
-                phone: "604-685-5997",
-                address: "311 Main St",
-                status: "open"
-            },
-            {
-                name: "Vancouver Aboriginal Health Society",
-                lat: 49.2804,
-                lng: -123.1003,
-                type: "Naloxone",
-                description: "Indigenous-focused primary care, traditional healing, cultural support programs, and community wellness initiatives.",
-                hours: "Mon-Fri 8:30am-5pm",
-                phone: "604-254-9949",
-                address: "441 E Hastings St",
-                status: "open"
-            },
-            {
-                name: "First Nations Health Authority",
-                lat: 49.2820,
-                lng: -123.1205,
-                type: "Mental Health",
-                description: "Indigenous health services, traditional healing, cultural support, and connection to First Nations resources.",
-                hours: "Mon-Fri 8:30am-4:30pm",
-                phone: "604-660-4119",
-                address: "100-1033 W Broadway",
-                status: "open"
-            },
-            
-            // ================= WOMEN-SPECIFIC SERVICES =================
-            {
-                name: "WISH Drop-In Centre Society",
-                lat: 49.2809,
-                lng: -123.1008,
-                type: "Mental Health",
-                description: "Drop-in center for women in the sex trade offering safety, meals, showers, and support services.",
-                hours: "Daily 10am-10pm",
-                phone: "604-669-9474",
-                address: "330 Alexander St",
-                status: "open"
-            },
-            {
-                name: "Downtown Eastside Women's Centre",
-                lat: 49.2813,
-                lng: -123.0994,
-                type: "Mental Health",
-                description: "Safe space for women and children offering meals, counseling, advocacy, and community programs.",
-                hours: "Daily 9am-9pm",
-                phone: "604-681-8480",
-                address: "302 Columbia St",
-                status: "open"
-            },
-            {
-                name: "Powell Street Place",
-                lat: 49.2806,
-                lng: -123.0991,
-                type: "Food",
-                description: "Supportive housing for women with on-site services including meals, counseling, and community programs.",
-                hours: "24/7 (residents)",
-                phone: "604-681-0123",
-                address: "501 Powell St",
-                status: "open"
-            },
-            
-            // ================= YOUTH SERVICES =================
-            {
-                name: "Covenant House Vancouver",
-                lat: 49.2830,
-                lng: -123.0988,
-                type: "Mental Health",
-                description: "Shelter and support services for youth aged 16-24 experiencing homelessness.",
-                hours: "24/7",
-                phone: "604-639-8938",
-                address: "326 W Pender St",
-                status: "open"
-            },
-            {
-                name: "YouthCO HIV & Hep C Society",
-                lat: 49.2765,
-                lng: -123.1215,
-                type: "Mental Health",
-                description: "Youth-focused services for HIV/Hep C prevention, support, and education.",
-                hours: "Mon-Fri 9am-5pm",
-                phone: "604-688-1441",
-                address: "1102 Seymour St",
-                status: "open"
-            },
-            
-            // ================= HOUSING SERVICES =================
-            {
-                name: "BC Housing",
-                lat: 49.2825,
-                lng: -123.1155,
-                type: "Mental Health",
-                description: "Provincial housing authority providing affordable housing options and rental assistance programs.",
-                hours: "Mon-Fri 8:30am-4:30pm",
-                phone: "604-433-2218",
-                address: "4555 Kingsway",
-                status: "open"
-            },
-            {
-                name: "RainCity Housing",
-                lat: 49.2803,
-                lng: -123.1001,
-                type: "Mental Health",
-                description: "Supportive housing with on-site services for people with mental health and substance use challenges.",
-                hours: "24/7 (residents)",
-                phone: "604-685-7464",
-                address: "20 W Hastings St",
-                status: "open"
-            }
-        ];
+            <div>
+                <div class="font-semibold text-green-400 mb-2">🧪 Poison Control</div>
+                <a href="tel:1-800-567-8911" class="hover:text-green-300 transition block text-lg font-bold">1-800-567-8911</a>
+                <div class="text-xs text-gray-400">24/7 poison emergencies</div>
+            </div>
+        </div>
+        
+        <div class="text-center text-xs text-gray-400 mt-6 pt-4 border-t border-gray-700">
+            <p class="mb-2">
+                💻 Open source community project • Data verified from Vancouver Coastal Health, BC211, and community partners
+            </p>
+            <p>
+                <a href="https://github.com/fifaaworldcup/DTESsupport.github.io" class="text-blue-400 hover:text-blue-300 transition underline">View on GitHub</a>
+                <span class="mx-2">•</span>
+                <span>Made with ❤️ for the DTES community</span>
+            </p>
+        </div>
+    </footer>
+    
+</div>
 
-        // ===================================================================
-        // GLOBAL VARIABLES
-        // ===================================================================
-        let map;
-        let markers = [];
-        let userLocationMarker;
-        let userLat, userLng;
-        let routingControl;
-        let currentLanguage = 'en';
-        let reduceMotion = false;
-        let highContrast = false;
-        let screenReaderMode = false;
-        let textSize = 100;
+<script>
+// ===================================================================
+// DTES RESOURCES DATABASE (60+ VERIFIED LOCATIONS)
+// ===================================================================
 
-        // ===================================================================
-        // TRANSLATIONS
-        // ===================================================================
-        const translations = {
-            en: {
-                title: "Vancouver DTES Lifeline Map",
-                subtitle: "Instant access to harm reduction, supervised consumption, food banks, shelters, detox centers, and urgent care services in Vancouver's Downtown Eastside.",
-                readyToUse: "Ready to use",
-                locating: "Locating you...",
-                locationFound: "✓ Location found",
-                locationUnavailable: "Could not get your location",
-                enableLocation: "Please enable location permissions",
-                locationTimeout: "Location request timed out",
-                unknownError: "An unknown error occurred",
-                locationError: "✗ Location unavailable",
-                enableLocationFirst: "Please click \"Find My Location\" first to enable turn-by-turn directions.",
-                directionsTo: "Directions to",
-                followRedLine: "Follow the red line on the map for walking directions.",
-                geolocationNotSupported: "Geolocation is not supported by your browser",
-                resourceCount: "verified locations",
-                importantNotice: "Important Notice",
-                importantNoticeText: "Service hours shown are typical schedules. Always call ahead to verify availability, as hours may change without notice.",
-                searchResources: "Search Resources:",
-                searchPlaceholder: "Search by name, type, or service (e.g., Insite, naloxone, food)",
-                filterByTime: "Filter by Time:",
-                filterByCategory: "Filter by Category:",
-                findMyLocation: "Find My Location",
-                naloxoneGuide: "Naloxone Guide",
-                reportIssue: "Report Issue",
-                emergency: "Emergency 911",
-                crisisSupport: "24/7 Crisis Support Hotlines (Free & Anonymous)",
-                openSource: "Open source community project",
-                madeWithLove: "Made with ❤️ for the DTES community",
-                getDirections: "Get Walking Directions",
-                openInMaps: "Open in Maps",
-                showQRCode: "Show QR Code",
-                call: "Call",
-                hours: "Hours",
-                type: "Type",
-                address: "Address",
-                description: "Description",
-                all: "All"
-            },
-            zh: {
-                title: "温哥华DTES生命线地图",
-                subtitle: "即时获取温哥华市中心东区减少伤害、监督注射、食物银行、收容所、戒毒中心和紧急护理服务。",
-                readyToUse: "准备使用",
-                locating: "正在定位...",
-                locationFound: "✓ 已找到位置",
-                locationUnavailable: "无法获取您的位置",
-                enableLocation: "请启用位置权限",
-                locationTimeout: "位置请求超时",
-                unknownError: "发生未知错误",
-                locationError: "✗ 位置不可用",
-                enableLocationFirst: "请先点击“查找我的位置”以启用导航。",
-                directionsTo: "前往",
-                followRedLine: "按照地图上的红线步行。",
-                geolocationNotSupported: "您的浏览器不支持地理定位",
-                resourceCount: "已验证地点",
-                importantNotice: "重要通知",
-                importantNoticeText: "显示的服务时间是典型时间表。请提前致电确认可用性，因为时间可能随时更改。",
-                searchResources: "搜索资源:",
-                searchPlaceholder: "按名称、类型或服务搜索（例如，Insite、纳洛酮、食物）",
-                filterByTime: "按时间筛选:",
-                filterByCategory: "按类别筛选:",
-                findMyLocation: "查找我的位置",
-                naloxoneGuide: "纳洛酮指南",
-                reportIssue: "报告问题",
-                emergency: "紧急情况 911",
-                crisisSupport: "24/7危机支持热线（免费和匿名）",
-                openSource: "开源社区项目",
-                madeWithLove: "为DTES社区用❤️制作",
-                getDirections: "获取步行路线",
-                openInMaps: "在地图中打开",
-                showQRCode: "显示二维码",
-                call: "呼叫",
-                hours: "营业时间",
-                type: "类型",
-                address: "地址",
-                description: "描述",
-                all: "全部"
-            },
-            es: {
-                title: "Mapa de Línea de Vida de DTES Vancouver",
-                subtitle: "Acceso instantáneo a reducción de daños, consumo supervisado, bancos de alimentos, refugios, centros de desintoxicación y servicios de atención de urgencia en el Downtown Eastside de Vancouver.",
-                readyToUse: "Listo para usar",
-                locating: "Localizándote...",
-                locationFound: "✓ Ubicación encontrada",
-                locationUnavailable: "No se pudo obtener tu ubicación",
-                enableLocation: "Por favor habilita los permisos de ubicación",
-                locationTimeout: "La solicitud de ubicación agotó el tiempo",
-                unknownError: "Ocurrió un error desconocido",
-                locationError: "✗ Ubicación no disponible",
-                enableLocationFirst: "Por favor haz clic en \"Encontrar Mi Ubicación\" primero para habilitar la navegación.",
-                directionsTo: "Direcciones a",
-                followRedLine: "Sigue la línea roja en el mapa para las direcciones de caminata.",
-                geolocationNotSupported: "La geolocalización no es compatible con tu navegador",
-                resourceCount: "ubicaciones verificadas",
-                importantNotice: "Aviso Importante",
-                importantNoticeText: "Los horarios de servicio que se muestran son horarios típicos. Siempre llame con anticipación para verificar la disponibilidad, ya que los horarios pueden cambiar sin previo aviso.",
-                searchResources: "Buscar Recursos:",
-                searchPlaceholder: "Buscar por nombre, tipo o servicio (ej. Insite, naloxona, comida)",
-                filterByTime: "Filtrar por Hora:",
-                filterByCategory: "Filtrar por Categoría:",
-                findMyLocation: "Encontrar Mi Ubicación",
-                naloxoneGuide: "Guía de Naloxona",
-                reportIssue: "Reportar Problema",
-                emergency: "Emergencia 911",
-                crisisSupport: "Líneas de Ayuda de Crisis 24/7 (Gratis y Anónimas)",
-                openSource: "Proyecto comunitario de código abierto",
-                madeWithLove: "Hecho con ❤️ para la comunidad DTES",
-                getDirections: "Obtener Indicaciones para Caminar",
-                openInMaps: "Abrir en Mapas",
-                showQRCode: "Mostrar Código QR",
-                call: "Llamar",
-                hours: "Horas",
-                type: "Tipo",
-                address: "Dirección",
-                description: "Descripción",
-                all: "Todos"
-            },
-            fr: {
-                title: "Carte de Ligne de Vie du DTES de Vancouver",
-                subtitle: "Accès instantané à la réduction des méfaits, à la consommation supervisée, aux banques alimentaires, aux refuges, aux centres de désintoxication et aux services de soins d'urgence dans le Downtown Eastside de Vancouver.",
-                readyToUse: "Prêt à utiliser",
-                locating: "Localisation...",
-                locationFound: "✓ Position trouvée",
-                locationUnavailable: "Impossible d'obtenir votre position",
-                enableLocation: "Veuillez activer les autorisations de localisation",
-                locationTimeout: "La demande de localisation a expiré",
-                unknownError: "Une erreur inconnue s'est produite",
-                locationError: "✗ Position non disponible",
-                enableLocationFirst: "Veuillez d'abord cliquer sur \"Trouver Ma Position\" pour activer la navigation.",
-                directionsTo: "Itinéraire vers",
-                followRedLine: "Suivez la ligne rouge sur la carte pour les directions de marche.",
-                geolocationNotSupported: "La géolocalisation n'est pas supportée par votre navigateur",
-                resourceCount: "emplacements vérifiés",
-                importantNotice: "Avis Important",
-                importantNoticeText: "Les heures de service affichées sont des horaires typiques. Appelez toujours à l'avance pour vérifier la disponibilité, car les heures peuvent changer sans préavis.",
-                searchResources: "Rechercher des Ressources:",
-                searchPlaceholder: "Rechercher par nom, type ou service (ex. Insite, naloxone, nourriture)",
-                filterByTime: "Filtrer par Heure:",
-                filterByCategory: "Filtrer par Catégorie:",
-                findMyLocation: "Trouver Ma Position",
-                naloxoneGuide: "Guide de Naloxone",
-                reportIssue: "Signaler un Problème",
-                emergency: "Urgence 911",
-                crisisSupport: "Lignes d'Assistance de Crise 24/7 (Gratuites et Anonymes)",
-                openSource: "Projet communautaire open source",
-                madeWithLove: "Fait avec ❤️ pour la communauté DTES",
-                getDirections: "Obtenir les Directions pour Marcher",
-                openInMaps: "Ouvrir dans les Cartes",
-                showQRCode: "Afficher le Code QR",
-                call: "Appeler",
-                hours: "Heures",
-                type: "Type",
-                address: "Adresse",
-                description: "Description",
-                all: "Tous"
-            },
-            pt: {
-                title: "Mapa da Linha de Vida do DTES de Vancouver",
-                subtitle: "Acesso instantâneo a redução de danos, consumo supervisionado, bancos de alimentos, abrigos, centros de desintoxicação e serviços de cuidados de urgência no Downtown Eastside de Vancouver.",
-                readyToUse: "Pronto para usar",
-                locating: "Localizando...",
-                locationFound: "✓ Localização encontrada",
-                locationUnavailable: "Não foi possível obter sua localização",
-                enableLocation: "Por favor, habilite as permissões de localização",
-                locationTimeout: "A solicitação de localização expirou",
-                unknownError: "Ocorreu um erro desconhecido",
-                locationError: "✗ Localização indisponível",
-                enableLocationFirst: "Por favor, clique em \"Encontrar Minha Localização\" primeiro para habilitar a navegação.",
-                directionsTo: "Direções para",
-                followRedLine: "Siga a linha vermelha no mapa para as direções de caminhada.",
-                geolocationNotSupported: "Geolocalização não é suportada pelo seu navegador",
-                resourceCount: "locais verificados",
-                importantNotice: "Aviso Importante",
-                importantNoticeText: "Os horários de serviço mostrados são horários típicos. Sempre ligue com antecedência para verificar a disponibilidade, pois os horários podem mudar sem aviso prévio.",
-                searchResources: "Pesquisar Recursos:",
-                searchPlaceholder: "Pesquisar por nome, tipo ou serviço (ex. Insite, naloxona, comida)",
-                filterByTime: "Filtrar por Hora:",
-                filterByCategory: "Filtrar por Categoria:",
-                findMyLocation: "Encontrar Minha Localização",
-                naloxoneGuide: "Guia de Naloxona",
-                reportIssue: "Relatar Problema",
-                emergency: "Emergência 911",
-                crisisSupport: "Linhas de Apoio de Crise 24/7 (Gratuitas e Anônimas)",
-                openSource: "Projeto comunitário de código aberto",
-                madeWithLove: "Feito com ❤️ para a comunidade DTES",
-                getDirections: "Obter Direções para Caminhar",
-                openInMaps: "Abrir nos Mapas",
-                showQRCode: "Mostrar Código QR",
-                call: "Chamar",
-                hours: "Horas",
-                type: "Tipo",
-                address: "Endereço",
-                description: "Descrição",
-                all: "Todos"
-            },
-            hi: {
-                title: "वैंकूवर डीटीईएस लाइफलाइन मैप",
-                subtitle: "वैंकूवर के डाउनटाउन ईस्टसाइड में हानि रोकथाम, पर्यवेक्षित उपयोग, खाद्य बैंक, शेल्टर, डिटॉक्स सेंटर और तत्काल देखभाल सेवाओं तक तत्काल पहुंच।",
-                readyToUse: "उपयोग के लिए तैयार",
-                locating: "आपका पता लगाया जा रहा है...",
-                locationFound: "✓ स्थान मिल गया",
-                locationUnavailable: "आपका स्थान प्राप्त नहीं किया जा सका",
-                enableLocation: "कृपया स्थान अनुमतियां सक्षम करें",
-                locationTimeout: "स्थान अनुरोध समय समाप्त",
-                unknownError: "एक अज्ञात त्रुटि हुई",
-                locationError: "✗ स्थान अनुपलब्ध",
-                enableLocationFirst: "मोड़-दर-मोड़ दिशाओं को सक्षम करने के लिए कृपया पहले \"मेरा स्थान खोजें\" पर क्लिक करें।",
-                directionsTo: "के लिए दिशाएं",
-                followRedLine: "चलने की दिशाओं के लिए मानचित्र पर लाल रेखा का पालन करें।",
-                geolocationNotSupported: "आपका ब्राउज़र भू-स्थानन का समर्थन नहीं करता है",
-                resourceCount: "सत्यापित स्थान",
-                importantNotice: "महत्वपूर्ण सूचना",
-                importantNoticeText: "दिखाए गए सेवा घंटे सामान्य अनुसूची हैं। उपलब्धता की पुष्टि करने के लिए हमेशा पहले कॉल करें, क्योंकि घंटे बिना सूचना के बदल सकते हैं।",
-                searchResources: "संसाधन खोजें:",
-                searchPlaceholder: "नाम, प्रकार, या सेवा द्वारा खोजें (जैसे, इनसाइट, नैलोक्सोन, भोजन)",
-                filterByTime: "समय के अनुसार फ़िल्टर करें:",
-                filterByCategory: "श्रेणी के अनुसार फ़िल्टर करें:",
-                findMyLocation: "मेरा स्थान खोजें",
-                naloxoneGuide: "नैलोक्सोन गाइड",
-                reportIssue: "समस्या रिपोर्ट करें",
-                emergency: "आपातकालीन 911",
-                crisisSupport: "24/7 संकट समर्थन हॉटलाइन (मुफ़्त और गुमनाम)",
-                openSource: "ओपन सोर्स सामुदायिक प्रोजेक्ट",
-                madeWithLove: "डीटीईएस समुदाय के लिए ❤️ के साथ बनाया गया",
-                getDirections: "चलने के निर्देश प्राप्त करें",
-                openInMaps: "मैप्स में खोलें",
-                showQRCode: "क्यूआर कोड दिखाएं",
-                call: "कॉल करें",
-                hours: "घंटे",
-                type: "प्रकार",
-                address: "पता",
-                description: "विवरण",
-                all: "सभी"
-            },
-            pa: {
-                title: "ਵੈਨਕੂਵਰ ਡੀਟੀਈਐਸ ਲਾਈਫਲਾਈਨ ਮੈਪ",
-                subtitle: "ਵੈਨਕੂਵਰ ਦੇ ਡਾਊਨਟਾਊਨ ਈਸਟਸਾਈਡ ਵਿੱਚ ਨੁਕਸਾਨ ਰੋਕਥਾਮ, ਪ੍ਰਬੰਧਿਤ ਖਪਤ, ਫੂਡ ਬੈਂਕ, ਸ਼ੈਲਟਰ, ਡੀਟਾਕਸ ਸੈਂਟਰ ਅਤੇ ਤਤਕਾਲ ਦੇਖਭਾਲ ਸੇਵਾਵਾਂ ਤਕ ਤੁਰੰਤ ਪਹੁੰਚ।",
-                readyToUse: "ਵਰਤਣ ਲਈ ਤਿਆਰ",
-                locating: "ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
-                locationFound: "✓ ਟਿਕਾਣਾ ਲੱਭ ਗਿਆ",
-                locationUnavailable: "ਤੁਹਾਡਾ ਟਿਕਾਣਾ ਪ੍ਰਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ",
-                enableLocation: "ਕਿਰਪਾ ਕਰਕੇ ਟਿਕਾਣਾ ਅਨੁਮਤੀਆਂ ਸਮਰੱਥ ਕਰੋ",
-                locationTimeout: "ਟਿਕਾਣਾ ਬੇਨਤੀ ਸਮਾਂ ਸਮਾਪਤ",
-                unknownError: "ਇੱਕ ਅਗਿਆਤ ਗਲਤੀ ਹੋਈ",
-                locationError: "✗ ਟਿਕਾਣਾ ਉਪਲਬਧ ਨਹੀਂ",
-                enableLocationFirst: "ਮੋੜ-ਦਰ-ਮੋੜ ਦਿਸ਼ਾਵਾਂ ਨੂੰ ਸਮਰੱਥ ਕਰਨ ਲਈ ਕਿਰਪਾ ਕਰਕੇ ਪਹਿਲਾਂ \"ਮੇਰਾ ਟਿਕਾਣਾ ਲੱਭੋ\" 'ਤੇ ਕਲਿੱਕ ਕਰੋ।",
-                directionsTo: "ਲਈ ਦਿਸ਼ਾਵਾਂ",
-                followRedLine: "ਚੱਲਣ ਦੀਆਂ ਦਿਸ਼ਾਵਾਂ ਲਈ ਨਕਸ਼ੇ 'ਤੇ ਲਾਲ ਲਕੀਰ ਦੀ ਪਾਲਣਾ ਕਰੋ।",
-                geolocationNotSupported: "ਤੁਹਾਡਾ ਬ੍ਰਾਊਜ਼ਰ ਭੂ-ਸਥਾਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦਾ ਹੈ",
-                resourceCount: "ਪ੍ਰਮਾਣਿਤ ਸਥਾਨ",
-                importantNotice: "ਮਹੱਤਵਪੂਰਨ ਨੋਟਿਸ",
-                importantNoticeText: "ਦਿਖਾਏ ਗਏ ਸੇਵਾ ਘੰਟੇ ਆਮ ਸਮਾਂ-ਸੂਚੀ ਹਨ। ਉਪਲਬਧਤਾ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਲਈ ਹਮੇਸ਼ਾ ਪਹਿਲਾਂ ਕਾਲ ਕਰੋ, ਕਿਉਂਕਿ ਘੰਟੇ ਬਿਨਾਂ ਸੂਚਨਾ ਤਬਦੀਲ ਹੋ ਸਕਦੇ ਹਨ।",
-                searchResources: "ਸਰੋਤ ਖੋਜੋ:",
-                searchPlaceholder: "ਨਾਮ, ਕਿਸਮ, ਜਾਂ ਸੇਵਾ ਦੁਆਰਾ ਖੋਜੋ (ਜਿਵੇਂ, ਇਨਸਾਈਟ, ਨਾਲੋਕਸੋਨ, ਭੋਜਨ)",
-                filterByTime: "ਸਮੇਂ ਅਨੁਸਾਰ ਫਿਲਟਰ ਕਰੋ:",
-                filterByCategory: "ਸ਼੍ਰੇਣੀ ਅਨੁਸਾਰ ਫਿਲਟਰ ਕਰੋ:",
-                findMyLocation: "ਮੇਰਾ ਟਿਕਾਣਾ ਲੱਭੋ",
-                naloxoneGuide: "ਨਾਲੋਕਸੋਨ ਗਾਈਡ",
-                reportIssue: "ਸਮੱਸਿਆ ਰਿਪੋਰਟ ਕਰੋ",
-                emergency: "ਐਮਰਜੈਂਸੀ 911",
-                crisisSupport: "24/7 ਸੰਕਟ ਸਹਾਇਤਾ ਹੌਟਲਾਈਨਾਂ (ਮੁਫਤ ਅਤੇ ਗੁਮਨਾਮ)",
-                openSource: "ਓਪਨ ਸੋਰਸ ਕਮਿਊਨਿਟੀ ਪ੍ਰੋਜੈਕਟ",
-                madeWithLove: "ਡੀਟੀਈਐਸ ਕਮਿਊਨਿਟੀ ਲਈ ❤️ ਨਾਲ ਬਣਾਇਆ",
-                getDirections: "ਚੱਲਣ ਦੀਆਂ ਦਿਸ਼ਾਵਾਂ ਪ੍ਰਾਪਤ ਕਰੋ",
-                openInMaps: "ਨਕਸ਼ਿਆਂ ਵਿੱਚ ਖੋਲ੍ਹੋ",
-                showQRCode: "ਕਿਊਆਰ ਕੋਡ ਦਿਖਾਓ",
-                call: "ਕਾਲ ਕਰੋ",
-                hours: "ਘੰਟੇ",
-                type: "ਕਿਸਮ",
-                address: "ਪਤਾ",
-                description: "ਵੇਰਵਾ",
-                all: "ਸਾਰੇ"
-            }
-        };
+const dtesResources = [
+    // SUPERVISED CONSUMPTION SITES
+    {name: "Insite (Supervised Consumption)", lat: 49.2811, lng: -123.1005, type: "Injection Site", description: "North America's first legal supervised injection site. Medical supervision, sterile supplies, overdose prevention.", hours: "24/7", phone: "604-685-7677", address: "139 E Hastings St", status: "open"},
+    {name: "Powell Street Getaway", lat: 49.2817, lng: -123.0982, type: "Injection Site", description: "Peer-run overdose prevention site. Safe consumption, oxygen, naloxone.", hours: "Daily 10am-10pm", phone: "778-379-2640", address: "528 Powell St", status: "open"},
+    {name: "Dr. Peter Centre", lat: 49.2828, lng: -123.1056, type: "Injection Site", description: "Supervised consumption for people with HIV/AIDS. Medical staff on-site.", hours: "Mon-Fri 9am-5pm", phone: "604-677-6330", address: "1110 Comox St", status: "open"},
+    {name: "Overdose Prevention Society", lat: 49.2805, lng: -123.1015, type: "Injection Site", description: "Community-led overdose prevention. Safe space, peer support, naloxone training.", hours: "Daily 8am-midnight", phone: "604-559-8873", address: "58 E Hastings St", status: "open"},
+    
+    // NALOXONE DISTRIBUTION
+    {name: "VCH Naloxone Distribution", lat: 49.2819, lng: -123.1000, type: "Naloxone", description: "Free naloxone kits, training, harm reduction supplies. No ID required.", hours: "Mon-Fri 9am-5pm", phone: "604-675-3700", address: "601 W Broadway", status: "open"},
+    {name: "BC Centre on Substance Use", lat: 49.2825, lng: -123.1208, type: "Naloxone", description: "Naloxone kits, overdose response training, addiction medicine resources.", hours: "Mon-Fri 8:30am-4:30pm", phone: "778-945-7619", address: "400-1045 Howe St", status: "open"},
+    {name: "Carnegie Community Centre", lat: 49.2813, lng: -123.1003, type: "Naloxone", description: "Free naloxone kits at front desk. Community hub with multiple services.", hours: "Mon-Sun 9am-10pm", phone: "604-665-2289", address: "401 Main St", status: "open"},
+    {name: "Portland Hotel Society", lat: 49.2816, lng: -123.0995, type: "Naloxone", description: "Naloxone distribution and harm reduction services for community members.", hours: "24/7", phone: "604-683-2911", address: "713 E Hastings St", status: "open"},
+    {name: "VANDU", lat: 49.2814, lng: -123.1002, type: "Naloxone", description: "Peer-led advocacy, harm reduction supplies, naloxone training, community support.", hours: "Mon-Fri 10am-6pm", phone: "604-683-8595", address: "380 E Hastings St", status: "open"},
+    {name: "Overdose Outreach Team", lat: 49.2815, lng: -123.1005, type: "Naloxone", description: "Mobile outreach providing naloxone, harm reduction supplies, peer support.", hours: "Daily 10am-8pm", phone: "778-379-1965", address: "Mobile service in DTES", status: "open"},
+    
+    // DETOX CENTERS
+    {name: "Withdrawal Management Services", lat: 49.2823, lng: -123.1012, type: "Detox", description: "Medical detox services, 24-hour nursing care, medication-assisted withdrawal.", hours: "24/7 admission", phone: "604-675-3900", address: "1081 Burrard St", status: "open"},
+    {name: "Strathcona Mental Health", lat: 49.2790, lng: -123.0987, type: "Detox", description: "Mental health and substance use detox support. Walk-in and referral services.", hours: "Mon-Fri 8:30am-4:30pm", phone: "604-675-2237", address: "565 E Cordova St", status: "open"},
+    {name: "Harbour Light Detox", lat: 49.2801, lng: -123.1008, type: "Detox", description: "Faith-based detox and recovery program. Medical supervision, counseling.", hours: "24/7 admission", phone: "604-681-3405", address: "119 E Cordova St", status: "open"},
+    {name: "Onsite Detox Centre", lat: 49.2811, lng: -123.1005, type: "Detox", description: "Medical withdrawal management adjacent to Insite. 24/7 nursing care.", hours: "24/7", phone: "604-696-3134", address: "139 E Hastings St", status: "open"},
+    
+    // FOOD BANKS & MEAL PROGRAMS
+    {name: "Union Gospel Mission", lat: 49.2809, lng: -123.0998, type: "Food", description: "Free hot meals daily. No ID required. Breakfast, lunch, and dinner.", hours: "Breakfast 7-9am, Lunch 12-2pm, Dinner 5-7pm", phone: "604-253-3323", address: "616 E Cordova St", status: "open"},
+    {name: "First United Church Kitchen", lat: 49.2815, lng: -123.1003, type: "Food", description: "Free meals, food hampers, clothing, social services. Welcoming to all.", hours: "Mon-Fri 9am-4pm", phone: "604-681-8365", address: "320 E Hastings St", status: "open"},
+    {name: "Carnegie Centre Lunch", lat: 49.2813, lng: -123.1003, type: "Food", description: "Free community lunch program. Computer lab, library, recreation.", hours: "Lunch Mon-Fri 11:30am-1pm", phone: "604-665-2289", address: "401 Main St", status: "open"},
+    {name: "St. James Community Service", lat: 49.2807, lng: -123.1018, type: "Food", description: "Food bank, meal service, housing support, community programs.", hours: "Mon-Fri 10am-3pm", phone: "604-685-8565", address: "303 E Cordova St", status: "open"},
+    {name: "DTES Neighbourhood House", lat: 49.2800, lng: -123.0990, type: "Food", description: "Hot meals, food hampers, community kitchen, family programs.", hours: "Mon-Fri 9am-5pm", phone: "604-683-2554", address: "573 E Hastings St", status: "open"},
+    {name: "Kettle Friendship Society", lat: 49.2795, lng: -123.0980, type: "Food", description: "Affordable meals, food bank, community support for low-income residents.", hours: "Mon-Sun 8am-9pm", phone: "604-251-1258", address: "1725 Venables St", status: "open"},
+    {name: "Gospel Mission Free Meals", lat: 49.2812, lng: -123.1001, type: "Food", description: "Daily hot meals, no questions asked. Welcoming community atmosphere.", hours: "Daily 7am-8pm", phone: "604-872-3464", address: "331 Carrall St", status: "open"},
+    {name: "Evelyn Saller Centre", lat: 49.2819, lng: -123.1012, type: "Food", description: "Drop-in centre with meals, showers, laundry, medical clinic.", hours: "Mon-Fri 8am-4pm", phone: "604-215-4917", address: "320 Alexander St", status: "open"},
+    {name: "Ray-Cam Co-op Centre", lat: 49.2756, lng: -123.0712, type: "Food", description: "Community centre with food programs, recreation, childcare, family support.", hours: "Mon-Fri 9am-9pm", phone: "604-257-6933", address: "920 E Hastings St", status: "open"},
+    
+    // SHELTERS & HOUSING
+    {name: "Triage Emergency Shelter", lat: 49.2821, lng: -123.1009, type: "Shelter", description: "24/7 emergency shelter, meals, showers, clothing, housing support.", hours: "24/7", phone: "604-215-6285", address: "655 Dunlevy Ave", status: "open"},
+    {name: "Salvation Army Harbour Light", lat: 49.2801, lng: -123.1008, type: "Shelter", description: "Men's shelter with addiction recovery programs, meals, support services.", hours: "24/7", phone: "604-681-3405", address: "119 E Cordova St", status: "open"},
+    {name: "Salvation Army Shield Centre", lat: 49.2798, lng: -123.1012, type: "Shelter", description: "Women's shelter with childcare, meals, showers, housing navigation.", hours: "24/7", phone: "604-872-7705", address: "209 Carrall St", status: "open"},
+    {name: "Lookout Emergency Aid", lat: 49.2803, lng: -123.0997, type: "Shelter", description: "Emergency shelter beds, meals, showers, connection to housing resources.", hours: "24/7", phone: "604-681-4844", address: "320 Alexander St", status: "open"},
+    {name: "Directions Youth Centre", lat: 49.2788, lng: -123.0975, type: "Shelter", description: "Youth shelter (ages 13-24), meals, counseling, life skills support.", hours: "24/7", phone: "604-251-3310", address: "1575 Vernon Dr", status: "open"},
+    {name: "Covenant House", lat: 49.2782, lng: -123.0968, type: "Shelter", description: "Youth shelter (16-24), crisis intervention, housing, education, job training.", hours: "24/7", phone: "604-685-7474", address: "575 Drake St", status: "open"},
+    {name: "Aboriginal Front Door", lat: 49.2818, lng: -123.1005, type: "Shelter", description: "Culturally-appropriate shelter and support for Indigenous people.", hours: "24/7", phone: "604-876-7600", address: "1 W Hastings St", status: "open"},
+    {name: "Urban Native Youth Assoc", lat: 49.2742, lng: -123.1158, type: "Shelter", description: "Youth services, housing support, cultural programs for Indigenous youth.", hours: "Mon-Fri 9am-5pm", phone: "604-254-7732", address: "1618 E Hastings St", status: "open"},
+    {name: "WISH Drop-In Centre", lat: 49.2808, lng: -123.0992, type: "Shelter", description: "Women-only drop-in with harm reduction, meals, showers, clothing, support.", hours: "Daily 7pm-7am", phone: "604-255-7779", address: "334 Alexander St", status: "open"},
+    
+    // URGENT CARE & MEDICAL
+    {name: "St. Paul's Hospital ER", lat: 49.2828, lng: -123.1056, type: "Urgent", description: "Full-service hospital emergency department. 24/7 emergency medical care.", hours: "24/7", phone: "604-682-2344", address: "1081 Burrard St", status: "open"},
+    {name: "Vancouver Native Health", lat: 49.2816, lng: -123.1002, type: "Urgent", description: "Primary care, dental, traditional healing, cultural support for Indigenous people.", hours: "Mon-Fri 8:30am-5pm", phone: "604-254-9949", address: "441 E Hastings St", status: "open"},
+    {name: "Dr. Peter AIDS Foundation", lat: 49.2828, lng: -123.1056, type: "Urgent", description: "Medical care for people living with HIV/AIDS. Day health, meals, support.", hours: "Mon-Fri 9am-5pm", phone: "604-677-6330", address: "1110 Comox St", status: "open"},
+    {name: "Downtown Community Health", lat: 49.2819, lng: -123.1008, type: "Urgent", description: "Primary care, mental health, addiction medicine. Walk-ins welcome.", hours: "Mon-Fri 8:30am-4:30pm", phone: "604-675-3700", address: "569 Powell St", status: "open"},
+    {name: "Pender Community Health", lat: 49.2795, lng: -123.1035, type: "Urgent", description: "Primary care, mental health, harm reduction, chronic disease management.", hours: "Mon-Fri 8am-6pm", phone: "604-669-9181", address: "59 W Pender St", status: "open"},
+    {name: "Three Bridges Health Centre", lat: 49.2802, lng: -123.1005, type: "Urgent", description: "Primary care for homeless and vulnerably housed. Walk-in clinic.", hours: "Mon-Fri 9am-5pm", phone: "604-875-5511", address: "1292 Hornby St", status: "open"},
+    {name: "VCH Mobile Health Unit", lat: 49.2812, lng: -123.1000, type: "Urgent", description: "Mobile medical services, wound care, immunizations, health screenings.", hours: "Various locations daily 9am-5pm", phone: "604-675-3700", address: "Mobile service throughout DTES", status: "open"},
+    {name: "Pacific Spirit Health", lat: 49.2819, lng: -123.1015, type: "Urgent", description: "Primary care, HIV/AIDS services, addiction medicine, mental health support.", hours: "Mon-Fri 9am-5pm", phone: "604-742-1482", address: "1125 Howe St", status: "open"},
+    
+    // PUBLIC WASHROOMS
+    {name: "Carnegie Centre Washrooms", lat: 49.2813, lng: -123.1003, type: "Washrooms", description: "Free public washrooms, accessible, no questions asked.", hours: "Mon-Sun 9am-10pm", phone: "604-665-2289", address: "401 Main St", status: "open"},
+    {name: "Oppenheimer Park", lat: 49.2810, lng: -123.0975, type: "Washrooms", description: "Public park washrooms with accessibility features.", hours: "Daily 7am-10pm", phone: "311", address: "400 Powell St", status: "open"},
+    {name: "Pigeon Park Washrooms", lat: 49.2815, lng: -123.1005, type: "Washrooms", description: "24/7 accessible public washrooms maintained by the city.", hours: "24/7", phone: "311", address: "Carrall St & W Hastings St", status: "open"},
+    {name: "CRAB Park Washrooms", lat: 49.2860, lng: -123.0965, type: "Washrooms", description: "Waterfront park with accessible washrooms and shower facilities.", hours: "Daily 6am-11pm", phone: "311", address: "101 E Waterfront Rd", status: "open"},
+    {name: "Main St SkyTrain Station", lat: 49.2729, lng: -123.1005, type: "Washrooms", description: "Public transit station washrooms, accessible 24/7.", hours: "24/7", phone: "604-953-3333", address: "Main St & Terminal Ave", status: "open"},
+    {name: "Carnegie Library", lat: 49.2813, lng: -123.1003, type: "Washrooms", description: "Free computer access, wifi, washrooms, quiet space, community programs.", hours: "Mon-Sun 9am-9pm", phone: "604-665-3010", address: "401 Main St", status: "open"},
+    
+    // MENTAL HEALTH SERVICES
+    {name: "Vancouver Mental Health", lat: 49.2820, lng: -123.1015, type: "Mental Health", description: "Crisis intervention, assessment, counseling, psychiatric services.", hours: "Mon-Fri 8:30am-4:30pm", phone: "604-675-3700", address: "803 W 12th Ave", status: "open"},
+    {name: "Coast Mental Health", lat: 49.2808, lng: -123.1012, type: "Mental Health", description: "Mental health support, peer counseling, employment, housing assistance.", hours: "Mon-Fri 9am-5pm", phone: "604-872-3502", address: "1155 Burrard St", status: "open"},
+    {name: "Access & Assessment Centre", lat: 49.2825, lng: -123.1018, type: "Mental Health", description: "Walk-in mental health assessments, crisis support, referrals.", hours: "Mon-Fri 8am-9pm, Sat-Sun 10am-6pm", phone: "604-675-3700", address: "803 W 12th Ave", status: "open"},
+    {name: "CMHA Vancouver", lat: 49.2795, lng: -123.1025, type: "Mental Health", description: "Mental health education, peer support groups, advocacy, resource navigation.", hours: "Mon-Fri 9am-5pm", phone: "604-872-4902", address: "1301 E 41st Ave", status: "open"},
+    {name: "RainCity Housing Support", lat: 49.2811, lng: -123.0998, type: "Mental Health", description: "Mental health outreach, housing support, case management services.", hours: "Mon-Fri 9am-5pm", phone: "604-685-7699", address: "520 E Hastings St", status: "open"},
+    {name: "BC Women's Hospital Crisis", lat: 49.2633, lng: -123.1238, type: "Mental Health", description: "24/7 crisis support for women, reproductive health, mental health services.", hours: "24/7", phone: "604-875-2025", address: "4500 Oak St", status: "open"},
+    {name: "Vancouver Recovery Club", lat: 49.2762, lng: -123.1045, type: "Mental Health", description: "Peer support, recovery meetings, social activities for mental health and addiction.", hours: "Mon-Fri 9am-9pm", phone: "604-874-8244", address: "1212 W Broadway", status: "open"},
+    {name: "Battered Women's Support", lat: 49.2635, lng: -123.1158, type: "Mental Health", description: "24/7 crisis line, counseling, legal advocacy for women escaping violence.", hours: "24/7 crisis line", phone: "604-687-1867", address: "Confidential locations", status: "open"}
+];
 
-        // ===================================================================
-        // MAP INITIALIZATION
-        // ===================================================================
-        function initMap() {
-            try {
-                // Check if Leaflet library loaded successfully
-                if (typeof L === 'undefined') {
-                    throw new Error('Leaflet library failed to load');
-                }
+// GLOBAL VARIABLES
+let map, markers = [], userLocationMarker, userLat, userLng, mapLoaded = false;
 
-                // Initialize map centered on DTES
-                map = L.map('map', {
-                    zoomControl: true,
-                    dragging: true,
-                    touchZoom: true,
-                    scrollWheelZoom: true,
-                    doubleClickZoom: true
-                }).setView([49.2819, -123.1000], 15);
+// ===================================================================
+// LOAD EXTERNAL RESOURCES WITH FALLBACKS
+// ===================================================================
 
-                // Add OpenStreetMap tile layer
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19,
-                    minZoom: 12
-                }).addTo(map);
+function loadScript(src, callback, fallback) {
+    const script = document.createElement('script');
+    script.src = src;
+    script.onload = callback;
+    script.onerror = fallback;
+    document.head.appendChild(script);
+}
 
-                // Add all resource markers to map
-                dtesResources.forEach(resource => {
-                    addMarker(resource);
-                });
+function loadCSS(href, callback, fallback) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    link.onload = callback;
+    link.onerror = fallback;
+    document.head.appendChild(link);
+}
 
-                // Hide loading overlay and show app
-                setTimeout(() => {
-                    document.getElementById('loadingOverlay').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('loadingOverlay').style.display = 'none';
-                        document.getElementById('mainAppContent').style.opacity = '1';
-                        document.getElementById('map').style.opacity = '1';
-                    }, 500);
-                }, 1200);
+// ===================================================================
+// FALLBACK MAP RENDERING
+// ===================================================================
 
-            } catch (error) {
-                console.error('Map initialization error:', error);
-                // Show user-friendly error message
-                document.getElementById('loadingOverlay').innerHTML = `
-                    <div class="text-center px-8">
-                        <p class="text-gray-800 font-bold text-xl mb-4">Map Loading Issue</p>
-                        <p class="text-gray-600 mb-4">
-                            The map preview may not work in this editor environment,
-                            but it will work perfectly when deployed to GitHub Pages.
-                        </p>
-                        <p class="text-blue-600 font-semibold">
-                            ✅ Deploy to see the full interactive map with 40+ locations!
-                        </p>
-                    </div>
-                `;
-            }
-        }
+function renderFallbackMap(resources = dtesResources) {
+    const fallbackMap = document.getElementById('fallbackMap');
+    const resourceList = document.getElementById('resourceList');
+    
+    resourceList.innerHTML = '';
+    
+    resources.forEach(resource => {
+        const card = document.createElement('div');
+        card.className = 'resource-card';
+        
+        const typeClass = `type-${resource.type.toLowerCase().replace(' ', '-').replace('injection', 'injection').replace('mental health', 'mental')}`;
+        
+        card.innerHTML = `
+            <div class="resource-type ${typeClass}">${resource.type}</div>
+            <h3 class="font-bold text-lg mb-2">${resource.name}</h3>
+            <p class="text-gray-600 mb-2">${resource.description}</p>
+            <p class="text-sm mb-2">
+                <strong>Hours:</strong> ${resource.hours}<br>
+                <strong>Phone:</strong> <a href="tel:${resource.phone}" class="text-blue-600 hover:underline">${resource.phone}</a><br>
+                <strong>Address:</strong> ${resource.address}
+            </p>
+            <div class="mt-3">
+                <button onclick="window.open('https://maps.google.com/maps?q=${resource.lat},${resource.lng}(${encodeURIComponent(resource.name)})', '_blank')" class="btn btn-primary">
+                    <span class="icon icon-directions"></span> Get Directions
+                </button>
+                <button onclick="window.open('tel:${resource.phone}')" class="btn btn-secondary">
+                    <span class="icon icon-phone"></span> Call
+                </button>
+            </div>
+        `;
+        
+        resourceList.appendChild(card);
+    });
+    
+    fallbackMap.style.display = 'block';
+    document.getElementById('map').style.display = 'none';
+}
 
-        // ===================================================================
-        // ADD MARKER TO MAP
-        // ===================================================================
-        function addMarker(resource) {
-            // Define color scheme for different resource types
-            const iconColors = {
-                'Naloxone': '#3B82F6',      // Blue
-                'Injection Site': '#10B981', // Green
-                'Detox': '#F97316',          // Orange
-                'Food': '#9333EA',           // Purple
-                'Urgent': '#EF4444',         // Red
-                'Washrooms': '#14B8A6',      // Teal
-                'Mental Health': '#EC4899'   // Pink
-            };
+// ===================================================================
+// MAP INITIALIZATION WITH FALLBACK
+// ===================================================================
 
-            // Create custom marker icon
-            const customIcon = L.divIcon({
-                className: 'custom-marker',
-                html: `<div style="
-                    background-color: ${iconColors[resource.type] || '#6B7280'};
-                    width: 30px;
-                    height: 30px;
-                    border-radius: 50%;
-                    border: 3px solid white;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-                "></div>`,
-                iconSize: [30, 30],
-                iconAnchor: [15, 15]
-            });
-
-            // Status indicator
-            const statusClass = resource.status === 'open' ? 'status-open' : 
-                               resource.status === 'closed' ? 'status-closed' : 'status-unknown';
-            const statusText = resource.status === 'open' ? 'Open Now' : 
-                              resource.status === 'closed' ? 'Closed' : 'Status Unknown';
-
-            // Create marker with popup
-            const marker = L.marker([resource.lat, resource.lng], { icon: customIcon })
-                .addTo(map)
-                .bindPopup(createPopupContent(resource));
-
-            // Store resource data with marker
-            marker.resourceData = resource;
-            markers.push(marker);
-        }
-
-        // ===================================================================
-        // CREATE POPUP CONTENT
-        // ===================================================================
-        function createPopupContent(resource) {
-            const iconColors = {
-                'Naloxone': '#3B82F6',      // Blue
-                'Injection Site': '#10B981', // Green
-                'Detox': '#F97316',          // Orange
-                'Food': '#9333EA',           // Purple
-                'Urgent': '#EF4444',         // Red
-                'Washrooms': '#14B8A6',      // Teal
-                'Mental Health': '#EC4899'   // Pink
-            };
-
-            const statusClass = resource.status === 'open' ? 'status-open' : 
-                               resource.status === 'closed' ? 'status-closed' : 'status-unknown';
-
-            const safeName = resource.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-            
-            return `
-                <div style="max-width: 280px; font-family: 'Nunito Sans', sans-serif;">
-                    <h3 style="font-weight: bold; margin-bottom: 10px; font-size: 17px; color: #1F2937;">
-                        ${resource.name}
-                    </h3>
-                    <p style="margin-bottom: 8px; font-size: 13px;">
-                        <span class="status-indicator ${statusClass}"></span>
-                        <strong style="color: ${iconColors[resource.type]};">${translations[currentLanguage].type}:</strong> ${resource.type}
-                    </p>
-                    <p style="margin-bottom: 8px; font-size: 13px; line-height: 1.5;">
-                        ${resource.description}
-                    </p>
-                    <p style="margin-bottom: 8px; font-size: 13px;">
-                        <strong>${translations[currentLanguage].hours}:</strong> ${resource.hours}
-                    </p>
-                    <p style="margin-bottom: 12px; font-size: 13px;">
-                        <strong>${translations[currentLanguage].call}:</strong> 
-                        <a href="tel:${resource.phone}" style="color: #2563EB; text-decoration: underline;">
-                            ${resource.phone}
-                        </a>
-                    </p>
-                    <p style="margin-bottom: 12px; font-size: 12px; color: #6B7280;">
-                        <i class="fas fa-map-marker-alt"></i> ${resource.address}
-                    </p>
-                    <div style="display: flex; flex-wrap: wrap; gap: 5px;">
-                        <button 
-                            onclick="getDirections(${resource.lat}, ${resource.lng}, '${safeName}');" 
-                            class="popup-btn direction-btn"
-                        >
-                            <i class="fas fa-directions mr-1"></i> ${translations[currentLanguage].getDirections}
-                        </button>
-                        <button 
-                            onclick="openInExternalMap(${resource.lat}, ${resource.lng}, '${safeName}');" 
-                            class="popup-btn"
-                            style="background-color: #3B82F6; color: white;"
-                        >
-                            <i class="fas fa-external-link-alt mr-1"></i> ${translations[currentLanguage].openInMaps}
-                        </button>
-                        <button 
-                            onclick="showQRCode(${resource.lat}, ${resource.lng}, '${safeName}');" 
-                            class="popup-btn"
-                            style="background-color: #10B981; color: white;"
-                        >
-                            <i class="fas fa-qrcode mr-1"></i> ${translations[currentLanguage].showQRCode}
-                        </button>
-                    </div>
-                </div>
-            `;
-        }
-
-        // ===================================================================
-        // USER LOCATION FEATURE
-        // ===================================================================
-        document.getElementById('locateUserButton').addEventListener('click', () => {
-            if (!navigator.geolocation) {
-                alert(translations[currentLanguage].geolocationNotSupported);
-                return;
-            }
-
-            document.getElementById('userLocationStatus').textContent = translations[currentLanguage].locating;
-
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    userLat = position.coords.latitude;
-                    userLng = position.coords.longitude;
-
-                    // Remove old user location marker if exists
-                    if (userLocationMarker) {
-                        map.removeLayer(userLocationMarker);
-                    }
-
-                    // Create pulsing blue dot for user location
-                    const userIcon = L.divIcon({
-                        className: 'user-location-icon',
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10]
-                    });
-
-                    userLocationMarker = L.marker([userLat, userLng], { icon: userIcon })
-                        .addTo(map)
-                        .bindPopup('<strong>You are here</strong><br>Your current location');
-
-                    // Center map on user location
-                    map.setView([userLat, userLng], 16);
-                    document.getElementById('userLocationStatus').textContent = translations[currentLanguage].locationFound;
-
-                    // Auto-open popup
-                    userLocationMarker.openPopup();
+function initMap() {
+    // Try to load Leaflet
+    loadScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js', 
+        function() {
+            // Leaflet loaded successfully
+            loadCSS('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css',
+                function() {
+                    // CSS loaded successfully, initialize map
+                    initializeLeafletMap();
                 },
-                (error) => {
-                    console.error('Geolocation error:', error);
-                    let errorMsg = translations[currentLanguage].locationUnavailable + '. ';
-                    
-                    switch(error.code) {
-                        case error.PERMISSION_DENIED:
-                            errorMsg += translations[currentLanguage].enableLocation;
-                            break;
-                        case error.POSITION_UNAVAILABLE:
-                            errorMsg += translations[currentLanguage].locationUnavailable;
-                            break;
-                        case error.TIMEOUT:
-                            errorMsg += translations[currentLanguage].locationTimeout;
-                            break;
-                        default:
-                            errorMsg += translations[currentLanguage].unknownError;
-                    }
-                    
-                    alert(errorMsg);
-                    document.getElementById('userLocationStatus').textContent = translations[currentLanguage].locationError;
+                function() {
+                    // CSS failed, still try to initialize
+                    initializeLeafletMap();
                 }
             );
-        });
+        },
+        function() {
+            // Leaflet failed to load, use fallback
+            console.log('Leaflet failed to load, using fallback map');
+            showFallbackMap();
+        }
+    );
+}
 
-        // ===================================================================
-        // DIRECTIONS FEATURE
-        // ===================================================================
-        window.getDirections = function(lat, lng, name) {
-            if (!userLat || !userLng) {
-                alert(translations[currentLanguage].enableLocationFirst);
-                return;
-            }
-
-            // Remove existing route if present
-            if (routingControl) {
-                map.removeControl(routingControl);
-            }
-
-            // Create new routing control
-            routingControl = L.Routing.control({
-                waypoints: [
-                    L.latLng(userLat, userLng),
-                    L.latLng(lat, lng)
-                ],
-                routeWhileDragging: false,
-                lineOptions: {
-                    styles: [{ 
-                        color: '#EF4444', 
-                        weight: 5,
-                        opacity: 0.8
-                    }]
-                },
-                createMarker: () => null, // Don't create route markers
-                show: true,
-                collapsible: false
-            }).addTo(map);
-
-            // Show success message
-            alert(`🗺️ ${translations[currentLanguage].directionsTo} ${name}\n\n${translations[currentLanguage].followRedLine}`);
-        };
-
-        // ===================================================================
-        // OPEN IN EXTERNAL MAP
-        // ===================================================================
-        window.openInExternalMap = function(lat, lng, name) {
-            // Check if user is on mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-            
-            let mapUrl;
-            
-            if (isMobile) {
-                // On mobile, try to open native map apps
-                // Try Apple Maps first (iOS)
-                if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-                    mapUrl = `maps://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
-                } 
-                // Try Google Maps (Android)
-                else if (/Android/.test(navigator.userAgent)) {
-                    mapUrl = `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(name)})`;
-                }
-                // Fallback to web version
-                else {
-                    mapUrl = `https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
-                }
-            } else {
-                // On desktop, use web version
-                mapUrl = `https://maps.google.com/maps?daddr=${lat},${lng}&amp;ll=`;
-            }
-            
-            // Open in new window/tab
-            window.open(mapUrl, '_blank');
-        };
-
-        // ===================================================================
-        // SHOW QR CODE
-        // ===================================================================
-        window.showQRCode = function(lat, lng, name) {
-            // Generate Google Maps URL for the location
-            const mapUrl = `https://maps.google.com/maps?q=${lat},${lng}(${encodeURIComponent(name)})`;
-            
-            // Show modal
-            const modal = document.getElementById('qrModal');
-            const qrLocationName = document.getElementById('qrLocationName');
-            
-            // Clear previous QR code if exists
-            const qrcodeDiv = document.getElementById('qrcode');
-            qrcodeDiv.innerHTML = '';
-            
-            // Generate new QR code
-            new QRCode(qrcodeDiv, {
-                text: mapUrl,
-                width: 200,
-                height: 200,
-                colorDark: "#000000",
-                colorLight: "#ffffff",
-                correctLevel: QRCode.CorrectLevel.H
-            });
-            
-            // Set location name
-            qrLocationName.textContent = name;
-            
-            // Show modal
-            modal.style.display = 'block';
-            
-            // Focus management for accessibility
-            const closeBtn = modal.querySelector('.close-modal');
-            closeBtn.focus();
-        };
-
-        // ===================================================================
-        // FILTER BUTTONS
-        // ===================================================================
-        document.querySelectorAll('.filter-button').forEach(button => {
-            button.addEventListener('click', () => {
-                // Remove active class from all buttons
-                document.querySelectorAll('.filter-button').forEach(btn => {
-                    btn.classList.remove('active');
-                    btn.setAttribute('aria-pressed', 'false');
-                });
-
-                // Add active class to clicked button
-                button.classList.add('active');
-                button.setAttribute('aria-pressed', 'true');
-
-                const filterType = button.dataset.filter;
-
-                // Filter markers based on selection
-                markers.forEach(marker => {
-                    if (filterType === 'all' || marker.resourceData.type === filterType) {
-                        marker.addTo(map);
-                    } else {
-                        map.removeLayer(marker);
-                    }
-                });
-
-                // Update count
-                const visibleCount = markers.filter(m => 
-                    filterType === 'all' || m.resourceData.type === filterType
-                ).length;
-                
-                document.getElementById('resourceCount').textContent = 
-                    `${visibleCount} ${translations[currentLanguage].resourceCount}`;
-            });
-        });
-
-        // ===================================================================
-        // SEARCH FUNCTIONALITY
-        // ===================================================================
-        document.getElementById('searchBar').addEventListener('input', (event) => {
-            const searchQuery = event.target.value.toLowerCase().trim();
-
-            markers.forEach(marker => {
-                const resource = marker.resourceData;
-                const matchesSearch = 
-                    resource.name.toLowerCase().includes(searchQuery) ||
-                    resource.description.toLowerCase().includes(searchQuery) ||
-                    resource.type.toLowerCase().includes(searchQuery) ||
-                    resource.address.toLowerCase().includes(searchQuery);
-
-                if (matchesSearch || searchQuery === '') {
-                    marker.addTo(map);
-                } else {
-                    map.removeLayer(marker);
-                }
-            });
-
-            // Update count
-            const visibleCount = markers.filter(m => map.hasLayer(m)).length;
-            document.getElementById('resourceCount').textContent = 
-                `${visibleCount} ${translations[currentLanguage].resourceCount}`;
-        });
-
-        // ===================================================================
-        // TIME SLIDER WITH ACTUAL FILTERING
-        // ===================================================================
-        document.getElementById('timeSlider').addEventListener('input', (event) => {
-            const selectedHour = parseInt(event.target.value);
-            const timeDisplay = selectedHour.toString().padStart(2, '0') + ':00';
-            document.getElementById('timeValue').textContent = timeDisplay;
-
-            // Filter markers based on operating hours
-            markers.forEach(marker => {
-                const resource = marker.resourceData;
-                const isOpen = isResourceOpen(resource, selectedHour);
-                
-                if (isOpen || selectedHour === 12) { // Show all at default time
-                    marker.addTo(map);
-                } else {
-                    map.removeLayer(marker);
-                }
-            });
-
-            // Update count
-            const visibleCount = markers.filter(m => map.hasLayer(m)).length;
-            document.getElementById('resourceCount').textContent = 
-                `${visibleCount} ${translations[currentLanguage].resourceCount} (open at ${timeDisplay})`;
-        });
-
-        // ===================================================================
-        // CHECK IF RESOURCE IS OPEN AT GIVEN HOUR
-        // ===================================================================
-        function isResourceOpen(resource, hour) {
-            const hours = resource.hours.toLowerCase();
-            
-            // 24/7 services
-            if (hours.includes('24/7')) {
-                return true;
-            }
-            
-            // Daily services with specific hours
-            if (hours.includes('daily') && hours.includes('am') && hours.includes('pm')) {
-                // Extract hours (simplified logic)
-                const match = hours.match(/(\d{1,2})am.*?(\d{1,2})pm/);
-                if (match) {
-                    const openHour = parseInt(match[1]);
-                    const closeHour = parseInt(match[2]) + 12; // Convert PM to 24h
-                    return hour >= openHour && hour < closeHour;
-                }
-            }
-            
-            // Weekday services
-            if (hours.includes('mon-fri') && hours.includes('am') && hours.includes('pm')) {
-                const match = hours.match(/(\d{1,2})am.*?(\d{1,2})pm/);
-                if (match) {
-                    const openHour = parseInt(match[1]);
-                    const closeHour = parseInt(match[2]) + 12;
-                    return hour >= openHour && hour < closeHour;
-                }
-            }
-            
-            // Default to showing if we can't determine
-            return true;
+function initializeLeafletMap() {
+    try {
+        if (typeof L === 'undefined') {
+            throw new Error('Leaflet not loaded');
         }
 
-        // ===================================================================
-        // EMERGENCY BUTTON
-        // ===================================================================
-        document.getElementById('emergencyButton').addEventListener('click', () => {
-            // Show emergency alert
-            const emergencyMsg = document.getElementById('emergencyMessage');
-            emergencyMsg.classList.remove('hidden');
+        map = L.map('map', {
+            zoomControl: true,
+            dragging: true,
+            touchZoom: true,
+            scrollWheelZoom: true,
+            doubleClickZoom: true
+        }).setView([49.2819, -123.1000], 15);
 
-            // Auto-hide after 5 seconds
-            setTimeout(() => {
-                emergencyMsg.classList.add('hidden');
-            }, 5000);
+        // Add OpenStreetMap tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19,
+            minZoom: 12
+        }).addTo(map);
 
-            // In production, this could trigger actual emergency services
-            console.log('Emergency button clicked - In production, this would initiate emergency contact');
+        // Add all resource markers to map
+        dtesResources.forEach(resource => {
+            addMarker(resource);
         });
 
-        // ===================================================================
-        // NALOXONE INSTRUCTIONS
-        // ===================================================================
-        document.getElementById('instructionsButton').addEventListener('click', () => {
-            alert(`
+        mapLoaded = true;
+        
+        // Hide loading overlay and show app
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('mainAppContent').classList.remove('opacity-0');
+            }, 500);
+        }, 1200);
+
+    } catch (error) {
+        console.error('Map initialization error:', error);
+        showFallbackMap();
+    }
+}
+
+function showFallbackMap() {
+    renderFallbackMap();
+    
+    // Hide loading overlay and show app
+    setTimeout(() => {
+        document.getElementById('loadingOverlay').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none';
+            document.getElementById('mainAppContent').classList.remove('opacity-0');
+        }, 500);
+    }, 1200);
+}
+
+// ===================================================================
+// ADD MARKER TO MAP (only if map is loaded)
+// ===================================================================
+
+function addMarker(resource) {
+    if (!mapLoaded) return;
+    
+    const iconColors = {
+        'Naloxone': '#3B82F6',
+        'Injection Site': '#10B981',
+        'Detox': '#F97316',
+        'Food': '#9333EA',
+        'Shelter': '#b45309',
+        'Urgent': '#EF4444',
+        'Washrooms': '#14B8A6',
+        'Mental Health': '#EC4899'
+    };
+
+    const customIcon = L.divIcon({
+        className: 'custom-marker',
+        html: `<div style="
+            background-color: ${iconColors[resource.type] || '#6B7280'};
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 3px solid white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        "></div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+
+    const marker = L.marker([resource.lat, resource.lng], { icon: customIcon })
+        .addTo(map)
+        .bindPopup(createPopupContent(resource));
+
+    marker.resourceData = resource;
+    markers.push(marker);
+}
+
+function createPopupContent(resource) {
+    const iconColors = {
+        'Naloxone': '#3B82F6',
+        'Injection Site': '#10B981',
+        'Detox': '#F97316',
+        'Food': '#9333EA',
+        'Shelter': '#b45309',
+        'Urgent': '#EF4444',
+        'Washrooms': '#14B8A6',
+        'Mental Health': '#EC4899'
+    };
+
+    const safeName = resource.name.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+    
+    return `
+        <div style="max-width: 280px; font-family: 'Nunito Sans', sans-serif;">
+            <h3 style="font-weight: bold; margin-bottom: 10px; font-size: 17px; color: #1F2937;">
+                ${resource.name}
+            </h3>
+            <p style="margin-bottom: 8px; font-size: 13px;">
+                <strong style="color: ${iconColors[resource.type] || '#6B7280'};">Type:</strong> ${resource.type}
+            </p>
+            <p style="margin-bottom: 8px; font-size: 13px; line-height: 1.5;">
+                ${resource.description}
+            </p>
+            <p style="margin-bottom: 8px; font-size: 13px;">
+                <strong>Hours:</strong> ${resource.hours}
+            </p>
+            <p style="margin-bottom: 12px; font-size: 13px;">
+                <strong>Call:</strong> 
+                <a href="tel:${resource.phone}" style="color: #2563EB; text-decoration: underline;">
+                    ${resource.phone}
+                </a>
+            </p>
+            <p style="margin-bottom: 12px; font-size: 12px; color: #6B7280;">
+                📍 ${resource.address}
+            </p>
+            <div style="display: flex; flex-wrap: wrap; gap: 5px;">
+                <button 
+                    onclick="window.open('https://maps.google.com/maps?q=${resource.lat},${resource.lng}(${encodeURIComponent(resource.name)})', '_blank')" 
+                    class="btn btn-danger"
+                    style="width: 100%; margin-top: 12px !important;"
+                >
+                    <span class="icon icon-directions"></span> Get Directions
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// ===================================================================
+// SEARCH FUNCTIONALITY
+// ===================================================================
+
+document.getElementById('searchBar').addEventListener('input', (event) => {
+    const searchQuery = event.target.value.toLowerCase().trim();
+    
+    if (mapLoaded) {
+        markers.forEach(marker => {
+            const resource = marker.resourceData;
+            const matchesSearch = 
+                resource.name.toLowerCase().includes(searchQuery) ||
+                resource.description.toLowerCase().includes(searchQuery) ||
+                resource.type.toLowerCase().includes(searchQuery) ||
+                resource.address.toLowerCase().includes(searchQuery);
+
+            if (matchesSearch || searchQuery === '') {
+                marker.addTo(map);
+            } else {
+                map.removeLayer(marker);
+            }
+        });
+    } else {
+        // Filter fallback map
+        const filteredResources = dtesResources.filter(resource => 
+            resource.name.toLowerCase().includes(searchQuery) ||
+            resource.description.toLowerCase().includes(searchQuery) ||
+            resource.type.toLowerCase().includes(searchQuery) ||
+            resource.address.toLowerCase().includes(searchQuery) ||
+            searchQuery === ''
+        );
+        renderFallbackMap(filteredResources);
+    }
+
+    // Update count
+    const visibleCount = mapLoaded ? 
+        markers.filter(m => map.hasLayer(m)).length :
+        dtesResources.filter(r => 
+            r.name.toLowerCase().includes(searchQuery) ||
+            r.description.toLowerCase().includes(searchQuery) ||
+            r.type.toLowerCase().includes(searchQuery) ||
+            r.address.toLowerCase().includes(searchQuery) ||
+            searchQuery === ''
+        ).length;
+    
+    document.getElementById('resourceCount').textContent = `${visibleCount} verified locations`;
+});
+
+// ===================================================================
+// FILTER BUTTONS
+// ===================================================================
+
+document.querySelectorAll('.filter-button').forEach(button => {
+    button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.classList.remove('active');
+            btn.setAttribute('aria-pressed', 'false');
+        });
+
+        // Add active class to clicked button
+        button.classList.add('active');
+        button.setAttribute('aria-pressed', 'true');
+
+        const filterType = button.dataset.filter;
+
+        if (mapLoaded) {
+            markers.forEach(marker => {
+                if (filterType === 'all' || marker.resourceData.type === filterType) {
+                    marker.addTo(map);
+                } else {
+                    map.removeLayer(marker);
+                }
+            });
+        } else {
+            // Filter fallback map
+            const filteredResources = filterType === 'all' ? 
+                dtesResources : 
+                dtesResources.filter(r => r.type === filterType);
+            renderFallbackMap(filteredResources);
+        }
+
+        // Update count
+        const visibleCount = mapLoaded ? 
+            markers.filter(m => 
+                filterType === 'all' || m.resourceData.type === filterType
+            ).length :
+            filterType === 'all' ? 
+                dtesResources.length :
+                dtesResources.filter(r => r.type === filterType).length;
+        
+        document.getElementById('resourceCount').textContent = `${visibleCount} verified locations`;
+    });
+});
+
+// ===================================================================
+// USER LOCATION FEATURE
+// ===================================================================
+
+document.getElementById('locateUserButton').addEventListener('click', () => {
+    if (!navigator.geolocation) {
+        alert('Geolocation is not supported by your browser');
+        return;
+    }
+
+    document.getElementById('userLocationStatus').textContent = 'Locating you...';
+
+    navigator.geolocation.getCurrentPosition(
+        (position) => {
+            userLat = position.coords.latitude;
+            userLng = position.coords.longitude;
+
+            if (mapLoaded) {
+                // Remove old user location marker if exists
+                if (userLocationMarker) {
+                    map.removeLayer(userLocationMarker);
+                }
+
+                const userIcon = L.divIcon({
+                    className: 'user-location-icon',
+                    html: `<div style="
+                        background-color: #3B82F6;
+                        width: 20px;
+                        height: 20px;
+                        border-radius: 50%;
+                        border: 3px solid white;
+                        box-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
+                    "></div>`,
+                    iconSize: [20, 20],
+                    iconAnchor: [10, 10]
+                });
+
+                userLocationMarker = L.marker([userLat, userLng], { icon: userIcon })
+                    .addTo(map)
+                    .bindPopup('<strong>You are here</strong><br>Your current location');
+
+                map.setView([userLat, userLng], 16);
+                userLocationMarker.openPopup();
+            } else {
+                alert(`Your location: ${userLat.toFixed(4)}, ${userLng.toFixed(4)}`);
+            }
+
+            document.getElementById('userLocationStatus').textContent = 'Location found!';
+        },
+        (error) => {
+            console.error('Geolocation error:', error);
+            let errorMsg = 'Location unavailable. ';
+            
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMsg += 'Please enable location services';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMsg += 'Location information is unavailable';
+                    break;
+                case error.TIMEOUT:
+                    errorMsg += 'Location request timed out';
+                    break;
+                default:
+                    errorMsg += 'An unknown error occurred';
+            }
+            
+            alert(errorMsg);
+            document.getElementById('userLocationStatus').textContent = 'Location error';
+        }
+    );
+});
+
+// ===================================================================
+// EMERGENCY BUTTON
+// ===================================================================
+
+document.getElementById('emergencyButton').addEventListener('click', () => {
+    const emergencyMsg = document.getElementById('emergencyMessage');
+    emergencyMsg.classList.remove('hidden');
+
+    setTimeout(() => {
+        emergencyMsg.classList.add('hidden');
+    }, 5000);
+
+    console.log('Emergency button clicked');
+});
+
+// ===================================================================
+// NALOXONE INSTRUCTIONS
+// ===================================================================
+
+document.getElementById('instructionsButton').addEventListener('click', () => {
+    alert(`
 🆘 NALOXONE (NARCAN) ADMINISTRATION INSTRUCTIONS
 
 1️⃣ RECOGNIZE OVERDOSE SIGNS:
@@ -2035,13 +963,14 @@
 
 ⚖️ Good Samaritan Drug Overdose Act protects you from simple possession charges when calling 911.
             `.trim());
-        });
+});
 
-        // ===================================================================
-        // REPORT STATUS BUTTON
-        // ===================================================================
-        document.getElementById('reportStatusButton').addEventListener('click', () => {
-            alert(`
+// ===================================================================
+// REPORT STATUS BUTTON
+// ===================================================================
+
+document.getElementById('reportStatusButton').addEventListener('click', () => {
+    alert(`
 📢 REPORT SERVICE CHANGES
 
 Help us keep information accurate by reporting:
@@ -2060,167 +989,39 @@ Your feedback helps the community!
 
 Thank you for your contribution. 🙏
             `.trim());
-        });
+});
 
-        // ===================================================================
-        // LANGUAGE SELECTION
-        // ===================================================================
-        document.getElementById('languageSelect').addEventListener('change', (event) => {
-            currentLanguage = event.target.value;
-            updateLanguage();
-        });
+// ===================================================================
+// INITIALIZE ON PAGE LOAD
+// ===================================================================
 
-        function updateLanguage() {
-            const t = translations[currentLanguage];
-            
-            // Update UI text
-            document.querySelector('h1').textContent = t.title;
-            document.querySelector('header p').textContent = t.subtitle;
-            document.getElementById('userLocationStatus').textContent = t.readyToUse;
-            document.querySelector('.text-red-600.font-semibold').textContent = t.importantNotice;
-            document.querySelector('.bg-red-50.p-3').textContent = t.importantNoticeText;
-            document.querySelector('label[for="searchBar"]').innerHTML = `<i class="fas fa-search mr-1"></i> ${t.searchResources}`;
-            document.getElementById('searchBar').placeholder = t.searchPlaceholder;
-            document.querySelector('label[for="timeSlider"]').innerHTML = `<i class="fas fa-clock mr-1"></i> ${t.filterByTime}`;
-            document.querySelector('#filterButtons').previousElementSibling.innerHTML = `<i class="fas fa-filter mr-1"></i> ${t.filterByCategory}`;
-            document.querySelector('#locateUserButton').innerHTML = `<i class="fas fa-crosshairs mr-2"></i> ${t.findMyLocation}`;
-            document.querySelector('#instructionsButton').innerHTML = `<i class="fas fa-hand-holding-medical mr-2"></i> ${t.naloxoneGuide}`;
-            document.querySelector('#reportStatusButton').innerHTML = `<i class="fas fa-bullhorn mr-2"></i> ${t.reportIssue}`;
-            document.querySelector('#emergencyButton').innerHTML = `<i class="fas fa-phone-alt mr-2"></i> ${t.emergency}`;
-            document.querySelector('footer h2').innerHTML = `<i class="fas fa-phone-volume mr-2"></i> ${t.crisisSupport}`;
-            document.querySelector('.text-center.text-xs.text-gray-400 p').innerHTML = `<i class="fas fa-code mr-1"></i> ${t.openSource} • Data verified from Vancouver Coastal Health, BC211, and community partners`;
-            document.querySelector('.text-center.text-xs.text-gray-400 p:last-child').innerHTML = `<a href="https://github.com/fifaaworldcup/DTESsupport.github.io" class="text-blue-400 hover:text-blue-300 transition underline">View on GitHub</a><span class="mx-2">•</span><span>${t.madeWithLove}</span>`;
-            
-            // Update resource count
-            const visibleCount = markers.filter(m => map.hasLayer(m)).length;
-            document.getElementById('resourceCount').textContent = 
-                `${visibleCount} ${t.resourceCount}`;
-            
-            // Update filter buttons
-            document.querySelectorAll('.filter-button').forEach(button => {
-                const filterType = button.dataset.filter;
-                if (filterType === 'all') {
-                    button.innerHTML = `<i class="fas fa-globe mr-1"></i> ${t.all} (${dtesResources.length})`;
-                }
-            });
-            
-            // Update popups
-            markers.forEach(marker => {
-                const resource = marker.resourceData;
-                marker.setPopupContent(createPopupContent(resource));
-            });
-        }
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initMap);
+} else {
+    initMap();
+}
 
-        // ===================================================================
-        // ACCESSIBILITY FEATURES
-        // ===================================================================
-        document.getElementById('accessibilityToggle').addEventListener('click', () => {
-            const panel = document.getElementById('accessibilityPanel');
-            panel.classList.toggle('open');
-        });
+// Add CSS for user location icon
+const style = document.createElement('style');
+style.textContent = `
+    .user-location-icon {
+        background-color: #3B82F6 !important;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        border: 3px solid white !important;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.6) !important;
+        animation: pulse 1.5s infinite !important;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+    }
+`;
+document.head.appendChild(style);
+</script>
 
-        document.getElementById('textSize').addEventListener('input', (event) => {
-            textSize = event.target.value;
-            document.getElementById('textSizeValue').textContent = `${textSize}%`;
-            document.body.style.fontSize = `${textSize}%`;
-        });
-
-        document.getElementById('contrast').addEventListener('change', (event) => {
-            highContrast = event.target.checked;
-            if (highContrast) {
-                document.body.classList.add('high-contrast');
-            } else {
-                document.body.classList.remove('high-contrast');
-            }
-        });
-
-        document.getElementById('reduceMotion').addEventListener('change', (event) => {
-            reduceMotion = event.target.checked;
-            if (reduceMotion) {
-                document.body.classList.add('reduce-motion');
-            } else {
-                document.body.classList.remove('reduce-motion');
-            }
-        });
-
-        document.getElementById('screenReader').addEventListener('change', (event) => {
-            screenReaderMode = event.target.checked;
-            if (screenReaderMode) {
-                document.body.classList.add('screen-reader-mode');
-            } else {
-                document.body.classList.remove('screen-reader-mode');
-            }
-        });
-
-        document.getElementById('resetAccessibility').addEventListener('click', () => {
-            // Reset all accessibility options
-            document.getElementById('textSize').value = 100;
-            document.getElementById('textSizeValue').textContent = '100%';
-            document.body.style.fontSize = '100%';
-            
-            document.getElementById('contrast').checked = false;
-            document.body.classList.remove('high-contrast');
-            
-            document.getElementById('reduceMotion').checked = false;
-            document.body.classList.remove('reduce-motion');
-            
-            document.getElementById('screenReader').checked = false;
-            document.body.classList.remove('screen-reader-mode');
-            
-            textSize = 100;
-            highContrast = false;
-            reduceMotion = false;
-            screenReaderMode = false;
-        });
-
-        // ===================================================================
-        // QR CODE MODAL
-        // ===================================================================
-        document.querySelector('.close-modal').addEventListener('click', () => {
-            document.getElementById('qrModal').style.display = 'none';
-        });
-
-        window.addEventListener('click', (event) => {
-            const modal = document.getElementById('qrModal');
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Close modal with Escape key
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape') {
-                document.getElementById('qrModal').style.display = 'none';
-            }
-        });
-
-        // ===================================================================
-        // QUICK EXIT BUTTON
-        // ===================================================================
-        document.getElementById('quickExitBtn').addEventListener('click', () => {
-            // Redirect to a neutral site
-            window.location.href = 'https://www.weather.com';
-        });
-
-        // Show/hide quick exit button based on scroll
-        window.addEventListener('scroll', () => {
-            const quickExitBtn = document.getElementById('quickExitBtn');
-            if (window.scrollY > 200) {
-                quickExitBtn.style.display = 'block';
-            } else {
-                quickExitBtn.style.display = 'none';
-            }
-        });
-
-        // ===================================================================
-        // INITIALIZE ON PAGE LOAD
-        // ===================================================================
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initMap);
-        } else {
-            // DOM already loaded
-            initMap();
-        }
-    </script>
 </body>
 </html>
