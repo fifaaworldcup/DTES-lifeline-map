@@ -8,7 +8,7 @@ Live Site: https://fifaaworldcup.github.io/DTESsupport.github.io/
 - **Interactive Map**: View 60+ verified resources on an interactive map
 - **Offline Capable**: Works completely offline after first load
 - **Search & Filter**: Find resources by name, type, or service
-- **Multi-language Support**: Available in 13 languages
+- **Multi-language Support**: Available in multiple languages
 - **Accessibility**: Full accessibility features including screen reader support
 - **Emergency Features**: Quick access to emergency services and naloxone instructions
 - **Mobile Responsive**: Works on all devices
