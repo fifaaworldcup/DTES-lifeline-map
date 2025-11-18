@@ -76,7 +76,6 @@ npx serve .
 
 ## 4. Translation Improvements
 
-Current languages: English · Chinese · Spanish · French · Portuguese · Hindi · Punjabi
 
 ### Adding a New Language
 ```javascript
