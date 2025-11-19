@@ -1,10 +1,5 @@
 # Security Policy
 
-## Supported Versions
-
-| Version | Supported          |
-|---------|--------------------|
-| 1.x.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
@@ -34,11 +29,5 @@ We will acknowledge receipt within 48 hours and provide a detailed response with
 - We will notify you when the issue is fixed
 - We will credit you in our security acknowledgments (if desired)
 - We will coordinate public disclosure timing
-
-### Do NOT
-
-- Open a public issue about a security vulnerability
-- Disclose the vulnerability publicly before we fix it
-- Use the vulnerability to harm users or the system
 
 Thank you for helping keep the DTES Lifeline Map safe for everyone!
