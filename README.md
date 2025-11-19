@@ -1,11 +1,11 @@
 # Vancouver DTES Lifeline Map
 
-An offline-capable web application that provides instant access to harm reduction, supervised consumption, food banks, shelters, detox centers, and urgent care services in Vancouver's Downtown Eastside.
+A web application that provides instant access to harm reduction, supervised consumption, food banks, shelters, detox centers, and urgent care services in Vancouver's Downtown Eastside.
 Live Site: https://fifaaworldcup.github.io/DTESsupport.github.io/
 
 ## Features
 
-- **Interactive Map**: View 60+ verified resources on an interactive map
+- **Interactive Map**: View 59 verified resources on an interactive map
 - **Offline Capable**: Works completely offline after first load
 - **Search & Filter**: Find resources by name, type, or service
 - **Multi-language Support**: Available in multiple languages
