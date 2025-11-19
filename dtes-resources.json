@@ -1,0 +1,192 @@
+[
+  {
+    "name": "Insite (PHS Supervised Consumption Site)",
+    "address": "139 E Hastings St, Vancouver, BC V6A 1N5",
+    "phone": "604-687-7483",
+    "hours": "Daily (check site for hours)",
+    "type": "Injection Site",
+    "lat": 49.2830,
+    "lng": -123.1000,
+    "source": "VCH / PHS - Insite. https://www.vch.ca/en/location/insite"
+  },
+  {
+    "name": "Overdose Prevention Society (OPS)",
+    "address": "141 E Hastings St, Vancouver, BC V6A 4J1",
+    "phone": "778-952-2015",
+    "hours": "Daily (check site)",
+    "type": "Naloxone / OPS",
+    "lat": 49.2832,
+    "lng": -123.0996,
+    "source": "VCH / OPS. https://www.vch.ca/en/location/overdose-prevention-society-ops"
+  },
+  {
+    "name": "Union Gospel Mission — The Cornerstone (UGM Reception)",
+    "address": "601 E Hastings St, Vancouver, BC V6A 1J7",
+    "phone": "604-253-3323",
+    "hours": "Reception / services — check site",
+    "type": "Food / Shelter / Services",
+    "lat": 49.2817,
+    "lng": -123.0991,
+    "source": "Union Gospel Mission. https://ugm.ca/contact-us"
+  },
+  {
+    "name": "Lookout Housing & Health Society — Powell Street Getaway / Freedman House",
+    "address": "450 E Hastings St, Vancouver, BC V6A 1P7",
+    "phone": "604-255-2343",
+    "hours": "Site and day services — check Lookout pages",
+    "type": "Day centre / Shelter",
+    "lat": 49.2810,
+    "lng": -123.0850,
+    "source": "Lookout Housing + Health / site pages. https://lookoutsociety.ca/ & contact pages"
+  },
+  {
+    "name": "Ray-Cam Co-operative Centre",
+    "address": "920 E Hastings St, Vancouver, BC V6A 3T1",
+    "phone": "604-257-6949",
+    "hours": "Varies — see Ray-Cam",
+    "type": "Community / Food / Programs",
+    "lat": 49.2850,
+    "lng": -123.0790,
+    "source": "Ray-Cam official page. https://raycamcooperative.com/ & City listing"
+  },
+  {
+    "name": "Salvation Army — Harbour Light",
+    "address": "119 E Cordova St, Vancouver, BC V6A 1K8",
+    "phone": "604-646-6800",
+    "hours": "Meal programs / services — check site",
+    "type": "Food / Shelter",
+    "lat": 49.2860,
+    "lng": -123.1090,
+    "source": "Salvation Army Vancouver - Harbour Light listings"
+  },
+  {
+    "name": "Gathering Place Community Centre",
+    "address": "609 Helmcken St, Vancouver, BC V6B 5R1",
+    "phone": "604-665-2391",
+    "hours": "Meals & supports — see City page",
+    "type": "Food / Drop-in",
+    "lat": 49.2780,
+    "lng": -123.1234,
+    "source": "City of Vancouver - Free and low-cost resources. https://vancouver.ca/people-programs/free-and-low-cost-resources.aspx"
+  },
+  {
+    "name": "The Door is Open (The Salvation Army / partners)",
+    "address": "255 Dunlevy Ave, Vancouver, BC V6A 0M4",
+    "phone": "604-669-0498",
+    "hours": "Meals (check site)",
+    "type": "Food / Drop-in",
+    "lat": 49.2710,
+    "lng": -123.0990,
+    "source": "City resources / The Door is Open references"
+  },
+  {
+    "name": "DTES Neighbourhood House",
+    "address": "573 E Hastings St, Vancouver, BC V6A 1P9",
+    "phone": "604-215-2030",
+    "hours": "Mon–Fri 9am–5pm (varies)",
+    "type": "Neighbourhood support / Food",
+    "lat": 49.2808,
+    "lng": -123.0990,
+    "source": "City of Vancouver - DTES Neighbourhood House listing"
+  },
+  {
+    "name": "Downtown Eastside Women’s Centre — Drop-in (302 Columbia St)",
+    "address": "302 Columbia St, Vancouver, BC V6A 2R9",
+    "phone": "604-681-8480",
+    "hours": "Drop-in hours vary — check site",
+    "type": "Women-only drop-in & supports",
+    "lat": 49.2810,
+    "lng": -123.0990,
+    "source": "DTES Women's Centre official pages / City directory"
+  },
+  {
+    "name": "WISH Drop-In Centre / WISH Shelter",
+    "address": "330–340 Alexander St, Vancouver, BC V6A 1C3",
+    "phone": "604-681-9244",
+    "hours": "Services vary — see WISH",
+    "type": "Support for street-based sex workers",
+    "lat": 49.2820,
+    "lng": -123.0990,
+    "source": "WISH Drop-In Centre Society information"
+  },
+  {
+    "name": "Covenant House Vancouver (youth services)",
+    "address": "575 Drake St, Vancouver, BC V6B 2S6",
+    "phone": "604-638-4438",
+    "hours": "Check site — youth shelter & services",
+    "type": "Youth shelter / services",
+    "lat": 49.2782,
+    "lng": -123.0968,
+    "source": "Covenant House Vancouver. https://www.covenanthousebc.org/"
+  },
+  {
+    "name": "Kettle Friendship Society (Community Meals)",
+    "address": "1725 Venables St, Vancouver, BC V5L 2H7",
+    "phone": "604-251-1258",
+    "hours": "Meals & programs — check site",
+    "type": "Community meals",
+    "lat": 49.2795,
+    "lng": -123.0980,
+    "source": "Kettle Friendship Society pages"
+  },
+  {
+    "name": "Vancouver Native Health (VNHS) - DTES",
+    "address": "449 E Hastings St, Vancouver, BC",
+    "phone": "604-254-9949",
+    "hours": "Services vary — primary care & outreach",
+    "type": "Primary care / Indigenous-focused",
+    "lat": 49.2816,
+    "lng": -123.1002,
+    "source": "Vancouver Native Health Society (site listing)"
+  },
+  {
+    "name": "Lookout Housing — Triage / Shelter (Powell Street)",
+    "address": "707 Powell St, Vancouver, BC V6A 1G4",
+    "phone": "604-254-3700",
+    "hours": "Shelter / triage — check site",
+    "type": "Emergency shelter / triage",
+    "lat": 49.2730,
+    "lng": -123.1100,
+    "source": "Lookout / RainCity / City listings"
+  },
+  {
+    "name": "Dress for Success Vancouver",
+    "address": "675 W Hastings St, Vancouver, BC",
+    "phone": "604-408-7923",
+    "hours": "By appointment (check site)",
+    "type": "Clothing / Employment supports",
+    "lat": 49.2860,
+    "lng": -123.1120,
+    "source": "Dress for Success Vancouver / City directory"
+  },
+  {
+    "name": "Working Gear",
+    "address": "520 Powell St, Vancouver, BC",
+    "phone": "778-877-0147",
+    "hours": "By appointment",
+    "type": "Clothing / Employment supports",
+    "lat": 49.2792,
+    "lng": -123.1069,
+    "source": "Working Gear (agency listing)"
+  },
+  {
+    "name": "Providence Crosstown Clinic",
+    "address": "77 E Hastings St, Vancouver, BC V6A 1N7",
+    "phone": "604-689-8803",
+    "hours": "Clinic hours vary",
+    "type": "Opioid agonist therapy / Clinic",
+    "lat": 49.2810,
+    "lng": -123.1000,
+    "source": "Providence Health / Crosstown Clinic listing"
+  },
+  {
+    "name": "St. Paul's Hospital (Emergency)",
+    "address": "1081 Burrard St, Vancouver, BC V6Z 1Y6",
+    "phone": "604-682-2344",
+    "hours": "24/7 Emergency",
+    "type": "Hospital / Emergency",
+    "lat": 49.2808,
+    "lng": -123.1102,
+    "source": "St. Paul's Hospital (VCH / Providence listings)"
+  }
+]
