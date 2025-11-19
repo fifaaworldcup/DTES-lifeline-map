@@ -1,140 +1,109 @@
-# Contributing to Vancouver DTES Lifeline Map
+# Contributing to the DTES Lifeline Map
 
-Thank you for your interest in contributing to **DTES Lifeline Map**!
-This community project relies on volunteers like you to maintain and improve this vital resource.
-
----
-
-## 🤝 How to Contribute
-
-### 1. Reporting Issues
-
-**Found incorrect information?**
-- Open an issue on GitHub with details
-- Include the resource name and the correct information
-- Provide source verification if possible
-
-**Bug reports**
-- Describe the issue clearly
-- Include steps to reproduce
-- Mention browser/device information
-- Add screenshots if helpful
+Thank you for helping maintain this vital community resource.  
+This guide explains how to add new resources, fix bugs, improve accessibility, and update translations.
 
 ---
 
-## 2. Adding New Resources
+## 🛠 How to Contribute
 
-**To add a new service location:**
+### 1. Fork & Branch
 
-### 1. Verify the Resource
-- Confirm the service is in the **DTES area**
-- Verify hours and contact info
-- Ensure it is a **public service**
+```bash
+git checkout -b feat/<description>
+```
 
-### 2. Prepare the Information
-```javascript
+### 2. Edit JSON
+
+Add or update entries in `dtes-resources.json`.  
+Use this template:
+
+```json
 {
-  name: "Service Name",
-  lat: 49.2811,
-  lng: -123.1005,
-  type: "Category",
-  description: "Brief description of services",
-  hours: "Operating hours",
-  phone: "xxx-xxx-xxxx",
-  address: "Street address",
-  status: "open/closed/unknown"
+  "name": "Example Resource",
+  "type": "Shelter",
+  "address": "123 Example St",
+  "phone": "604-555-1234",
+  "hours": "24/7",
+  "lat": 49.2801,
+  "lng": -123.1009,
+  "description": "Short helpful info",
+  "source": "Official site or gov listing",
+  "verified_at": "2025-11-18"
 }
 ```
 
-### 3. Submit a Pull Request
-- Fork the repository
-- Add the resource to the `dtesResources` array
-- Test the changes locally
-- Submit a PR with a clear description
-
----
-
-## 3. Code Contributions
-
-### Development Setup
+### 3. Validate JSON
 ```bash
-git clone https://github.com/fifaaworldcup.github.io/DTESsupport.github.io.git
-cd DTESsupport.github.io
-python -m http.server 8000
-# or:
-npx serve .
+jq . dtes-resources.json
 ```
 
-### Code Style Guidelines
-- Use **ES6+ JavaScript features**
-- Follow existing naming conventions
-- Add comments for complex logic
-- Ensure **accessibility** (ARIA labels, keyboard navigation)
-- Test on **multiple devices and browsers**
-
----
-
-## 4. Translation Improvements
-
-
-### Adding a New Language
-```javascript
-const translations = {
-  newLangCode: {
-    title: "Translated Title",
-    subtitle: "Translated subtitle"
-  }
-};
+### 4. Test Locally
+```bash
+python3 -m http.server 8000
 ```
 
----
+### 5. Commit & Push
+```bash
+git add dtes-resources.json
+git commit -m "feat: add <Resource Name>"
+git push origin feat/<description>
+```
 
-## 5. Design Improvements
-
-### UI / UX Contributions
-- Maintain **WCAG 2.1** accessibility standards
-- Ensure **mobile responsiveness**
-- Test with **screen readers**
-- Test **keyboard navigation**
-
----
-
-## 📋 Development Guidelines
-
-### Code Structure
-- Keep functions **modular and reusable**
-- Use **semantic HTML5**
-- Follow **BEM-like CSS naming**
-- Implement proper **error handling**
-
-### Testing Checklist
-- Works on all major browsers
-- Mobile responsive
-- Screen reader compatible
-- Keyboard navigable
-- High contrast mode functional
-- Location services functional
-- All translations display properly
+### 6. Open PR
+Include:
+- What changed
+- Why
+- Source links
 
 ---
 
-## 🔄 Review Process
+## 🌍 Translations
 
-- Automated checks must pass
-- Code follows guidelines
-- Documentation updated
-- Maintainer approval required
-
----
-
-## 📞 Getting Help
-
-Email: **dteslifeline.info@gmail.com**
+If adding a language:
+- Update the translation dictionary in `index.html`
+- Provide full UI + popup translations
+- Ensure it covers every key
 
 ---
 
-## 🙏 Thank You
+## ♿ Accessibility Guidelines
 
-Your contribution helps improve access to critical services in the DTES community.
-Made with ❤️ by the community.
+Any PR must respect accessibility:
+- Keyboard tab focus usable
+- ARIA labels included
+- Screen-reader friendly wording
+- High contrast works
+- TTS works with popups
+
+---
+
+## 🗺 Map / UI Changes
+
+- Maintain Tailwind style conventions  
+- Do not introduce breaking layout changes without discussion  
+- Ensure mobile UI still works  
+
+---
+
+## 🧪 Testing Checklist
+
+Before submitting:
+- Search works
+- Filters work
+- Map loads
+- Popups translate
+- Accessibility toggles work
+- JSON loads without errors
+
+---
+
+## 🧑‍🤝‍🧑 Code of Conduct
+Be respectful, clear, and constructive.  
+Add `CODE_OF_CONDUCT.md` later if desired.
+
+---
+
+## ❤️ Thank you
+Every contribution improves safety and access for the DTES community.
 
