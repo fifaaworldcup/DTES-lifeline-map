@@ -6,13 +6,7 @@ The project provides an easy way to locate shelters, food programs, harm‑reduc
 ---
 
 ## 🌐 Live Site
-
-
-```
 https://fifaaworldcup.github.io/DTESsupport.github.io/
-```
-```
-
 ---
 
 ## 📁 Project Structure
@@ -27,8 +21,6 @@ https://fifaaworldcup.github.io/DTESsupport.github.io/
 ```
 
 ---
-
-## ✨ Features
 
 ### 🗺 Map + Navigation
 - Leaflet map with clusters & popups  
