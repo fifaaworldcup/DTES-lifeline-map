@@ -6,11 +6,16 @@ The project provides an easy way to locate shelters, food programs, harm‑reduc
 ---
 
 ## 🌐 Live Site
-[https://fifaaworldcup.github.io/DTESsupport.github.io/]
+
+
 ```
+https://fifaaworldcup.github.io/DTESsupport.github.io/
+```
+```
+
 ---
 
-### 📁 **Project Structure**
+## 📁 Project Structure
 ```
 /
 ├─ index.html                 # Main site (loads JSON)
@@ -23,7 +28,7 @@ The project provides an easy way to locate shelters, food programs, harm‑reduc
 
 ---
 
-### ✨ Features
+## ✨ Features
 
 ### 🗺 Map + Navigation
 - Leaflet map with clusters & popups  
@@ -142,6 +147,6 @@ See **SECURITY.md**
 ---
 
 ## 📜 License
-MIT License (recommended — add `LICENSE` file)
+MIT License
 
 
