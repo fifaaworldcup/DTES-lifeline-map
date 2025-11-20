@@ -10,7 +10,7 @@ The project provides an easy way to locate shelters, food programs, harm‑reduc
 ```
 ---
 
-## 📁 Project Structure
+### 📁 **Project Structure**
 ```
 /
 ├─ index.html                 # Main site (loads JSON)
@@ -23,7 +23,7 @@ The project provides an easy way to locate shelters, food programs, harm‑reduc
 
 ---
 
-## ✨ Features
+### ✨ Features
 
 ### 🗺 Map + Navigation
 - Leaflet map with clusters & popups  
