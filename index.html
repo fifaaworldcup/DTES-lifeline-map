@@ -1,63 +1,77 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vancouver DTES Lifeline Map</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Vancouver DTES Lifeline Map</title>
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
 
-  <!-- PWA manifest -->
-  <link rel="manifest" href="/manifest.json">
-
-  <!-- Local libraries (for offline use, put these under /libs/) -->
-  <link rel="stylesheet" href="libs/leaflet/leaflet.css">
-  <link rel="stylesheet" href="libs/leaflet-routing-machine/leaflet-routing-machine.css">
-  <link rel="stylesheet" href="libs/fontawesome/css/all.min.css">
-  <link rel="stylesheet" href="css/tailwind.min.css">
-
-  <style>
-    :root { --accent: #1d4ed8; --muted:#6b7280; --bg:#f6f7fb; --card:#fff; }
-    html,body{ height:100%; margin:0; font-family: "Nunito Sans", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background:var(--bg); color:#111; }
-    .container { max-width:1100px; margin:18px auto; padding:12px; }
-    header { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; }
-    #map { height:70vh; min-height:380px; border-radius:12px; background:var(--card); box-shadow:0 8px 30px rgba(12,12,13,.06); overflow:hidden; }
-    .chip{ display:inline-flex; gap:.5rem; align-items:center; padding:.45rem .7rem; border-radius:999px; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06); font-weight:700; cursor:pointer; border:1px solid rgba(0,0,0,.04); }
-    .btn { padding:.6rem .9rem; border-radius:8px; font-weight:700; cursor:pointer; }
-    .hidden { display:none !important; }
-    .rtl { direction:rtl; }
-    #offlineBanner { display:none; background:#ffedd5; color:#7c2d12; padding:8px 12px; border-radius:8px; margin-bottom:12px; }
-    #listView { display:none; background:var(--card); padding:12px; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,.06); max-height:60vh; overflow:auto; }
-    .resource-card { border-bottom:1px solid #eef2f7; padding:10px 0; }
-    .resource-card:last-child { border-bottom:none; }
-    #accessibilityPanel { position:fixed; left:18px; bottom:18px; z-index:1100; background:rgba(255,255,255,.98); padding:10px; border-radius:10px; box-shadow:0 8px 24px rgba(12,12,13,.12); }
-    #accessibilityPanel.minimized { height:40px; overflow:hidden; width:60px; padding:6px; border-radius:8px; }
-    .access-item { margin-bottom:8px; display:flex; gap:8px; align-items:center; }
-    .high-contrast { background:#000 !important; color:#fff !important; }
-    .dyslexic-font { font-family: "OpenDyslexic", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, Arial !important; }
-    .skip-link { position:absolute; left:-9999px; top:auto; width:1px; height:1px; overflow:hidden; }
-    .skip-link:focus { left:10px; top:10px; width:auto; height:auto; padding:8px 12px; background:#111; color:#fff; border-radius:6px; z-index:3000; }
-    .filter-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
-    .filter-button { padding:.45rem .6rem; border-radius:8px; border:1px solid rgba(0,0,0,.06); background:#fff; cursor:pointer; font-weight:700; }
-    .filter-button.active { outline:3px solid rgba(29,78,216,.12); transform:translateY(-2px); }
-    .popup-btn { padding:0.4rem 0.7rem; border-radius:0.5rem; font-weight:600; display:inline-flex; align-items:center; justify-content:center; margin-top:10px; margin-right:5px; font-size:0.85rem; cursor:pointer; border:none; }
-    .error-message { background:#fee; color:#c00; padding:8px; border-radius:4px; margin:8px 0; }
-    .loading { display:inline-block; width:20px; height:20px; border:3px solid rgba(0,0,0,0.1); border-radius:50%; border-top-color:var(--accent); animation:spin 1s ease-in-out infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-  </style>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Nunito Sans', sans-serif; margin: 0; padding: 0; background:#f6f7fb; }
+        #map { height: 70vh; width: 100%; min-height:400px; border-radius: .75rem; background-color: #f3f4f6; }
+        .leaflet-popup-content-wrapper { border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,.15); }
+        .popup-btn { padding: .4rem .7rem; border-radius:.5rem; font-weight:600; display:inline-flex; align-items:center; margin-top:10px; margin-right:5px; font-size:.85rem; cursor:pointer; border:none; transition:all .2s ease; }
+        .popup-btn:hover{ transform: translateY(-1px); box-shadow:0 2px 8px rgba(0,0,0,.15); }
+        .direction-btn{ background-color:#EF4444; color:white; width:100%; margin-top:12px !important; }
+        .filter-button{ transition:all .2s ease-in-out; box-shadow:0 1px 3px rgba(0,0,0,.08); border:2px solid transparent; }
+        .filter-button.active{ box-shadow:0 0 0 3px rgba(29,78,216,.15); border-color:#1D4ED8; background-color:#1D4ED8 !important; transform:scale(1.03); }
+        .filter-button:hover{ transform: translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,.12); }
+        .user-location-icon{ background-color:#3B82F6; width:20px; height:20px; border-radius:50%; border:3px solid white; box-shadow:0 0 10px rgba(0,0,0,.6); animation:pulse 1.5s infinite; }
+        @keyframes pulse { 0%{ box-shadow:0 0 0 0 rgba(59,130,246,.7);} 70%{ box-shadow:0 0 0 10px rgba(59,130,246,0);} 100%{ box-shadow:0 0 0 0 rgba(59,130,246,0);} }
+        #loadingOverlay{ position:fixed; inset:0; background:rgba(255,255,255,.98); z-index:1010; display:flex; flex-direction:column; align-items:center; justify-content:center; transition:opacity .5s; }
+        .spinner{ border:4px solid rgba(0,0,0,.08); width:40px; height:40px; border-radius:50%; border-left-color:#1D4ED8; animation:spin 1s ease infinite; }
+        @keyframes spin{ 0%{ transform:rotate(0deg);} 100%{ transform:rotate(360deg);} }
+        .status-indicator{ display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+        .status-open{ background-color:#10B981; }
+        .status-closed{ background-color:#EF4444; }
+        #quickExitBtn{ position:fixed; bottom:20px; right:20px; background-color:#EF4444; color:white; padding:10px 15px; border-radius:6px; cursor:pointer; z-index:1000; display:none; }
+        .language-selector{ position:fixed; top:10px; right:10px; z-index:1000; }
+        .qr-modal{ display:none; position:fixed; z-index:1050; inset:0; background-color:rgba(0,0,0,.5); align-items:center; justify-content:center; }
+        .qr-modal-content{ background:#fff; padding:20px; border-radius:10px; width:90%; max-width:420px; text-align:center; }
+        .close-modal{ color:#aaa; font-size:24px; font-weight:bold; cursor:pointer; }
+        /* Accessibility widget */
+        #a11yWidget{ position:fixed; right:16px; bottom:16px; width:320px; background:#fff; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,.12); padding:12px; z-index:2200; transition: transform .18s ease, opacity .18s ease; }
+        #a11yWidget.minimized{ width:52px; height:52px; padding:6px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+        #a11yWidget button{ cursor:pointer; }
+        .cat-list{ display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+        .cat-chk{ display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; background:#f3f4f6; cursor:pointer; user-select:none; }
+        .cat-chk input{ margin:0; transform:scale(1.05); }
+        .high-contrast { background:#000 !important; color:#fff !important; }
+        .high-contrast .bg-white { background:#000 !important; color:#fff !important; }
+        .high-contrast .text-gray-600 { color:#ccc !important; }
+        .high-contrast .text-gray-800 { color:#fff !important; }
+        .high-contrast .text-gray-500 { color:#aaa !important; }
+        .high-contrast .text-gray-700 { color:#ddd !important; }
+        .high-contrast .border-gray-200 { border-color:#444 !important; }
+        .high-contrast .border-gray-300 { border-color:#444 !important; }
+        .high-contrast .shadow-xl { box-shadow:0 0 0 1px #444 !important; }
+        .high-contrast .shadow-lg { box-shadow:0 0 0 1px #444 !important; }
+        .high-contrast .shadow-2xl { box-shadow:0 0 0 1px #444 !important; }
+        .rtl { direction: rtl; }
+        .rtl .filter-button { margin-left: 0; margin-right: 0.5rem; }
+        .rtl .cat-chk { flex-direction: row-reverse; }
+    </style>
 </head>
 <body>
 
-<a href="#main" class="skip-link">Skip to content</a>
+<div id="loadingOverlay">
+    <div class="spinner mb-4"></div>
+    <div class="text-2xl font-bold text-gray-800">DTES Lifeline Map</div>
+    <div class="text-sm text-gray-500 mt-2">Loading verified community resources...</div>
+</div>
 
-<div class="container" id="main" role="main" aria-live="polite">
-  <header>
-    <div style="flex:1;">
-      <h1 id="mainTitle" style="margin:0;font-size:22px;">Vancouver DTES Lifeline Map</h1>
-      <p id="subtitle" style="margin:6px 0;color:var(--muted);">Immediate access to food, shelters, harm reduction, and hotlines.</p>
-      <div id="statusLine" style="font-size:13px;color:var(--muted);">Verified resources — call before you go.</div>
-    </div>
-
-    <div style="display:flex;gap:8px;align-items:center;">
-      <select id="languageSelect" aria-label="Choose language" class="chip" title="Language">
+<div class="language-selector">
+    <select id="languageSelect" class="bg-white border border-gray-300 rounded px-3 py-1 text-sm shadow-lg">
         <option value="en">English</option>
         <option value="zh">中文</option>
         <option value="es">Español</option>
@@ -74,870 +88,1196 @@
         <option value="sv">Svenska</option>
         <option value="de">Deutsch</option>
         <option value="pt">Português</option>
-      </select>
-      <button id="toggleListView" class="chip" title="Toggle list view">List view</button>
-    </div>
-  </header>
-
-  <div id="offlineBanner" role="status"></div>
-  <div id="errorMessage" class="error-message hidden" role="alert"></div>
-
-  <!-- Search and quick actions -->
-  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:12px; align-items:center;">
-    <input id="searchBar" placeholder="Search by name, type, or service" style="flex:1;padding:10px;border-radius:10px;border:1px solid #e6edf3;" aria-label="Search resources" />
-    <button id="locateUserButton" class="chip btn" title="Find my location"><i class="fas fa-crosshairs"></i>&nbsp; Find me</button>
-    <button id="emergencyButton" class="chip btn" style="background:#ef4444;color:#fff;"><i class="fas fa-phone-alt"></i>&nbsp; 911</button>
-  </div>
-
-  <!-- Filters -->
-  <div class="filter-row" id="filterRow" aria-label="Category filters" role="toolbar">
-    <button class="filter-button active" data-filter="all">All</button>
-    <button class="filter-button" data-filter="Naloxone">Naloxone</button>
-    <button class="filter-button" data-filter="Injection Site">Sites</button>
-    <button class="filter-button" data-filter="Detox">Detox</button>
-    <button class="filter-button" data-filter="Food">Food</button>
-    <button class="filter-button" data-filter="Shelter">Shelter</button>
-    <button class="filter-button" data-filter="Washrooms">Washrooms</button>
-    <button class="filter-button" data-filter="Clothing">Clothing</button>
-    <button class="filter-button" data-filter="Mental Health">Mental</button>
-    <button class="filter-button" data-filter="Hotline">Hotlines</button>
-  </div>
-
-  <!-- Map -->
-  <div id="map" aria-label="Map">
-    <div id="mapLoading" class="loading" style="position:absolute;top:50%;left:50%;transform:translate(-50%, -50%);"></div>
-  </div>
-
-  <!-- OFFLINE LIST (fallback) -->
-  <div id="listView" aria-live="polite"></div>
-
-  <!-- Hotlines -->
-  <footer style="margin-top:12px;">
-    <h2 id="hotlinesTitle" style="margin:6px 0 12px 0;">Hotlines & Support</h2>
-    <div id="hotlinesGrid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;"></div>
-    <div style="color:var(--muted);font-size:12px;margin-top:10px;">Made for the DTES community — verify hours by calling first.</div>
-  </footer>
+    </select>
 </div>
 
-<!-- QR Modal -->
-<div id="qrModal" class="hidden" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.5);z-index:9000;">
-  <div style="background:#fff;padding:18px;border-radius:12px;max-width:420px;width:92%;">
-    <button id="closeQr" style="float:right;background:none;border:none;font-size:20px;">×</button>
-    <h3 id="qrTitle">QR Code</h3>
-    <div id="qrcode" style="margin:12px auto;"></div>
-    <div id="qrName" style="color:var(--muted);font-size:13px;"></div>
-  </div>
+<div id="qrModal" class="qr-modal">
+    <div class="qr-modal-content">
+        <span class="close-modal">×</span>
+        <h2 class="text-lg font-bold mb-4">Location QR Code</h2>
+        <p class="mb-4">Scan this code to get directions on your phone</p>
+        <div id="qrcode"></div>
+        <p id="qrLocationName" class="mt-4 text-sm text-gray-600"></p>
+    </div>
 </div>
 
-<!-- Accessibility panel (minimizable) -->
-<div id="accessibilityPanel" role="region" aria-label="Accessibility controls">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-    <strong>Accessibility</strong>
-    <button id="minimizeAccess" class="chip" title="Minimize accessibility panel">━</button>
-  </div>
+<button id="quickExitBtn" aria-label="Quick Exit">
+    <i class="fas fa-times mr-2"></i> Quick Exit
+</button>
 
-  <div id="accessControls">
-    <div class="access-item">
-      <label class="chip" for="contrastToggle"><i class="fas fa-adjust"></i>&nbsp; Contrast</label>
-      <button id="contrastToggle" class="chip">Toggle</button>
+<div id="mainAppContent" class="container mx-auto p-4 md:p-8 opacity-0 transition-opacity duration-500">
+
+    <header class="bg-white p-6 shadow-xl rounded-xl mb-6">
+        <h1 id="mainTitle" class="text-4xl font-extrabold text-gray-900 mb-2">Vancouver DTES Lifeline Map</h1>
+        <p id="subtitle" class="text-gray-600 mb-2">Instant access to harm reduction, supervised consumption, food banks, shelters, detox centers, and urgent care services.</p>
+        <p class="text-sm text-gray-500 mb-2">
+            <span id="userLocationStatus" class="font-semibold text-gray-700">Ready to use</span>
+            <span class="mx-2">|</span>
+            <span id="resourceCount" class="text-blue-600 font-semibold">0 verified locations</span>
+        </p>
+        <div id="alertBanner" class="text-xs text-red-600 font-semibold mt-3 bg-red-50 p-3 rounded-lg border border-red-200">
+            <i class="fas fa-exclamation-triangle mr-2"></i>
+            <span id="alertText">Important: Service hours may change. Always call ahead.</span>
+        </div>
+    </header>
+
+    <div class="grid grid-cols-1 gap-4 mb-6">
+        <div class="bg-white p-5 shadow-lg rounded-xl border border-gray-200">
+            <div class="flex flex-col md:flex-row gap-4 mb-4">
+                <div class="flex-grow">
+                    <label for="searchBar" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-search mr-1"></i> <span id="searchLabel">Search Resources:</span>
+                    </label>
+                    <input id="searchBar" type="text" placeholder="Search by name, type, or service" class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm">
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <span class="text-sm font-semibold text-gray-700 mb-3">
+                    <i class="fas fa-filter mr-1"></i> <span id="filterLabel">Filter by Category:</span>
+                </span>
+            </div>
+
+            <div id="filterButtons" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-3">
+                <button data-filter="all" class="filter-button bg-gray-600 hover:bg-gray-700 text-white py-2.5 px-3 rounded-lg active">
+                    <i class="fas fa-globe mr-1"></i> <span id="allBtnText">All</span> (<span id="allCount">0</span>)
+                </button>
+                <button data-filter="Naloxone" class="filter-button bg-blue-500 hover:bg-blue-600 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-kit-medical mr-1"></i> <span id="naloxoneBtnText">Naloxone</span>
+                </button>
+                <button data-filter="Injection Site" class="filter-button bg-green-500 hover:bg-green-600 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-syringe mr-1"></i> <span id="sitesBtnText">Sites</span>
+                </button>
+                <button data-filter="Detox" class="filter-button bg-orange-500 hover:bg-orange-600 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-house-medical-flag mr-1"></i> <span id="detoxBtnText">Detox</span>
+                </button>
+                <button data-filter="Food" class="filter-button bg-purple-600 hover:bg-purple-700 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-utensils mr-1"></i> <span id="foodBtnText">Food</span>
+                </button>
+                <button data-filter="Shelter" class="filter-button bg-yellow-700 hover:bg-yellow-800 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-bed mr-1"></i> <span id="shelterBtnText">Shelter</span>
+                </button>
+                <button data-filter="Urgent" class="filter-button bg-red-600 hover:bg-red-700 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-hospital mr-1"></i> <span id="urgentBtnText">Urgent</span>
+                </button>
+                <button data-filter="Washrooms" class="filter-button bg-teal-600 hover:bg-teal-700 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-restroom mr-1"></i> <span id="washroomsBtnText">Washrooms</span>
+                </button>
+                <button data-filter="Mental Health" class="filter-button bg-pink-600 hover:bg-pink-700 text-white py-2.5 px-3 rounded-lg">
+                    <i class="fas fa-brain mr-1"></i> <span id="mentalBtnText">Mental</span>
+                </button>
+            </div>
+
+            <div>
+                <div class="text-sm font-medium text-gray-700">Select categories (multi-select):</div>
+                <div id="categoryCheckboxes" class="cat-list" aria-live="polite"></div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <button id="locateUserButton" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg">
+                <i class="fas fa-crosshairs mr-2"></i> <span id="locateBtnLabel">Find My Location</span>
+            </button>
+            <button id="instructionsButton" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg">
+                <i class="fas fa-hand-holding-medical mr-2"></i> <span id="naloxoneBtnLabel">Naloxone Guide</span>
+            </button>
+            <button id="reportStatusButton" class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-4 rounded-lg shadow-lg">
+                <i class="fas fa-bullhorn mr-2"></i> <span id="reportBtnLabel">Report Issue</span>
+            </button>
+            <button id="emergencyButton" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg shadow-lg">
+                <i class="fas fa-phone-alt mr-2"></i> <span id="emergencyBtnLabel">Emergency 911</span>
+            </button>
+        </div>
     </div>
 
-    <div class="access-item">
-      <label class="chip"><i class="fas fa-text-height"></i>&nbsp; Font Size</label>
-      <div style="display:flex;gap:6px">
-        <button id="fontDec" class="chip">A-</button>
-        <button id="fontInc" class="chip">A+</button>
-      </div>
+    <div id="emergencyMessage" class="hidden bg-red-200 border-2 border-red-500 text-red-800 px-4 py-3 rounded-lg mb-4 font-bold">
+        <i class="fas fa-exclamation-circle mr-2"></i> EMERGENCY: Please call 911 immediately.
     </div>
 
-    <div class="access-item">
-      <label class="chip"><i class="fas fa-font"></i>&nbsp; Dyslexic Font</label>
-      <button id="dyslexicToggle" class="chip">Toggle</button>
-    </div>
+    <div id="map" class="shadow-2xl border-4 border-white"></div>
 
-    <div class="access-item">
-      <label class="chip"><i class="fas fa-volume-up"></i>&nbsp; Read Popup</label>
-      <button id="readPopupBtn" class="chip">Read</button>
-    </div>
+    <footer class="mt-6 bg-gray-800 text-white p-6 rounded-xl shadow-lg">
+        <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
+            <i class="fas fa-phone-volume mr-2"></i> <span id="hotlinesTitle">24/7 Crisis Support Hotlines</span>
+        </h2>
+        <div id="hotlinesGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 text-sm">
+            <!-- hotlines will be generated from JSON - fallback content added client-side -->
+        </div>
 
-    <div class="access-item">
-      <label class="chip"><i class="fas fa-arrows-alt-h"></i>&nbsp; Reduce Motion</label>
-      <button id="reducedMotionToggle" class="chip">Toggle</button>
-    </div>
-  </div>
+        <div class="text-center text-xs text-gray-400 mt-6 pt-4 border-t border-gray-700">
+            <p id="footerText">Made with ❤️ for the DTES community — call first to confirm hours and availability.</p>
+        </div>
+    </footer>
 </div>
 
-<!-- Required libraries (put local copies here for offline): -->
-<script src="libs/leaflet/leaflet.js"></script>
-<script src="libs/leaflet-routing-machine/leaflet-routing-machine.js"></script>
-<script src="libs/qrcode/qrcode.min.js"></script>
+<!-- Accessibility widget (minimizable) -->
+<div id="a11yWidget" role="region" aria-label="Accessibility">
+    <div id="a11yContent">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong id="a11yTitle">Accessibility</strong>
+            <div style="display:flex; gap:6px; align-items:center;">
+                <button id="minimizeA11y" class="text-sm text-gray-600" title="Minimize accessibility">–</button>
+            </div>
+        </div>
+
+        <div style="margin-top:8px; display:flex; gap:6px;">
+            <button id="increaseFont" class="bg-gray-100 px-3 py-1 rounded text-sm">A+</button>
+            <button id="decreaseFont" class="bg-gray-100 px-3 py-1 rounded text-sm">A-</button>
+            <button id="toggleContrast" class="bg-gray-100 px-3 py-1 rounded text-sm" id="contrastBtnText">High contrast</button>
+        </div>
+
+        <div style="margin-top:8px;">
+            <small class="text-gray-500" id="a11yDesc">Plain language & screen reader tips available</small>
+        </div>
+    </div>
+    <div id="a11yMinimized" style="display:none; text-align:center;">
+        <button id="restoreA11y" title="Open accessibility" style="background:none; border:none; font-size:20px;"><i class="fas fa-universal-access"></i></button>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
 <script>
 /* ===========================
-   DTES Lifeline Map — main JS
-   - Loads dtes-resources.json (single source of truth)
-   - Registers service worker /sw.js
-   - Supports translations + RTL
-   - Accessibility panel + TTS helper
-   - Filters, search, find-me, QR, routing
-   - Offline fallback (list view)
+   This file uses external JSON: dtes-resources.json
+   Place that JSON in the same folder as this HTML.
    =========================== */
 
-/* ---------- Translations ---------- */
-const translations = {
-  en: { 
-    title: "Vancouver DTES Lifeline Map", 
-    subtitle: "Immediate access to food, shelters, harm reduction, and hotlines.", 
-    searchPlaceholder: "Search by name, type, or service", 
-    offlineBanner: "You are offline — map tiles may be unavailable. Use list view for full access.", 
-    popup: {
-      type: "Type", 
-      hours: "Hours", 
-      call: "Call", 
-      getDirections: "Get Directions", 
-      openInMaps: "Open in Maps", 
-      showQRCode: "Show QR"
-    }, 
-    locate: "Find My Location", 
-    locationFound: "Location found!", 
-    enableLocationFirst: "Enable your location first", 
-    directionsTo: "Directions to", 
-    followRedLine: "Follow the red line on the map",
-    hotlinesTitle: "Hotlines & Support",
-    listView: "List view",
-    mapView: "Map view",
-    loading: "Loading...",
-    error: "Error"
-  }, 
-  ar: { 
-    title: "خريطة موارد DTES - فانكوفر", 
-    subtitle: "الوصول الفوري إلى خفض الأذى والملاجئ وخدمات الدعم", 
-    searchPlaceholder: "ابحث بالاسم أو النوع أو الخدمة", 
-    offlineBanner: "أنت في وضع عدم الاتصال — قد لا تتوفر بلاطات الخريطة. استخدم عرض القائمة.", 
-    popup: {
-      type: "النوع", 
-      hours: "الساعات", 
-      call: "اتصل", 
-      getDirections: "الاتجاهات", 
-      openInMaps: "فتح الخرائط", 
-      showQRCode: "رمز QR"
-    }, 
-    locate: "موقعي", 
-    locationFound: "تم العثور على الموقع!", 
-    enableLocationFirst: "فعّل موقعك أولاً", 
-    directionsTo: "اتجه إلى", 
-    followRedLine: "اتبع الخط الأحمر",
-    hotlinesTitle: "خطوط المساعدة والدعم",
-    listView: "عرض القائمة",
-    mapView: "عرض الخريطة",
-    loading: "جاري التحميل...",
-    error: "خطأ"
-  }, 
-  zh: { 
-    title: "DTES 资源地图", 
-    subtitle: "即时获取社区资源", 
-    searchPlaceholder: "按名称、类型或服务搜索", 
-    offlineBanner: "您处于离线状态 —— 地图切片可能无法使用。", 
-    popup: {
-      type: "类型", 
-      hours: "时间", 
-      call: "致电", 
-      getDirections: "获取路线", 
-      openInMaps: "在地图中打开", 
-      showQRCode: "显示二维码"
-    }, 
-    locate: "定位", 
-    locationFound: "找到位置！", 
-    enableLocationFirst: "请先启用位置", 
-    directionsTo: "前往", 
-    followRedLine: "沿着红线走",
-    hotlinesTitle: "热线与支持",
-    listView: "列表视图",
-    mapView: "地图视图",
-    loading: "加载中...",
-    error: "错误"
-  },
-  es: { 
-    title: "Mapa DTES", 
-    subtitle: "Recursos comunitarios", 
-    searchPlaceholder: "Buscar por nombre, tipo o servicio", 
-    offlineBanner: "Estás sin conexión.", 
-    popup: {
-      type: "Tipo", 
-      hours: "Horario", 
-      call: "Llamar", 
-      getDirections: "Direcciones", 
-      openInMaps: "Abrir en Mapas", 
-      showQRCode: "Código QR"
-    }, 
-    locate: "Mi ubicación", 
-    locationFound: "Ubicación encontrada", 
-    enableLocationFirst: "Activa tu ubicación primero", 
-    directionsTo: "Direcciones a", 
-    followRedLine: "Sigue la línea roja en el mapa",
-    hotlinesTitle: "Líneas de ayuda y apoyo",
-    listView: "Vista de lista",
-    mapView: "Vista de mapa",
-    loading: "Cargando...",
-    error: "Error"
-  },
-  fr: { 
-    title: "Carte DTES", 
-    subtitle: "Ressources communautaires", 
-    searchPlaceholder: "Rechercher par nom, type ou service", 
-    offlineBanner: "Hors ligne.", 
-    popup: {
-      type: "Type", 
-      hours: "Heures", 
-      call: "Appeler", 
-      getDirections: "Itinéraire", 
-      openInMaps: "Ouvrir Maps", 
-      showQRCode: "Code QR"
-    }, 
-    locate: "Ma position", 
-    locationFound: "Position trouvée", 
-    enableLocationFirst: "Activez votre localisation d'abord", 
-    directionsTo: "Itinéraire vers", 
-    followRedLine: "Suivez la ligne rouge sur la carte",
-    hotlinesTitle: "Lignes d'assistance et soutien",
-    listView: "Vue liste",
-    mapView: "Vue carte",
-    loading: "Chargement...",
-    error: "Erreur"
-  },
-  bn: { 
-    title: "DTES রিসোর্স মানচিত্র", 
-    subtitle: "কমিউনিটি রিসোর্স এক ক্লিকে", 
-    searchPlaceholder: "নাম, কাস্ট বা সার্ভিস দিয়ে খুঁজুন", 
-    offlineBanner: "অফলাইন।", 
-    popup: {
-      type: "ধরন", 
-      hours: "ঘণ্টা", 
-      call: "কল", 
-      getDirections: "দিকনির্দেশ", 
-      openInMaps: "মানচিত্রে খুলুন", 
-      showQRCode: "QR কোড"
-    }, 
-    locate: "আমার অবস্থান", 
-    locationFound: "অবস্থান পাওয়া গেছে", 
-    enableLocationFirst: "প্রথমে আপনার অবস্থান সক্রিয় করুন", 
-    directionsTo: "এর দিকনির্দেশ", 
-    followRedLine: "মানচিত্রে লাল লাইন অনুসরণ করুন",
-    hotlinesTitle: "হটলাইন এবং সহায়তা",
-    listView: "তালিকা ভিউ",
-    mapView: "মানচিত্র ভিউ",
-    loading: "লোড হচ্ছে...",
-    error: "ত্রুটি"
-  },
-  tl: { 
-    title: "DTES Resource Map", 
-    subtitle: "Mabilis na pag-access sa mga mapagkukunan ng komunidad", 
-    searchPlaceholder: "Maghanap ayon sa pangalan, uri, o serbisyo", 
-    offlineBanner: "Ikaw ay offline.", 
-    popup: {
-      type: "Uri", 
-      hours: "Oras", 
-      call: "Tawagan", 
-      getDirections: "Mga Direksyon", 
-      openInMaps: "Buksan sa Maps", 
-      showQRCode: "QR Code"
-    }, 
-    locate: "Aking lokasyon", 
-    locationFound: "Nahanap ang lokasyon", 
-    enableLocationFirst: "I-activate muna ang iyong lokasyon", 
-    directionsTo: "Mga direksyon patungo sa", 
-    followRedLine: "Sundan ang pulang linya sa mapa",
-    hotlinesTitle: "Mga Hotline at Suporta",
-    listView: "Tingnan sa listahan",
-    mapView: "Tingnan sa mapa",
-    loading: "Naglo-load...",
-    error: "Error"
-  },
-  fa: { 
-    title: "نقشه منابع DTES", 
-    subtitle: "دسترسی فوری به منابع جامعه", 
-    searchPlaceholder: "جستجو بر اساس نام، نوع یا خدمات", 
-    offlineBanner: "شما آفلاین هستید.", 
-    popup: {
-      type: "نوع", 
-      hours: "ساعات", 
-      call: "تماس", 
-      getDirections: "مسیرها", 
-      openInMaps: "باز کردن در نقشه", 
-      showQRCode: "کد QR"
-    }, 
-    locate: "موقعیت من", 
-    locationFound: "موقعیت پیدا شد", 
-    enableLocationFirst: "ابتدا موقعیت خود را فعال کنید", 
-    directionsTo: "مسیرها به", 
-    followRedLine: "خط قرمز را روی نقشه دنبال کنید",
-    hotlinesTitle: "خطوط فوری و پشتیبانی",
-    listView: "نمای لیست",
-    mapView: "نمای نقشه",
-    loading: "در حال بارگذاری...",
-    error: "خطا"
-  },
-  hi: { 
-    title: "DTES संसाधन मानचित्र", 
-    subtitle: "सामुदायिक संसाधनों तक तत्काल पहुंच", 
-    searchPlaceholder: "नाम, प्रकार, या सेवा द्वारा खोजें", 
-    offlineBanner: "आप ऑफ़लाइन हैं।", 
-    popup: {
-      type: "प्रकार", 
-      hours: "घंटे", 
-      call: "कॉल करें", 
-      getDirections: "दिशाएं", 
-      openInMaps: "मैप्स में खोलें", 
-      showQRCode: "QR कोड"
-    }, 
-    locate: "मेरा स्थान", 
-    locationFound: "स्थान मिल गया", 
-    enableLocationFirst: "पहले अपना स्थान सक्षम करें", 
-    directionsTo: "के लिए दिशाएं", 
-    followRedLine: "मानचित्र पर लाल रेखा का पालन करें",
-    hotlinesTitle: "हॉटलाइन और समर्थन",
-    listView: "सूची दृश्य",
-    mapView: "मानचित्र दृश्य",
-    loading: "लोड हो रहा है...",
-    error: "त्रुटि"
-  },
-  ur: { 
-    title: "DTES وسائل کا نقشہ", 
-    subtitle: "برادران کے وسائل تک فوری رسائی", 
-    searchPlaceholder: "نام، قسم، یا سروس کے ذریعے تلاش کریں", 
-    offlineBanner: "آپ آف لائن ہیں۔", 
-    popup: {
-      type: "قسم", 
-      hours: "گھنٹے", 
-      call: "کال کریں", 
-      getDirections: "سمت", 
-      openInMaps: "نقشے میں کھولیں", 
-      showQRCode: "QR کوڈ"
-    }, 
-    locate: "میری جگہ", 
-    locationFound: "جگہ مل گئی", 
-    enableLocationFirst: "پہلے اپنی جگہ فعال کریں", 
-    directionsTo: "کی سمت", 
-    followRedLine: "نقشے پر لال لائن کی پیروی کریں",
-    hotlinesTitle: "ہاٹ لائنز اور سپورٹ",
-    listView: "فہرست کا نظارہ",
-    mapView: "نقشے کا نظارہ",
-    loading: "لوڈ ہو رہا ہے...",
-    error: "خرابی"
-  },
-  pa: { 
-    title: "DTES ਸਰੋਤ ਨਕਸ਼ਾ", 
-    subtitle: "ਭਾਈਚਾਰਕ ਸਰੋਤਾਂ ਤਕ ਤੁਰੰਤ ਪਹੁੰਚ", 
-    searchPlaceholder: "ਨਾਮ, ਕਿਸਮ, ਜਾਂ ਸੇਵਾ ਦੁਆਰਾ ਖੋਜੋ", 
-    offlineBanner: "ਤੁਸੀਂ ਆਫਲਾਈਨ ਹੋ।", 
-    popup: {
-      type: "ਕਿਸਮ", 
-      hours: "ਘੰਟੇ", 
-      call: "ਕਾਲ ਕਰੋ", 
-      getDirections: "ਦਿਸ਼ਾਵਾਂ", 
-      openInMaps: "ਨਕਸ਼ਿਆਂ ਵਿੱਚ ਖੋਲ੍ਹੋ", 
-      showQRCode: "QR ਕੋਡ"
-    }, 
-    locate: "ਮੇਰਾ ਟਿਕਾਣਾ", 
-    locationFound: "ਟਿਕਾਣਾ ਲੱਭ ਗਿਆ", 
-    enableLocationFirst: "ਪਹਿਲਾਂ ਆਪਣਾ ਟਿਕਾਣਾ ਯੋਗ ਕਰੋ", 
-    directionsTo: "ਵੱਲ ਦਿਸ਼ਾਵਾਂ", 
-    followRedLine: "ਨਕਸ਼ੇ 'ਤੇ ਲਾਲ ਲਾਈਨ ਦੀ ਪਾਲਣਾ ਕਰੋ",
-    hotlinesTitle: "ਹਾਟਲਾਈਨਾਂ ਅਤੇ ਸਹਾਇਤਾ",
-    listView: "ਸੂਚੀ ਦ੍ਰਿਸ਼",
-    mapView: "ਨਕਸ਼ਾ ਦ੍ਰਿਸ਼",
-    loading: "ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
-    error: "ਗਲਤੀ"
-  },
-  nl: { 
-    title: "DTES Bronnenkaart", 
-    subtitle: "Onmiddellijke toegang tot gemeenschapsbronnen", 
-    searchPlaceholder: "Zoek op naam, type of dienst", 
-    offlineBanner: "Je bent offline.", 
-    popup: {
-      type: "Type", 
-      hours: "Uren", 
-      call: "Bel", 
-      getDirections: "Routebeschrijving", 
-      openInMaps: "Openen in Kaarten", 
-      showQRCode: "QR Code"
-    }, 
-    locate: "Mijn locatie", 
-    locationFound: "Locatie gevonden", 
-    enableLocationFirst: "Activeer eerst je locatie", 
-    directionsTo: "Routebeschrijving naar", 
-    followRedLine: "Volg de rode lijn op de kaart",
-    hotlinesTitle: "Hulplijnen en ondersteuning",
-    listView: "Lijstweergave",
-    mapView: "Kaartweergave",
-    loading: "Laden...",
-    error: "Fout"
-  },
-  it: { 
-    title: "Mappa Risorse DTES", 
-    subtitle: "Accesso immediato alle risorse della comunità", 
-    searchPlaceholder: "Cerca per nome, tipo o servizio", 
-    offlineBanner: "Sei offline.", 
-    popup: {
-      type: "Tipo", 
-      hours: "Orari", 
-      call: "Chiama", 
-      getDirections: "Indicazioni", 
-      openInMaps: "Apri in Mappe", 
-      showQRCode: "Codice QR"
-    }, 
-    locate: "La mia posizione", 
-    locationFound: "Posizione trovata", 
-    enableLocationFirst: "Attiva prima la tua posizione", 
-    directionsTo: "Indicazioni per", 
-    followRedLine: "Segui la linea rossa sulla mappa",
-    hotlinesTitle: "Linee di aiuto e supporto",
-    listView: "Vista elenco",
-    mapView: "Vista mappa",
-    loading: "Caricamento...",
-    error: "Errore"
-  },
-  sv: { 
-    title: "DTES Resurskarta", 
-    subtitle: "Omedelbar tillgång till gemenskapsresurser", 
-    searchPlaceholder: "Sök efter namn, typ eller tjänst", 
-    offlineBanner: "Du är offline.", 
-    popup: {
-      type: "Typ", 
-      hours: "Tider", 
-      call: "Ring", 
-      getDirections: "Vägbeskrivning", 
-      openInMaps: "Öppna i Kartor", 
-      showQRCode: "QR-kod"
-    }, 
-    locate: "Min plats", 
-    locationFound: "Plats hittad", 
-    enableLocationFirst: "Aktivera din plats först", 
-    directionsTo: "Vägbeskrivning till", 
-    followRedLine: "Följ den röda linjen på kartan",
-    hotlinesTitle: "Jourtelefoner och stöd",
-    listView: "Listvy",
-    mapView: "Kartvy",
-    loading: "Laddar...",
-    error: "Fel"
-  },
-  de: { 
-    title: "DTES Ressourcenkarte", 
-    subtitle: "Sofortiger Zugang zu Gemeinschaftsressourcen", 
-    searchPlaceholder: "Nach Name, Typ oder Dienst suchen", 
-    offlineBanner: "Sie sind offline.", 
-    popup: {
-      type: "Typ", 
-      hours: "Öffnungszeiten", 
-      call: "Anrufen", 
-      getDirections: "Wegbeschreibung", 
-      openInMaps: "In Karten öffnen", 
-      showQRCode: "QR-Code"
-    }, 
-    locate: "Mein Standort", 
-    locationFound: "Standort gefunden", 
-    enableLocationFirst: "Aktivieren Sie zuerst Ihren Standort", 
-    directionsTo: "Wegbeschreibung zu", 
-    followRedLine: "Folgen Sie der roten Linie auf der Karte",
-    hotlinesTitle: "Hotlines und Unterstützung",
-    listView: "Listenansicht",
-    mapView: "Kartenansicht",
-    loading: "Laden...",
-    error: "Fehler"
-  },
-  pt: { 
-    title: "Mapa de Recursos DTES", 
-    subtitle: "Acesso imediato a recursos da comunidade", 
-    searchPlaceholder: "Pesquisar por nome, tipo ou serviço", 
-    offlineBanner: "Você está offline.", 
-    popup: {
-      type: "Tipo", 
-      hours: "Horas", 
-      call: "Ligar", 
-      getDirections: "Direções", 
-      openInMaps: "Abrir no Mapas", 
-      showQRCode: "Código QR"
-    }, 
-    locate: "Minha localização", 
-    locationFound: "Localização encontrada", 
-    enableLocationFirst: "Ative sua localização primeiro", 
-    directionsTo: "Direções para", 
-    followRedLine: "Siga a linha vermelha no mapa",
-    hotlinesTitle: "Linhas de ajuda e suporte",
-    listView: "Visualização de lista",
-    mapView: "Visualização de mapa",
-    loading: "Carregando...",
-    error: "Erro"
-  }
-};
-
-/* ---------- State ---------- */
-let currentLang = 'en';
+let dtesResources = [];          // populated by fetch
 let map = null;
 let markers = [];
-let resources = [];
-let userLoc = null;
+let userLat = null, userLng = null;
+let userLocationMarker = null;
 let routingControl = null;
-let lastOpenPopupText = '';
+let currentLanguage = 'en';
 
-/* ---------- Utils ---------- */
-const $ = id => document.getElementById(id);
-const safe = v => v === null || v === undefined ? '' : String(v);
-
-/* ---------- Error handling ---------- */
-function showError(message) {
-  const errorEl = $('errorMessage');
-  errorEl.textContent = message;
-  errorEl.classList.remove('hidden');
-  setTimeout(() => errorEl.classList.add('hidden'), 5000);
-}
-
-/* ---------- Load JSON resources ---------- */
-async function loadResources(){
-  try {
-    showLoading(true);
-    const resp = await fetch('dtes-resources.json', { cache: 'no-store' });
-    if(!resp.ok) throw new Error('Fetch failed ' + resp.status);
-    resources = await resp.json();
-  } catch (err) {
-    console.warn('Primary fetch failed, trying cache', err);
-    try {
-      const cached = await caches.match('/dtes-resources.json');
-      if(cached){
-        resources = JSON.parse(await cached.text());
-      } else {
-        throw new Error('No cached data available');
-      }
-    } catch (cacheErr) {
-      console.error('No data available', cacheErr);
-      showError('Failed to load resources. Please try again later.');
-      resources = [];
+/* UI text translations (comprehensive) */
+const uiText = {
+    en: { 
+        title: "Vancouver DTES Lifeline Map", 
+        subtitle: "Instant access to harm reduction, supervised consumption, food banks, shelters, detox centers, and urgent care services.", 
+        searchPlaceholder: "Search by name, type, or service", 
+        locate: "Find My Location", 
+        naloxone: "Naloxone Guide", 
+        report: "Report Issue", 
+        emergency: "Emergency 911", 
+        filterLabel: "Filter by Category:", 
+        searchLabel: "Search Resources:", 
+        alert: "Important: Service hours may change. Always call ahead.", 
+        resourceCountSuffix: "verified locations", 
+        locating: "Locating...", 
+        locationFound: "Location found!", 
+        enableLocationFirst: "Enable your location first", 
+        directionsTo: "Directions to", 
+        followRedLine: "Follow the red line on map",
+        hotlinesTitle: "24/7 Crisis Support Hotlines",
+        footerText: "Made with ❤️ for the DTES community — call first to confirm hours and availability.",
+        a11yTitle: "Accessibility",
+        a11yDesc: "Plain language & screen reader tips available",
+        contrastBtnText: "High contrast",
+        allBtnText: "All",
+        naloxoneBtnText: "Naloxone",
+        sitesBtnText: "Sites",
+        detoxBtnText: "Detox",
+        foodBtnText: "Food",
+        shelterBtnText: "Shelter",
+        urgentBtnText: "Urgent",
+        washroomsBtnText: "Washrooms",
+        mentalBtnText: "Mental"
+    },
+    zh: { 
+        title:"温哥华 DTES 资源地图", 
+        subtitle:"即时访问减害、注射站、食物银行、收容所、戒毒中心和急诊服务。", 
+        searchPlaceholder:"按名称、类型或服务搜索", 
+        locate:"查找我的位置", 
+        naloxone:"纳洛酮 指导", 
+        report:"报告问题", 
+        emergency:"紧急 911", 
+        filterLabel:"按类别筛选:", 
+        searchLabel:"搜索资源:", 
+        alert:"重要：服务时间可能会更改。请先致电确认。", 
+        resourceCountSuffix:"已验证地点", 
+        locating:"正在定位...", 
+        locationFound:"找到位置!", 
+        enableLocationFirst:"请先启用位置", 
+        directionsTo:"前往", 
+        followRedLine:"按照地图上的红线",
+        hotlinesTitle:"24/7 危机支持热线",
+        footerText:"为 DTES 社区用 ❤️ 制作 — 请先致电确认时间和可用性。",
+        a11yTitle:"无障碍",
+        a11yDesc:"提供简单语言和屏幕阅读器提示",
+        contrastBtnText:"高对比度",
+        allBtnText: "全部",
+        naloxoneBtnText: "纳洛酮",
+        sitesBtnText: "站点",
+        detoxBtnText: "戒毒",
+        foodBtnText: "食物",
+        shelterBtnText: "收容所",
+        urgentBtnText: "紧急",
+        washroomsBtnText: "洗手间",
+        mentalBtnText: "心理健康"
+    },
+    es: { 
+        title:"Mapa de Recursos DTES Vancouver", 
+        subtitle:"Acceso instantáneo a reducción de daños, sitios de consumo supervisado, bancos de alimentos, refugios, centros de desintoxicación y atención urgente.", 
+        searchPlaceholder:"Buscar por nombre, tipo o servicio", 
+        locate:"Mi ubicación", 
+        naloxone:"Guía Naloxona", 
+        report:"Reportar problema", 
+        emergency:"Emergencia 911", 
+        filterLabel:"Filtrar por categoría:", 
+        searchLabel:"Buscar recursos:", 
+        alert:"Importante: Los horarios pueden cambiar. Llame antes.", 
+        resourceCountSuffix:"ubicaciones verificadas", 
+        locating:"Localizando...", 
+        locationFound:"¡Ubicación encontrada!", 
+        enableLocationFirst:"Active su ubicación primero", 
+        directionsTo:"Direcciones a", 
+        followRedLine:"Siga la línea roja",
+        hotlinesTitle:"Líneas de Apoyo de Crisis 24/7",
+        footerText:"Hecho con ❤️ para la comunidad DTES — llame primero para confirmar horarios y disponibilidad.",
+        a11yTitle:"Accesibilidad",
+        a11yDesc:"Disponibles consejos de lenguaje sencillo y lector de pantalla",
+        contrastBtnText:"Alto contraste",
+        allBtnText: "Todos",
+        naloxoneBtnText: "Naloxona",
+        sitesBtnText: "Sitios",
+        detoxBtnText: "Desintoxicación",
+        foodBtnText: "Alimentos",
+        shelterBtnText: "Refugio",
+        urgentBtnText: "Urgente",
+        washroomsBtnText: "Baños",
+        mentalBtnText: "Salud mental"
+    },
+    fr: { 
+        title:"Carte des Ressources DTES Vancouver", 
+        subtitle:"Accès instantané à la réduction des méfaits, aux sites de consommation supervisée, aux banques alimentaires, aux refuges, aux centres de désintoxication et aux soins d'urgence.", 
+        searchPlaceholder:"Rechercher par nom, type ou service", 
+        locate:"Ma position", 
+        naloxone:"Guide Naloxone", 
+        report:"Signaler un problème", 
+        emergency:"Urgence 911", 
+        filterLabel:"Filtrer par catégorie:", 
+        searchLabel:"Rechercher des ressources:", 
+        alert:"Important: Les heures de service peuvent changer. Appelez d'abord.", 
+        resourceCountSuffix:"emplacements vérifiés", 
+        locating:"Localisation...", 
+        locationFound:"Position trouvée!", 
+        enableLocationFirst:"Activez d'abord votre localisation", 
+        directionsTo:"Itinéraire vers", 
+        followRedLine:"Suivez la ligne rouge sur la carte",
+        hotlinesTitle:"Lignes d'Assistance de Crise 24/7",
+        footerText:"Fait avec ❤️ pour la communauté DTES — appelez d'abord pour confirmer les heures et la disponibilité.",
+        a11yTitle:"Accessibilité",
+        a11yDesc:"Conseils de langage simple et lecteur d'écran disponibles",
+        contrastBtnText:"Contraste élevé",
+        allBtnText: "Tous",
+        naloxoneBtnText: "Naloxone",
+        sitesBtnText: "Sites",
+        detoxBtnText: "Désintoxication",
+        foodBtnText: "Nourriture",
+        shelterBtnText: "Refuge",
+        urgentBtnText: "Urgence",
+        washroomsBtnText: "Toilettes",
+        mentalBtnText: "Santé mentale"
+    },
+    bn: { 
+        title:"ভ্যাঙ্কুভার DTES রিসোর্স মানচিত্র", 
+        subtitle:"ক্ষতি হ্রাস, তত্ত্বাবধানে সেবন, খাদ্য ব্যাংক, আশ্রয়কেন্দ্র, ডিটক্স সেন্টার এবং জরুরি যত্নে তাত্ক্ষণিক প্রবেশাধিকার।", 
+        searchPlaceholder:"নাম, ধরন বা পরিষেবা অনুসারে অনুসন্ধান করুন", 
+        locate:"আমার অবস্থান", 
+        naloxone:"নালোক্সোন গাইড", 
+        report:"সমস্যা রিপোর্ট করুন", 
+        emergency:"জরুরি 911", 
+        filterLabel:"বিভাগ অনুযায়ী ফিল্টার করুন:", 
+        searchLabel:"সম্পদ অনুসন্ধান করুন:", 
+        alert:"গুরুত্বপূর্ণ: পরিষেবার সময় পরিবর্তিত হতে পারে। আগে ফোন করুন।", 
+        resourceCountSuffix:"যাচাইকৃত স্থান", 
+        locating:"অবস্থান নির্ণয় করা হচ্ছে...", 
+        locationFound:"অবস্থান পাওয়া গেছে!", 
+        enableLocationFirst:"প্রথমে আপনার অবস্থান সক্ষম করুন", 
+        directionsTo:"এর দিকনির্দেশ", 
+        followRedLine:"মানচিত্রে লাল লাইন অনুসরণ করুন",
+        hotlinesTitle:"২৪/৭ সংকট সহায়তা হটলাইন",
+        footerText:"DTES সম্প্রদায়ের জন্য ❤️ দিয়ে তৈরি — সময় এবং প্রাপ্যতা নিশ্চিত করতে প্রথমে কল করুন।",
+        a11yTitle:"অ্যাক্সেসিবিলিটি",
+        a11yDesc:"সরল ভাষা এবং স্ক্রিন রিডার টিপস উপলব্ধ",
+        contrastBtnText:"উচ্চ কন্ট্রাস্ট",
+        allBtnText: "সব",
+        naloxoneBtnText: "নালোক্সোন",
+        sitesBtnText: "সাইট",
+        detoxBtnText: "ডিটক্স",
+        foodBtnText: "খাদ্য",
+        shelterBtnText: "আশ্রয়",
+        urgentBtnText: "জরুরি",
+        washroomsBtnText: "শৌচাগার",
+        mentalBtnText: "মানসিক স্বাস্থ্য"
+    },
+    tl: { 
+        title:"Vancouver DTES Resource Map", 
+        subtitle:"Mabilis na pag-access sa harm reduction, supervised consumption, food banks, shelters, detox centers, at urgent care services.", 
+        searchPlaceholder:"Maghanap ayon sa pangalan, uri, o serbisyo", 
+        locate:"Aking Lokasyon", 
+        naloxone:"Gabay sa Naloxone", 
+        report:"Iulat ang Isyu", 
+        emergency:"Emergency 911", 
+        filterLabel:"Filter ayon sa Kategorya:", 
+        searchLabel:"Hanapin ang mga Resource:", 
+        alert:"Mahalaga: Maaaring magbago ang oras ng serbisyo. Tumawag muna.", 
+        resourceCountSuffix:"mga verified na lokasyon", 
+        locating:"Naghahanap ng lokasyon...", 
+        locationFound:"Nahanap ang lokasyon!", 
+        enableLocationFirst:"I-enable muna ang iyong lokasyon", 
+        directionsTo:"Mga Direksyon patungo sa", 
+        followRedLine:"Sundan ang pulang linya sa mapa",
+        hotlinesTitle:"24/7 Crisis Support Hotlines",
+        footerText:"Gawa with ❤️ para sa DTES community — tumawag muna upang kumpirmahin ang oras at availability.",
+        a11yTitle:"Accessibility",
+        a11yDesc:"Available ang plain language at screen reader tips",
+        contrastBtnText:"High contrast",
+        allBtnText: "Lahat",
+        naloxoneBtnText: "Naloxone",
+        sitesBtnText: "Mga Site",
+        detoxBtnText: "Detox",
+        foodBtnText: "Pagkain",
+        shelterBtnText: "Kanlungan",
+        urgentBtnText: "Urgent",
+        washroomsBtnText: "Comfort room",
+        mentalBtnText: "Mental health"
+    },
+    ar: { 
+        title:"خريطة موارد DTES فانكوفر", 
+        subtitle:"وصول فوري إلى تقليل الأضرار، أماكن الاستهلاك الخاضعة للإشراف، بنوك الطعام، الملاجئ، مراكز إزالة السموم، وخدمات الرعاية العاجلة.", 
+        searchPlaceholder:"البحث بالاسم أو النوع أو الخدمة", 
+        locate:"موقعي", 
+        naloxone:"دليل النالوكسون", 
+        report:"الإبلاغ عن مشكلة", 
+        emergency:"طوارئ 911", 
+        filterLabel:"تصفية حسب الفئة:", 
+        searchLabel:"البحث عن الموارد:", 
+        alert:"مهم: قد تتغير ساعات الخدمة. اتصل أولاً.", 
+        resourceCountSuffix:"مواقع موثوقة", 
+        locating:"جاري تحديد الموقع...", 
+        locationFound:"تم العثور على الموقع!", 
+        enableLocationFirst:"قم بتمكين موقعك أولاً", 
+        directionsTo:"الاتجاهات إلى", 
+        followRedLine:"اتبع الخط الأحمر على الخريطة",
+        hotlinesTitle:"خطوط دعم الأزمات على مدار الساعة",
+        footerText:"صُنع بـ ❤️ لمجتمع DTES — اتصل أولاً لتأكيد الساعات والتوفر.",
+        a11yTitle:"إمكانية الوصول",
+        a11yDesc:"متاحة نصائح اللغة البسيطة وقارئ الشاشة",
+        contrastBtnText:"تباين عالي",
+        allBtnText: "الكل",
+        naloxoneBtnText: "النالوكسون",
+        sitesBtnText: "المواقع",
+        detoxBtnText: "إزالة السموم",
+        foodBtnText: "الطعام",
+        shelterBtnText: "المأوى",
+        urgentBtnText: "طارئ",
+        washroomsBtnText: "دورات المياه",
+        mentalBtnText: "الصحة النفسية"
+    },
+    fa: { 
+        title:"نقشه منابع DTES ونکوور", 
+        subtitle:"دسترسی فوری به کاهش آسیب، مکان‌های مصرف تحت نظارت، بانک‌های غذا، پناهگاه‌ها، مراکز سم‌زدایی و خدمات درمانی فوری.", 
+        searchPlaceholder:"جستجو بر اساس نام، نوع یا خدمات", 
+        locate:"موقعیت من", 
+        naloxone:"راهنمای نالوکسون", 
+        report:"گزارش مشکل", 
+        emergency:"اورژانس 911", 
+        filterLabel:"فیلتر بر اساس دسته:", 
+        searchLabel:"جستجوی منابع:", 
+        alert:"مهم: ساعات خدمات ممکن است تغییر کنند. ابتدا تماس بگیرید.", 
+        resourceCountSuffix:"مکان‌های تأیید شده", 
+        locating:"در حال پیدا کردن موقعیت...", 
+        locationFound:"موقعیت پیدا شد!", 
+        enableLocationFirst:"ابتدا موقعیت خود را فعال کنید", 
+        directionsTo:"مسیرها به", 
+        followRedLine:"خط قرمز را روی نقشه دنبال کنید",
+        hotlinesTitle:"خطوط پشتیبانی بحران ۲۴/۷",
+        footerText:"با ❤️ برای جامعه DTES ساخته شده است - ابتدا برای تأیید ساعات و در دسترس بودن تماس بگیرید.",
+        a11yTitle:"دسترسی‌پذیری",
+        a11yDesc:"نکات زبان ساده و صفحه‌خوان در دسترس هستند",
+        contrastBtnText:"کنتراست بالا",
+        allBtnText: "همه",
+        naloxoneBtnText: "نالوکسون",
+        sitesBtnText: "مکان‌ها",
+        detoxBtnText: "سم‌زدایی",
+        foodBtnText: "غذا",
+        shelterBtnText: "پناهگاه",
+        urgentBtnText: "فوری",
+        washroomsBtnText: "دستشویی‌ها",
+        mentalBtnText: "سلامت روان"
+    },
+    hi: { 
+        title:"वैंकूवर DTES संसाधन मानचित्र", 
+        subtitle:"हानि कमी, पर्यवेक्षित उपभोग, खाद्य बैंक, आश्रय केंद्र, डिटॉक्स केंद्र और तत्काल देखभाल सेवाओं तक तत्काल पहुंच।", 
+        searchPlaceholder:"नाम, प्रकार या सेवा द्वारा खोजें", 
+        locate:"मेरा स्थान", 
+        naloxone:"नैलोक्सोन गाइड", 
+        report:"समस्या रिपोर्ट करें", 
+        emergency:"आपातकालीन 911", 
+        filterLabel:"श्रेणी के अनुसार फ़िल्टर करें:", 
+        searchLabel:"संसाधन खोजें:", 
+        alert:"महत्वपूर्ण: सेवा के घंटे बदल सकते हैं। पहले कॉल करें।", 
+        resourceCountSuffix:"सत्यापित स्थान", 
+        locating:"स्थान खोज रहे हैं...", 
+        locationFound:"स्थान मिल गया!", 
+        enableLocationFirst:"पहले अपना स्थान सक्षम करें", 
+        directionsTo:"के लिए दिशाएं", 
+        followRedLine:"नक्शे पर लाल रेखा का पालन करें",
+        hotlinesTitle:"24/7 संकट समर्थन हॉटलाइन",
+        footerText:"DTES समुदाय के लिए ❤️ से बनाया गया — घंटे और उपलब्धता की पुष्टि के लिए पहले कॉल करें।",
+        a11yTitle:"पहुंच",
+        a11yDesc:"सरल भाषा और स्क्रीन रीडर टिप्स उपलब्ध हैं",
+        contrastBtnText:"उच्च कंट्रास्ट",
+        allBtnText: "सभी",
+        naloxoneBtnText: "नैलोक्सोन",
+        sitesBtnText: "साइटें",
+        detoxBtnText: "डिटॉक्स",
+        foodBtnText: "भोजन",
+        shelterBtnText: "आश्रय",
+        urgentBtnText: "तत्काल",
+        washroomsBtnText: "शौचालय",
+        mentalBtnText: "मानसिक स्वास्थ्य"
+    },
+    ur: { 
+        title:"وینکوور DTES وسائل کا نقشہ", 
+        subtitle:"نقصان میں کمی، نگرانی کے ساتھ استعمال، فوڈ بینکس، پناہ گاہیں، ڈیٹاکس سینٹرز اور فوری دیکھ بھال خدمات تک فوری رسائی۔", 
+        searchPlaceholder:"نام، قسم یا سروس کے ذریعے تلاش کریں", 
+        locate:"میرا مقام", 
+        naloxone:"نالوکسون گائیڈ", 
+        report:"مسئلہ رپورٹ کریں", 
+        emergency:"ایمرجنسی 911", 
+        filterLabel:"قسم کے مطابق فلٹر کریں:", 
+        searchLabel:"وسائل تلاش کریں:", 
+        alert:"اہم: سروس کے گھنٹے تبدیل ہو سکتے ہیں۔ پہلے کال کریں۔", 
+        resourceCountSuffix:"تصدیق شدہ مقامات", 
+        locating:"مقام تلاش ہو رہا ہے...", 
+        locationFound:"مقام مل گیا!", 
+        enableLocationFirst:"پہلے اپنا مقام فعال کریں", 
+        directionsTo:"کی سمت", 
+        followRedLine:"نقشے پر لال لائن کی پیروی کریں",
+        hotlinesTitle:"24/7 بحران سپورٹ ہاٹ لائنز",
+        footerText:"DTES کمیونٹی کے لیے ❤️ سے بنایا گیا — گھنٹوں اور دستیابی کی تصدیق کے لیے پہلے کال کریں۔",
+        a11yTitle:"رسائی",
+        a11yDesc:"سادہ زبان اور اسکرین ریڈر ٹپس دستیاب ہیں",
+        contrastBtnText:"ہائی کنٹراسٹ",
+        allBtnText: "سب",
+        naloxoneBtnText: "نالوکسون",
+        sitesBtnText: "سائٹس",
+        detoxBtnText: "ڈیٹاکس",
+        foodBtnText: "کھانا",
+        shelterBtnText: "پناہ گاہ",
+        urgentBtnText:"فوری",
+        washroomsBtnText: "باتھ روم",
+        mentalBtnText: "دستاویزی صحت"
+    },
+    pa: { 
+        title:"ਵੈਂਕੂਵਰ DTES ਸਰੋਤ ਨਕਸ਼ਾ", 
+        subtitle:"ਨੁਕਸਾਨ ਵਿੱਚ ਕਮੀ, ਨਿਗਰਾਨੀ ਹੇਠ ਵਰਤੋਂ, ਫੂਡ ਬੈਂਕ, ਸ਼ੈਲਟਰ, ਡੀਟਾਕਸ ਸੈਂਟਰ ਅਤੇ ਤਤਕਾਲ ਦੇਖਭਾਲ ਸੇਵਾਵਾਂ ਤੱਕ ਤੁਰੰਤ ਪਹੁੰਚ।", 
+        searchPlaceholder:"ਨਾਮ, ਕਿਸਮ ਜਾਂ ਸੇਵਾ ਦੁਆਰਾ ਖੋਜੋ", 
+        locate:"ਮੇਰਾ ਟਿਕਾਣਾ", 
+        naloxone:"ਨਾਲੋਕਸੋਨ ਗਾਈਡ", 
+        report:"ਮੁੱਦਾ ਰਿਪੋਰਟ ਕਰੋ", 
+        emergency:"ਐਮਰਜੈਂਸੀ 911", 
+        filterLabel:"ਸ਼੍ਰੇਣੀ ਅਨੁਸਾਰ ਫਿਲਟਰ ਕਰੋ:", 
+        searchLabel:"ਸਰੋਤ ਖੋਜੋ:", 
+        alert:"ਮਹੱਤਵਪੂਰਨ: ਸੇਵਾ ਦੇ ਘੰਟੇ ਬਦਲ ਸਕਦੇ ਹਨ। ਪਹਿਲਾਂ ਕਾਲ ਕਰੋ।", 
+        resourceCountSuffix:"ਤਸਦੀਕ ਕੀਤੇ ਸਥਾਨ", 
+        locating:"ਟਿਕਾਣਾ ਲੱਭ ਰਿਹਾ ਹੈ...", 
+        locationFound:"ਟਿਕਾਣਾ ਮਿਲ ਗਿਆ!", 
+        enableLocationFirst:"ਪਹਿਲਾਂ ਆਪਣਾ ਟਿਕਾਣਾ ਯੋਗ ਕਰੋ", 
+        directionsTo:"ਵੱਲ ਦਿਸ਼ਾਵਾਂ", 
+        followRedLine:"ਨਕਸ਼ੇ 'ਤੇ ਲਾਲ ਲਾਈਨ ਦੀ ਪਾਲਣਾ ਕਰੋ",
+        hotlinesTitle:"24/7 ਸੰਕਟ ਸਹਾਇਤਾ ਹਾਟਲਾਈਨਾਂ",
+        footerText:"DTES ਭਾਈਚਾਰੇ ਲਈ ❤️ ਨਾਲ ਬਣਾਇਆ ਗਿਆ — ਘੰਟਿਆਂ ਅਤੇ ਉਪਲਬਧਤਾ ਦੀ ਪੁਸ਼ਟੀ ਲਈ ਪਹਿਲਾਂ ਕਾਲ ਕਰੋ।",
+        a11yTitle:"ਪਹੁੰਚ",
+        a11yDesc:"ਸਧਾਰਨ ਭਾਸ਼ਾ ਅਤੇ ਸਕ੍ਰੀਨ ਰੀਡਰ ਸੁਝਾਅ ਉਪਲਬਧ ਹਨ",
+        contrastBtnText:"ਉੱਚ ਕੰਟਰਾਸਟ",
+        allBtnText: "ਸਭ",
+        naloxoneBtnText: "ਨਾਲੋਕਸੋਨ",
+        sitesBtnText: "ਸਾਈਟਾਂ",
+        detoxBtnText: "ਡੀਟਾਕਸ",
+        foodBtnText: "ਭੋਜਨ",
+        shelterBtnText: "ਸ਼ੈਲਟਰ",
+        urgentBtnText: "ਤਤਕਾਲ",
+        washroomsBtnText: "ਵਾਸ਼ਰੂਮ",
+        mentalBtnText: "ਮਾਨਸਿਕ ਸਿਹਤ"
+    },
+    nl: { 
+        title:"Vancouver DTES Bronnenkaart", 
+        subtitle:"Directe toegang tot schadevermindering, begeleid gebruik, voedselbanken, opvang, detoxcentra en spoedeisende hulp.", 
+        searchPlaceholder:"Zoek op naam, type of dienst", 
+        locate:"Mijn locatie", 
+        naloxone:"Naloxon Gids", 
+        report:"Probleem rapporteren", 
+        emergency:"Nood 911", 
+        filterLabel:"Filter op categorie:", 
+        searchLabel:"Zoek bronnen:", 
+        alert:"Belangrijk: Servicetijden kunnen veranderen. Bel eerst.", 
+        resourceCountSuffix:"geverifieerde locaties", 
+        locating:"Locatie bepalen...", 
+        locationFound:"Locatie gevonden!", 
+        enableLocationFirst:"Activeer eerst uw locatie", 
+        directionsTo:"Route naar", 
+        followRedLine:"Volg de rode lijn op de kaart",
+        hotlinesTitle:"24/7 Crisis Ondersteuning Hotlines",
+        footerText:"Gemaakt met ❤️ voor de DTES gemeenschap — bel eerst om uren en beschikbaarheid te bevestigen.",
+        a11yTitle:"Toegankelijkheid",
+        a11yDesc:"Eenvoudige taal en screenreader tips beschikbaar",
+        contrastBtnText:"Hoog contrast",
+        allBtnText: "Alle",
+        naloxoneBtnText: "Naloxon",
+        sitesBtnText: "Locaties",
+        detoxBtnText: "Detox",
+        foodBtnText: "Voedsel",
+        shelterBtnText: "Opvang",
+        urgentBtnText: "Urgent",
+        washroomsBtnText: "Toiletten",
+        mentalBtnText: "Geestelijke gezondheid"
+    },
+    it: { 
+        title:"Mappa delle Risorse DTES Vancouver", 
+        subtitle:"Accesso immediato a riduzione del danno, consumo supervisionato, banche alimentari, rifugi, centri di disintossicazione e cure urgenti.", 
+        searchPlaceholder:"Cerca per nome, tipo o servizio", 
+        locate:"La mia posizione", 
+        naloxone:"Guida Naloxone", 
+        report:"Segnala problema", 
+        emergency:"Emergenza 911", 
+        filterLabel:"Filtra per categoria:", 
+        searchLabel:"Cerca risorse:", 
+        alert:"Importante: Gli orari di servizio possono cambiare. Chiama prima.", 
+        resourceCountSuffix:"località verificate", 
+        locating:"Localizzazione in corso...", 
+        locationFound:"Posizione trovata!", 
+        enableLocationFirst:"Abilita prima la tua posizione", 
+        directionsTo:"Indicazioni per", 
+        followRedLine:"Segui la linea rossa sulla mappa",
+        hotlinesTitle:"Linee di Supporto di Crisi 24/7",
+        footerText:"Fatto con ❤️ per la comunità DTES — chiama prima per confermare orari e disponibilità.",
+        a11yTitle:"Accessibilità",
+        a11yDesc:"Disponibili suggerimenti per linguaggio semplice e screen reader",
+        contrastBtnText:"Alto contrasto",
+        allBtnText: "Tutti",
+        naloxoneBtnText: "Naloxone",
+        sitesBtnText: "Siti",
+        detoxBtnText: "Disintossicazione",
+        foodBtnText: "Cibo",
+        shelterBtnText: "Rifugio",
+        urgentBtnText: "Urgente",
+        washroomsBtnText: "Bagni",
+        mentalBtnText: "Salute mentale"
+    },
+    sv: { 
+        title:"Vancouver DTES Resurskarta", 
+        subtitle:"Omedelbar tillgång till skademinskning, övervakad konsumtion, matbanker, skydd, detoxcenter och akutvård.", 
+        searchPlaceholder:"Sök efter namn, typ eller tjänst", 
+        locate:"Min position", 
+        naloxone:"Naloxon Guide", 
+        report:"Rapportera problem", 
+        emergency:"Nödsituation 911", 
+        filterLabel:"Filtrera efter kategori:", 
+        searchLabel:"Sök resurser:", 
+        alert:"Viktigt: Service-öppettider kan ändras. Ring först.", 
+        resourceCountSuffix:"verifierade platser", 
+        locating:"Hittar position...", 
+        locationFound:"Position hittad!", 
+        enableLocationFirst:"Aktivera din position först", 
+        directionsTo:"Vägbeskrivning till", 
+        followRedLine:"Följ den röda linjen på kartan",
+        hotlinesTitle:"24/7 Krisstöd Hotlines",
+        footerText:"Gjord med ❤️ för DTES-gemenskapen — ring först för att bekräfta tider och tillgänglighet.",
+        a11yTitle:"Tillgänglighet",
+        a11yDesc:"Enkelt språk och skärmläsartips tillgängliga",
+        contrastBtnText:"Hög kontrast",
+        allBtnText: "Alla",
+        naloxoneBtnText: "Naloxon",
+        sitesBtnText: "Platser",
+        detoxBtnText: "Detox",
+        foodBtnText: "Mat",
+        shelterBtnText: "Skydd",
+        urgentBtnText: "Akut",
+        washroomsBtnText: "Toaletter",
+        mentalBtnText: "Mental hälsa"
+    },
+    de: { 
+        title:"Vancouver DTES Ressourcenkarte", 
+        subtitle:"Sofortiger Zugang zu Schadensminderung, überwachtem Konsum, Lebensmittelbanken, Unterkünften, Entgiftungszentren und Notfallversorgung.", 
+        searchPlaceholder:"Nach Name, Typ oder Dienst suchen", 
+        locate:"Mein Standort", 
+        naloxone:"Naloxon Leitfaden", 
+        report:"Problem melden", 
+        emergency:"Notfall 911", 
+        filterLabel:"Nach Kategorie filtern:", 
+        searchLabel:"Ressourcen suchen:", 
+        alert:"Wichtig: Servicezeiten können sich ändern. Rufen Sie zuerst an.", 
+        resourceCountSuffix:"verifizierte Standorte", 
+        locating:"Standort wird ermittelt...", 
+        locationFound:"Standort gefunden!", 
+        enableLocationFirst:"Aktivieren Sie zuerst Ihren Standort", 
+        directionsTo:"Wegbeschreibung zu", 
+        followRedLine:"Folgen Sie der roten Linie auf der Karte",
+        hotlinesTitle:"24/7 Krisenunterstützung Hotlines",
+        footerText:"Mit ❤️ für die DTES-Gemeinschaft gemacht — rufen Sie zuerst an, um Zeiten und Verfügbarkeit zu bestätigen.",
+        a11yTitle:"Barrierefreiheit",
+        a11yDesc:"Einfache Sprache und Screenreader-Tipps verfügbar",
+        contrastBtnText:"Hoher Kontrast",
+        allBtnText: "Alle",
+        naloxoneBtnText: "Naloxon",
+        sitesBtnText: "Standorte",
+        detoxBtnText: "Entgiftung",
+        foodBtnText: "Lebensmittel",
+        shelterBtnText: "Unterkunft",
+        urgentBtnText: "Dringend",
+        washroomsBtnText: "Toiletten",
+        mentalBtnText: "Psychische Gesundheit"
+    },
+    pt: { 
+        title:"Mapa de Recursos DTES Vancouver", 
+        subtitle:"Acesso instantâneo a redução de danos, consumo supervisionado, bancos de alimentos, abrigos, centros de desintoxicação e cuidados urgentes.", 
+        searchPlaceholder:"Pesquisar por nome, tipo ou serviço", 
+        locate:"Minha localização", 
+        naloxone:"Guia de Naloxona", 
+        report:"Relatar problema", 
+        emergency:"Emergência 911", 
+        filterLabel:"Filtrar por categoria:", 
+        searchLabel:"Pesquisar recursos:", 
+        alert:"Importante: Os horários de serviço podem mudar. Ligue primeiro.", 
+        resourceCountSuffix:"locais verificados", 
+        locating:"Localizando...", 
+        locationFound:"Localização encontrada!", 
+        enableLocationFirst:"Ative sua localização primeiro", 
+        directionsTo:"Direções para", 
+        followRedLine:"Siga a linha vermelha no mapa",
+        hotlinesTitle:"Linhas de Apoio de Crise 24/7",
+        footerText:"Feito com ❤️ para a comunidade DTES — ligue primeiro para confirmar horários e disponibilidade.",
+        a11yTitle:"Acessibilidade",
+        a11yDesc:"Dicas de linguagem simples e leitor de tela disponíveis",
+        contrastBtnText:"Alto contraste",
+        allBtnText: "Todos",
+        naloxoneBtnText: "Naloxona",
+        sitesBtnText: "Locais",
+        detoxBtnText: "Desintoxicação",
+        foodBtnText: "Alimento",
+        shelterBtnText: "Abrigo",
+        urgentBtnText: "Urgente",
+        washroomsBtnText: "Banheiros",
+        mentalBtnText: "Saúde mental"
     }
-  } finally {
-    showLoading(false);
-    renderHotlines();
-    renderList();
-    addMarkersFromResources();
-    updateStatusLine();
-  }
-}
-
-function showLoading(show) {
-  const loadingEl = $('mapLoading');
-  if (loadingEl) {
-    loadingEl.style.display = show ? 'block' : 'none';
-  }
-}
-
-/* ---------- Map init ---------- */
-function initMap(){
-  if(map) return;
-  try {
-    map = L.map('map').setView([49.2819, -123.1000], 14);
-    const tileLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'© OpenStreetMap', maxZoom:19 });
-    tileLayer.addTo(map);
-    tileLayer.on('tileerror', () => showOfflineFallback());
-  } catch (err) {
-    console.error('Failed to initialize map', err);
-    showError('Failed to load map. Please check your internet connection.');
-    showOfflineFallback();
-  }
-}
-
-/* ---------- Add markers ---------- */
-function addMarkersFromResources(){
-  if(!map) initMap();
-  // remove previous markers
-  markers.forEach(m => map.removeLayer(m));
-  markers = [];
-  resources.forEach(r => {
-    if(typeof r.lat === 'number' && typeof r.lng === 'number'){
-      const colorMap = {'Food':'#9333EA','Shelter':'#b45309','Detox':'#F97316','Naloxone':'#3B82F6','Hotline':'#6B7280','Washrooms':'#14B8A6','Mental Health':'#EC4899','Injection Site':'#10B981','Clothing':'#0ea5a4'};
-      const color = colorMap[r.type] || '#6B7280';
-      const icon = L.divIcon({ html:`<div style="background:${color};width:28px;height:28px;border-radius:50%;border:3px solid white"></div>`, className:'', iconSize:[28,28], iconAnchor:[14,14] });
-      const m = L.marker([r.lat, r.lng], { icon }).addTo(map);
-      m.resource = r;
-      m.bindPopup(createPopup(r), { maxWidth:340 });
-      m.on('popupopen', () => { lastOpenPopupText = stripHtml(createPopup(r)); });
-      markers.push(m);
-    }
-  });
-}
-
-/* ---------- Popup HTML ---------- */
-function createPopup(r){
-  const t = translations[currentLang] ? translations[currentLang].popup : translations.en.popup;
-  const phone = r.phone ? `<a href="tel:${safe(r.phone)}">${safe(r.phone)}</a>` : 'N/A';
-  const addr = safe(r.address||'');
-  return `
-    <div style="font-family:inherit;">
-      <h3 style="margin:0 0 6px 0;font-weight:800">${safe(r.name)}</h3>
-      <div style="font-size:13px;margin-bottom:6px;"><strong>${t.type}:</strong> ${safe(r.type)}</div>
-      <div style="font-size:13px;margin-bottom:6px;"><strong>${t.hours}:</strong> ${safe(r.hours||'N/A')}</div>
-      <div style="font-size:13px;margin-bottom:8px;"><strong>${t.call}:</strong> ${phone}</div>
-      <div style="color:var(--muted);font-size:13px;margin-bottom:8px;">${addr}</div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap;">
-        <button onclick="getDirections(${r.lat}, ${r.lng}, '${escapeForJS(r.name)}')" class="popup-btn" style="background:#ef4444;color:#fff;"><i class="fas fa-directions"></i>&nbsp; ${t.getDirections}</button>
-        <button onclick="openInMaps(${r.lat}, ${r.lng}, '${escapeForJS(r.name)}')" class="popup-btn" style="background:#2563EB;color:#fff;"><i class="fas fa-external-link-alt"></i>&nbsp; ${t.openInMaps}</button>
-        <button onclick="showQR(${r.lat}, ${r.lng}, '${escapeForJS(r.name)}')" class="popup-btn" style="background:#10B981;color:#fff;"><i class="fas fa-qrcode"></i>&nbsp; ${t.showQRCode}</button>
-      </div>
-    </div>
-  `;
-}
-
-/* ---------- Helpers ---------- */
-function escapeForJS(s){ return String(s).replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
-function stripHtml(html){ 
-  const div = document.createElement('div');
-  div.innerHTML = html;
-  return div.textContent || div.innerText || ''; 
-}
-
-/* ---------- Directions & External Maps ---------- */
-function getDirections(lat,lng,name){
-  if(!userLoc) { 
-    alert(translations[currentLang].enableLocationFirst || translations.en.enableLocationFirst); 
-    return; 
-  }
-  try {
-    if(routingControl) routingControl.remove();
-    routingControl = L.Routing.control({
-      waypoints: [L.latLng(userLoc.lat, userLoc.lng), L.latLng(lat,lng)],
-      lineOptions: { styles: [{ color: '#ef4444', weight: 5, opacity: .9 }]},
-      createMarker: () => null
-    }).addTo(map);
-    alert((translations[currentLang].directionsTo || translations.en.directionsTo) + ' ' + name);
-  } catch (err) {
-    console.error('Failed to get directions', err);
-    showError('Failed to calculate directions. Please try again.');
-  }
-}
-
-function openInMaps(lat,lng,name){
-  try {
-    const url = `https://maps.google.com/?q=${lat},${lng}(${encodeURIComponent(name)})`;
-    window.open(url, '_blank');
-  } catch (err) {
-    console.error('Failed to open maps', err);
-    showError('Failed to open external maps. Please try again.');
-  }
-}
-
-/* ---------- QR ---------- */
-function showQR(lat,lng,name){
-  try {
-    const url = `https://maps.google.com/?q=${lat},${lng}(${encodeURIComponent(name)})`;
-    document.getElementById('qrcode').innerHTML = '';
-    new QRCode(document.getElementById('qrcode'), { text: url, width:200, height:200 });
-    document.getElementById('qrName').textContent = name;
-    document.getElementById('qrModal').classList.remove('hidden');
-  } catch (err) {
-    console.error('Failed to generate QR code', err);
-    showError('Failed to generate QR code. Please try again.');
-  }
-}
-
-/* ---------- List view ---------- */
-function renderList(){
-  const list = document.getElementById('listView');
-  list.innerHTML = '';
-  resources.forEach(r => {
-    const d = document.createElement('div');
-    d.className = 'resource-card';
-    d.innerHTML = `<div style="font-weight:800">${safe(r.name)}</div>
-                   <div style="color:var(--muted);font-size:13px">${safe(r.type)} • ${safe(r.address||'')}</div>
-                   <div style="margin-top:6px;"><a href="tel:${safe(r.phone)}">${safe(r.phone||'')}</a></div>`;
-    list.appendChild(d);
-  });
-}
-
-/* ---------- Hotlines ---------- */
-function renderHotlines(){
-  const grid = document.getElementById('hotlinesGrid');
-  grid.innerHTML = '';
-  const hotlines = resources.filter(r => r.type && String(r.type).toLowerCase().includes('hotline'));
-  const arr = hotlines.length ? hotlines : [
-    { name:"BC Mental Health", phone:"310-6789", description:"Provincial mental health support" },
-    { name:"Suicide Crisis (9-8-8)", phone:"988", description:"24/7 support" },
-    { name:"Kids Help Phone", phone:"1-800-668-6868", description:"24/7 support for youth" }
-  ];
-  arr.forEach(h => {
-    const el = document.createElement('div');
-    el.innerHTML = `<div style="font-weight:800;color:#0ea5a4">${safe(h.name)}</div><div style="font-weight:800"><a href="tel:${safe(h.phone)}">${safe(h.phone)}</a></div><div style="font-size:12px;color:var(--muted)">${safe(h.description||'')}</div>`;
-    grid.appendChild(el);
-  });
-}
-
-/* ---------- Search & Filters ---------- */
-document.getElementById('searchBar').addEventListener('input', e => {
-  const q = e.target.value.toLowerCase().trim();
-  markers.forEach(m => {
-    const r = m.resource || {};
-    const hay = `${safe(r.name)} ${safe(r.type)} ${safe(r.address||'')} ${safe(r.description||'')} ${safe(r.phone||'')}`.toLowerCase();
-    if(q === '' || hay.includes(q)) m.addTo(map); else map.removeLayer(m);
-  });
-});
-
-document.querySelectorAll('.filter-button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const filter = btn.dataset.filter;
-    markers.forEach(m => {
-      if(filter === 'all' || (m.resource && m.resource.type === filter)) m.addTo(map); else map.removeLayer(m);
-    });
-  });
-});
-
-/* ---------- Geolocation ---------- */
-document.getElementById('locateUserButton').addEventListener('click', () => {
-  if(!navigator.geolocation) {
-    showError('Geolocation is not supported by your browser');
-    return;
-  }
-  
-  navigator.geolocation.getCurrentPosition(pos => {
-    userLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-    if(window._you) map.removeLayer(window._you);
-    window._you = L.circleMarker([userLoc.lat, userLoc.lng], { radius:8, color:'#2563EB', fillColor:'#3B82F6', fillOpacity:1 }).addTo(map).bindPopup(translations[currentLang].locationFound || translations.en.locationFound);
-    map.setView([userLoc.lat, userLoc.lng], 15);
-  }, err => { 
-    console.error('Geolocation error', err);
-    showError('Unable to get location: ' + err.message); 
-  });
-});
-
-/* ---------- QR modal close ---------- */
-document.getElementById('closeQr').addEventListener('click', ()=> document.getElementById('qrModal').classList.add('hidden'));
-window.addEventListener('click', e => { if(e.target === document.getElementById('qrModal')) document.getElementById('qrModal').classList.add('hidden'); });
-
-/* ---------- Accessibility controls ---------- */
-document.getElementById('contrastToggle').addEventListener('click', () => {
-  document.body.classList.toggle('high-contrast');
-});
-document.getElementById('fontInc').addEventListener('click', () => {
-  const root = document.documentElement;
-  const size = parseFloat(getComputedStyle(root).fontSize || 16);
-  root.style.fontSize = (size + 1) + 'px';
-});
-document.getElementById('fontDec').addEventListener('click', () => {
-  const root = document.documentElement;
-  const size = parseFloat(getComputedStyle(root).fontSize || 16);
-  root.style.fontSize = Math.max(12, size - 1) + 'px';
-});
-document.getElementById('dyslexicToggle').addEventListener('click', () => {
-  document.body.classList.toggle('dyslexic-font');
-});
-document.getElementById('readPopupBtn').addEventListener('click', () => {
-  if(!lastOpenPopupText) { 
-    alert('Open a resource popup first'); 
-    return; 
-  }
-  speak(lastOpenPopupText);
-});
-document.getElementById('reducedMotionToggle').addEventListener('click', () => {
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    alert('Your system already requests reduced motion.');
-  } else {
-    // best-effort: add class to reduce CSS transitions
-    document.body.classList.toggle('reduced-motion');
-  }
-});
-document.getElementById('minimizeAccess').addEventListener('click', () => {
-  const p = document.getElementById('accessibilityPanel');
-  p.classList.toggle('minimized');
-});
-
-/* ---------- Text-to-speech ---------- */
-function speak(text){
-  if(!('speechSynthesis' in window)) {
-    showError('Text-to-speech is not supported by your browser');
-    return;
-  }
-  const ut = new SpeechSynthesisUtterance(text);
-  const langMap = { ar: 'ar-SA', fa:'fa-IR', ur:'ur-PK', zh:'zh-CN', hi:'hi-IN', en:'en-US', fr:'fr-FR', es:'es-ES', bn:'bn-BD' };
-  ut.lang = langMap[currentLang] || currentLang || 'en-US';
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(ut);
-}
-
-/* ---------- Read open popup (dev helper) ---------- */
-window.readOpenPopup = () => { 
-  if(!lastOpenPopupText) alert('No open popup'); 
-  else speak(lastOpenPopupText); 
 };
 
-/* ---------- Offline fallback ---------- */
-function showOfflineFallback(){
-  // hide map, show list
-  document.getElementById('map').style.display = 'none';
-  document.getElementById('listView').style.display = 'block';
+/* popup label translations */
+const popText = {
+    en: { type: "Type", hours: "Hours", call: "Call", getDirections: "Get Directions", openInMaps: "Open in Maps", showQRCode: "Show QR" },
+    zh: { type: "类型", hours: "时间", call: "致电", getDirections: "获取路线", openInMaps: "在地图中打开", showQRCode: "显示二维码" },
+    es: { type: "Tipo", hours: "Horario", call: "Llamar", getDirections: "Direcciones", openInMaps: "Abrir en Mapas", showQRCode: "Código QR" },
+    fr: { type: "Type", hours: "Heures", call: "Appeler", getDirections: "Itinéraire", openInMaps: "Ouvrir Maps", showQRCode: "Code QR" },
+    bn: { type: "ধরন", hours: "ঘণ্টা", call: "কল", getDirections: "দিকনির্দেশ", openInMaps: "মানচিত্রে খুলুন", showQRCode: "QR কোড" },
+    tl: { type: "Uri", hours: "Oras", call: "Tawagan", getDirections: "Mga Direksyon", openInMaps: "Buksan sa Maps", showQRCode: "QR Code" },
+    ar: { type: "النوع", hours: "الساعات", call: "اتصل", getDirections: "الاتجاهات", openInMaps: "فتح الخرائط", showQRCode: "رمز QR" },
+    fa: { type: "نوع", hours: "ساعات", call: "تماس", getDirections: "مسیرها", openInMaps: "باز کردن نقشه", showQRCode: "کد QR" },
+    hi: { type: "प्रकार", hours: "घंटे", call: "कॉल करें", getDirections: "दिशाएं", openInMaps: "मैप्स में खोलें", showQRCode: "QR कोड" },
+    ur: { type: "قسم", hours: "گھنٹے", call: "کال کریں", getDirections: "سمتیں", openInMaps: "نقشے میں کھولیں", showQRCode: "QR کوڈ" },
+    pa: { type: "ਕਿਸਮ", hours: "ਘੰਟੇ", call: "ਕਾਲ ਕਰੋ", getDirections: "ਦਿਸ਼ਾਵਾਂ", openInMaps: "ਨਕਸ਼ਿਆਂ ਵਿੱਚ ਖੋਲ੍ਹੋ", showQRCode: "QR ਕੋਡ" },
+    nl: { type: "Type", hours: "Uren", call: "Bellen", getDirections: "Routebeschrijving", openInMaps: "Openen in Kaarten", showQRCode: "QR Code" },
+    it: { type: "Tipo", hours: "Orari", call: "Chiama", getDirections: "Indicazioni", openInMaps: "Apri in Mappe", showQRCode: "Codice QR" },
+    sv: { type: "Typ", hours: "Tider", call: "Ring", getDirections: "Vägbeskrivning", openInMaps: "Öppna i Kartor", showQRCode: "QR-kod" },
+    de: { type: "Typ", hours: "Öffnungszeiten", call: "Anrufen", getDirections: "Wegbeschreibung", openInMaps: "In Karten öffnen", showQRCode: "QR-Code" },
+    pt: { type: "Tipo", hours: "Horas", call: "Ligar", getDirections: "Direções", openInMaps: "Abrir no Mapas", showQRCode: "Código QR" }
+};
+
+/* SAFE helper */
+function safe(s){ return s === null || s === undefined ? '' : String(s); }
+
+/* -------------------------
+   Fetch external JSON and initialize
+   ------------------------- */
+async function loadResourcesJSON(url='dtes-resources.json'){
+    try{
+        const res = await fetch(url, { cache:'no-store' });
+        if(!res.ok) throw new Error('Failed to fetch ' + url + ' (' + res.status + ')');
+        const data = await res.json();
+        if(!Array.isArray(data)) throw new Error('JSON must be an array');
+        dtesResources = data;
+        // set hotlines area in footer
+        renderHotlines();
+        // update counts in UI and build checkboxes
+        document.getElementById('allCount').textContent = dtesResources.length;
+        buildCategoryCheckboxes();
+        // init map when Leaflet ready
+        waitForLeafletAndInit();
+    } catch(err){
+        console.error('loadResourcesJSON error', err);
+        // Try to load fallback data
+        loadFallbackData();
+        // still hide the loading overlay so user can see the page
+        hideLoadingOverlay();
+    }
 }
-document.getElementById('toggleListView').addEventListener('click', () => {
-  const lv = document.getElementById('listView');
-  if(lv.style.display === 'block') { 
-    lv.style.display = 'none'; 
-    document.getElementById('map').style.display = ''; 
-    document.getElementById('toggleListView').textContent = translations[currentLang].listView || translations.en.listView; 
-  }
-  else { 
-    lv.style.display = 'block'; 
-    document.getElementById('map').style.display = 'none'; 
-    document.getElementById('toggleListView').textContent = translations[currentLang].mapView || translations.en.mapView; 
-  }
+
+// Fallback data in case JSON fails to load
+function loadFallbackData() {
+    dtesResources = [
+        {
+            name: "Insite Supervised Consumption Site",
+            address: "139 E Hastings St, Vancouver, BC",
+            phone: "604-685-7677",
+            hours: "24/7",
+            type: "Injection Site",
+            lat: 49.2811,
+            lng: -123.0995,
+            description: "Supervised consumption and harm reduction services",
+            source: "VCH / Insite",
+            verified_at: "2025-11-18",
+            status: "open"
+        },
+        {
+            name: "Union Gospel Mission — The Cornerstone",
+            address: "601 E Hastings St, Vancouver, BC V6A 1J7",
+            phone: "604-253-3323",
+            hours: "Meals (varies)",
+            type: "Food",
+            lat: 49.2827,
+            lng: -123.1010,
+            source: "Union Gospel Mission",
+            verified_at: "2025-11-18",
+            status: "open"
+        },
+        {
+            name: "RainCity Housing (Triage Shelter)",
+            address: "707 Powell St, Vancouver, BC V6A 1H5",
+            phone: "604-254-3700",
+            hours: "Daily: 8am–7:30pm (limited availability)",
+            type: "Shelter",
+            lat: 49.2819,
+            lng: -123.1002,
+            source: "RainCity Housing",
+            verified_at: "2025-11-18",
+            status: "open"
+        },
+        {
+            name: "St. Paul's Hospital Emergency",
+            address: "1081 Burrard St, Vancouver, BC V6Z 1Y6",
+            phone: "604-682-2344",
+            hours: "24/7",
+            type: "Urgent",
+            lat: 49.2845,
+            lng: -123.1230,
+            source: "St. Paul's Hospital",
+            verified_at: "2025-11-18",
+            status: "open"
+        }
+    ];
+    
+    // Set hotlines area in footer
+    renderHotlines();
+    // Update counts in UI and build checkboxes
+    document.getElementById('allCount').textContent = dtesResources.length;
+    buildCategoryCheckboxes();
+    // Init map when Leaflet ready
+    waitForLeafletAndInit();
+}
+
+/* wait for L then call initMap (avoid race) */
+function waitForLeafletAndInit(){
+    const tries = 0;
+    (function poll(){
+        if(typeof L !== 'undefined' && document.getElementById('map')){
+            initMap();
+        } else {
+            setTimeout(poll, 100);
+        }
+    })();
+}
+
+/* -------------------------
+   Map init + mounting markers
+   ------------------------- */
+function initMap(){
+    // if already initialized, clear markers and re-add
+    if(!map){
+        map = L.map('map').setView([49.2819, -123.1000], 14);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '© OpenStreetMap', maxZoom:19 }).addTo(map);
+    } else {
+        // clear existing marker layers
+        markers.forEach(m => map.removeLayer(m));
+        markers = [];
+    }
+
+    // add markers from dtesResources (only if lat/lng provided)
+    dtesResources.forEach(r => {
+        if(typeof r.lat === 'number' && typeof r.lng === 'number'){
+            addMarker(r);
+        }
+    });
+
+    // update UI
+    updateResourceCount();
+    hideLoadingOverlay();
+    applyUiTranslations(); // update UI language strings
+}
+
+/* add single marker */
+function addMarker(r){
+    const colors = {'Naloxone':'#3B82F6','Injection Site':'#10B981','Detox':'#F97316','Food':'#9333EA','Shelter':'#b45309','Urgent':'#EF4444','Washrooms':'#14B8A6','Mental Health':'#EC4899','Hotline':'#6B7280'};
+    const color = colors[r.type] || '#6B7280';
+    const icon = L.divIcon({ className: 'custom-marker', html:`<div style="background-color:${color}; width:28px; height:28px; border-radius:50%; border:3px solid white; box-shadow:0 2px 8px rgba(0,0,0,.3)"></div>`, iconSize:[28,28], iconAnchor:[14,14] });
+    const marker = L.marker([r.lat, r.lng], { icon: icon }).addTo(map);
+    marker.resourceData = r;
+    marker.bindPopup(createPopupHtml(r), { maxWidth: 340 });
+    markers.push(marker);
+}
+
+/* create popup html using translations */
+function createPopupHtml(r){
+    const t = popText[currentLanguage] || popText.en;
+    const safeName = safe(r.name).replace(/"/g,'&quot;').replace(/'/g,"&#39;");
+    const phoneHtml = r.phone ? `<a href="tel:${safe(r.phone)}" style="color:#2563EB">${safe(r.phone)}</a>` : 'N/A';
+    return `
+        <div style="max-width:320px; font-family:'Nunito Sans',sans-serif;">
+            <h3 style="font-weight:bold; margin-bottom:8px; font-size:16px;">${safeName}</h3>
+            <p style="margin-bottom:8px; font-size:13px;"><strong>${t.type}:</strong> ${safe(r.type)}</p>
+            <p style="margin-bottom:8px; font-size:13px;">${safe(r.description || '')}</p>
+            <p style="margin-bottom:8px; font-size:13px;"><strong>${t.hours}:</strong> ${safe(r.hours || 'N/A')}</p>
+            <p style="margin-bottom:12px; font-size:13px;"><strong>${t.call}:</strong> ${phoneHtml}</p>
+            <p style="margin-bottom:12px; font-size:12px; color:#6B7280;"><i class="fas fa-map-marker-alt"></i> ${safe(r.address || '')}</p>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button onclick="getDirections(${r.lat},${r.lng},'${safeName}');" class="popup-btn direction-btn"><i class="fas fa-directions mr-1"></i> ${t.getDirections}</button>
+                <button onclick="openInExternalMap(${r.lat},${r.lng},'${safeName}');" class="popup-btn" style="background-color:#3B82F6; color:white;"><i class="fas fa-external-link-alt mr-1"></i> ${t.openInMaps}</button>
+                <button onclick="showQRCode(${r.lat},${r.lng},'${safeName}');" class="popup-btn" style="background-color:#10B981; color:white;"><i class="fas fa-qrcode mr-1"></i> ${t.showQRCode}</button>
+            </div>
+        </div>
+    `;
+}
+
+/* -------------------------
+   Search / filtering / categories
+   ------------------------- */
+function buildCategoryCheckboxes(){
+    const container = document.getElementById('categoryCheckboxes');
+    container.innerHTML = '';
+    const types = Array.from(new Set(dtesResources.map(r => r.type))).sort();
+    types.forEach(type => {
+        const id = 'cat_' + type.replace(/\W+/g,'_');
+        const wrapper = document.createElement('label');
+        wrapper.className = 'cat-chk';
+        wrapper.innerHTML = `<input type="checkbox" id="${id}" name="category" value="${type}" /><span style="font-size:13px;">${type}</span>`;
+        container.appendChild(wrapper);
+        wrapper.querySelector('input').addEventListener('change', applyCategoryFilters);
+    });
+}
+
+function applyCategoryFilters(){
+    const checked = Array.from(document.querySelectorAll('#categoryCheckboxes input:checked')).map(i => i.value);
+    if(checked.length === 0){
+        // fallback to single filter button
+        const activeBtn = document.querySelector('.filter-button.active');
+        const filter = activeBtn ? activeBtn.dataset.filter : 'all';
+        markers.forEach(m => {
+            if(filter === 'all' || m.resourceData.type === filter) m.addTo(map); else map.removeLayer(m);
+        });
+    } else {
+        markers.forEach(m => {
+            if(checked.includes(m.resourceData.type)) m.addTo(map); else map.removeLayer(m);
+        });
+    }
+    updateResourceCount();
+}
+
+document.getElementById('searchBar').addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase().trim();
+    markers.forEach(m => {
+        const r = m.resourceData;
+        const hay = `${r.name} ${r.description} ${r.type} ${r.address} ${r.phone}`.toLowerCase();
+        const match = q === '' || hay.includes(q);
+        if(match) m.addTo(map); else map.removeLayer(m);
+    });
+    updateResourceCount();
 });
 
-/* ---------- Online status ---------- */
-function updateOnlineUI(){
-  const offline = !navigator.onLine;
-  const banner = document.getElementById('offlineBanner');
-  banner.style.display = offline ? 'block' : 'none';
-  if(offline) banner.textContent = translations[currentLang].offlineBanner || translations.en.offlineBanner;
-}
-window.addEventListener('online', updateOnlineUI);
-window.addEventListener('offline', updateOnlineUI);
-
-/* ---------- Language switch ---------- */
-document.getElementById('languageSelect').addEventListener('change', (e) => {
-  currentLang = e.target.value || 'en';
-  if(['ar','fa','ur','he'].includes(currentLang)) { 
-    document.documentElement.dir = 'rtl'; 
-    document.body.classList.add('rtl'); 
-  } else { 
-    document.documentElement.dir = 'ltr'; 
-    document.body.classList.remove('rtl'); 
-  }
-  applyTranslations();
-  markers.forEach(m => m.bindPopup(createPopup(m.resource)));
+/* single filter buttons */
+document.querySelectorAll('.filter-button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        // if any category checkbox selected, ignore overriding filter
+        const anyChecked = document.querySelectorAll('#categoryCheckboxes input:checked').length > 0;
+        document.querySelectorAll('.filter-button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        if(anyChecked) return;
+        const filter = btn.dataset.filter;
+        markers.forEach(m => {
+            if(filter === 'all' || m.resourceData.type === filter) m.addTo(map); else map.removeLayer(m);
+        });
+        updateResourceCount();
+    });
 });
 
-function applyTranslations(){
-  const t = translations[currentLang] || translations.en;
-  document.getElementById('mainTitle').textContent = t.title;
-  document.getElementById('subtitle').textContent = t.subtitle;
-  document.getElementById('searchBar').placeholder = t.searchPlaceholder || '';
-  document.getElementById('hotlinesTitle').textContent = t.hotlinesTitle || 'Hotlines & Support';
-  document.getElementById('toggleListView').textContent = t.listView || 'List view';
-  updateOnlineUI();
+/* resource count update */
+function updateResourceCount(){
+    const count = markers.filter(m => map.hasLayer(m)).length;
+    document.getElementById('resourceCount').textContent = `${count} ${uiText[currentLanguage]?.resourceCountSuffix || 'verified locations'}`;
+    document.getElementById('allCount').textContent = dtesResources.length;
 }
 
-/* ---------- Status line ---------- */
-function updateStatusLine(){
-  document.getElementById('statusLine').textContent = `${resources.length} verified locations — call before you go.`;
+/* -------------------------
+   Directions / external maps / QR
+   ------------------------- */
+function getDirections(lat,lng,name){
+    if(!userLat || !userLng){ alert(uiText[currentLanguage]?.enableLocationFirst || 'Enable your location first'); return; }
+    if(routingControl) map.removeControl(routingControl);
+    routingControl = L.Routing.control({
+        waypoints: [ L.latLng(userLat,userLng), L.latLng(lat,lng) ],
+        lineOptions: { styles: [{ color:'#EF4444', weight:5, opacity:0.8 }] },
+        createMarker: ()=>null
+    }).addTo(map);
+    alert(`${uiText[currentLanguage]?.directionsTo || 'Directions to'} ${name}\n\n${uiText[currentLanguage]?.followRedLine || 'Follow the red line on map'}`);
 }
 
-/* ---------- Service Worker registration ---------- */
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('/sw.js').then(() => console.log('Service worker registered')).catch(err => console.warn('SW failed', err));
+function openInExternalMap(lat,lng,name){
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    let url;
+    if(isMobile){
+        if(/iPhone|iPad|iPod/.test(navigator.userAgent)) url = `maps://maps.google.com/maps?daddr=${lat},${lng}`;
+        else if(/Android/.test(navigator.userAgent)) url = `geo:${lat},${lng}?q=${lat},${lng}(${encodeURIComponent(name)})`;
+        else url = `https://maps.google.com/maps?daddr=${lat},${lng}`;
+    } else {
+        url = `https://maps.google.com/maps?daddr=${lat},${lng}`;
+    }
+    window.open(url,'_blank');
 }
 
-/* ---------- Init on DOM ready ---------- */
-document.addEventListener('DOMContentLoaded', async () => {
-  applyTranslations();
-  initMap();
-  await loadResources();
-  updateOnlineUI();
+function showQRCode(lat,lng,name){
+    const url = `https://maps.google.com/maps?q=${lat},${lng}(${encodeURIComponent(name)})`;
+    const modal = document.getElementById('qrModal');
+    const qrcodeDiv = document.getElementById('qrcode');
+    qrcodeDiv.innerHTML = '';
+    new QRCode(qrcodeDiv, { text: url, width:200, height:200 });
+    document.getElementById('qrLocationName').textContent = name;
+    modal.style.display = 'flex';
+}
+
+/* QR modal close */
+document.querySelector('.close-modal').addEventListener('click', ()=> document.getElementById('qrModal').style.display='none');
+window.addEventListener('click', (e) => { if(e.target === document.getElementById('qrModal')) document.getElementById('qrModal').style.display='none'; });
+
+/* -------------------------
+   Geolocation
+   ------------------------- */
+document.getElementById('locateUserButton').addEventListener('click', () => {
+    if(!navigator.geolocation) { alert('Geolocation not supported'); return; }
+    document.getElementById('userLocationStatus').textContent = uiText[currentLanguage]?.locating || 'Locating...';
+    navigator.geolocation.getCurrentPosition((pos) => {
+        userLat = pos.coords.latitude; userLng = pos.coords.longitude;
+        if(userLocationMarker) map.removeLayer(userLocationMarker);
+        const icon = L.divIcon({ className: 'user-location-icon', iconSize:[20,20], iconAnchor:[10,10] });
+        userLocationMarker = L.marker([userLat,userLng], { icon: icon }).addTo(map).bindPopup('<strong>You are here</strong>');
+        map.setView([userLat,userLng], 15);
+        document.getElementById('userLocationStatus').textContent = uiText[currentLanguage]?.locationFound || 'Location found!';
+        userLocationMarker.openPopup();
+    }, (err) => {
+        console.error('Geolocation error', err);
+        alert('Unable to get location. Please enable location services.');
+        document.getElementById('userLocationStatus').textContent = 'Location error';
+    });
 });
+
+/* -------------------------
+   UI Buttons: emergency/instructions/report
+   ------------------------- */
+document.getElementById('emergencyButton').addEventListener('click', () => {
+    const msg = document.getElementById('emergencyMessage');
+    msg.classList.remove('hidden');
+    setTimeout(()=> msg.classList.add('hidden'), 5000);
+});
+
+document.getElementById('instructionsButton').addEventListener('click', () => {
+    const instructions = currentLanguage === 'zh' ? 
+        `🆘 纳洛酮说明\n\n1) 识别过量（无/缓慢呼吸、蓝唇、无意识）\n2) 拨打 911\n3) 给予纳洛酮（鼻喷或注射）\n4) 提供人工呼吸\n5) 留在患者身边并寻求帮助\n\n许多图钉处可免费获得纳洛酮套件。` :
+        currentLanguage === 'es' ? 
+        `🆘 INSTRUCCIONES DE NALOXONA\n\n1) Reconozca la sobredosis (respiración lenta/nula, labios azules, inconsciente)\n2) Llame al 911\n3) Administre naloxona (nasal o inyectable)\n4) Proporcione respiración de rescate\n5) Permanezca con la persona y pida ayuda\n\nLos kits de naloxona gratuitos están disponibles en muchos marcadores.` :
+        `🆘 NALOXONE INSTRUCTIONS\n\n1) Recognize overdose (no/slow breathing, blue lips, unconscious)\n2) Call 911\n3) Give naloxone (nasal or injectable)\n4) Provide rescue breaths\n5) Stay with person & call for help\n\nFree naloxone kits available at many pins.`;
+    alert(instructions);
+});
+
+document.getElementById('reportStatusButton').addEventListener('click', () => {
+    const reportText = currentLanguage === 'zh' ? 
+        `📢 报告服务变更\n\n请发送电子邮件至 info@dteslifeline.org 或在 GitHub 上开 issue 来建议更新（关闭、时间变更、新资源）。谢谢。` :
+        currentLanguage === 'es' ? 
+        `📢 REPORTAR CAMBIOS EN SERVICIOS\n\nPor favor envíe un correo electrónico a info@dteslifeline.org o abra un issue en GitHub para sugerir actualizaciones (cierre, cambios de horario, nuevos recursos). Gracias.` :
+        `📢 REPORT SERVICE CHANGES\n\nPlease email info@dteslifeline.org or open a GitHub issue to suggest updates (closures, hours changes, new resources). Thank you.`;
+    alert(reportText);
+});
+
+/* -------------------------
+   Accessibility widget
+   ------------------------- */
+const a11y = {
+    el: document.getElementById('a11yWidget'),
+    content: document.getElementById('a11yContent'),
+    minimizedDiv: document.getElementById('a11yMinimized'),
+    minimizeBtn: document.getElementById('minimizeA11y'),
+    restoreBtn: document.getElementById('restoreA11y'),
+    increase: document.getElementById('increaseFont'),
+    decrease: document.getElementById('decreaseFont'),
+    contrastBtn: document.getElementById('toggleContrast')
+};
+
+function setA11yMinimized(state){
+    if(state){
+        a11y.el.classList.add('minimized');
+        a11y.content.style.display = 'none';
+        if(a11y.minimizedDiv) a11y.minimizedDiv.style.display = 'block';
+        sessionStorage.setItem('a11yMin', '1');
+    } else {
+        a11y.el.classList.remove('minimized');
+        a11y.content.style.display = 'block';
+        if(a11y.minimizedDiv) a11y.minimizedDiv.style.display = 'none';
+        sessionStorage.removeItem('a11yMin');
+    }
+}
+
+if(a11y.minimizeBtn) a11y.minimizeBtn.addEventListener('click', ()=> setA11yMinimized(true));
+if(a11y.restoreBtn) a11y.restoreBtn.addEventListener('click', ()=> setA11yMinimized(false));
+if(a11y.increase) a11y.increase.addEventListener('click', ()=> {
+    const root = document.documentElement;
+    const size = parseFloat(getComputedStyle(root).fontSize) || 16;
+    const next = Math.min(28, size + 2);
+    root.style.fontSize = next + 'px';
+});
+if(a11y.decrease) a11y.decrease.addEventListener('click', ()=> {
+    const root = document.documentElement;
+    const size = parseFloat(getComputedStyle(root).fontSize) || 16;
+    const next = Math.max(12, size - 2);
+    root.style.fontSize = next + 'px';
+});
+if(a11y.contrastBtn) a11y.contrastBtn.addEventListener('click', ()=> {
+    document.body.classList.toggle('high-contrast');
+    const on = document.body.classList.contains('high-contrast');
+    a11y.contrastBtn.textContent = on ? 
+        (uiText[currentLanguage]?.contrastBtnText === 'High contrast' ? 'Contrast: On' : 'تباين: تشغيل') : 
+        uiText[currentLanguage]?.contrastBtnText || 'High contrast';
+});
+
+if(sessionStorage.getItem('a11yMin')) setA11yMinimized(true);
+
+/* -------------------------
+   Hotlines rendering in footer
+   (hotlines should be included in dtes-resources.json with type "Hotline" or we show fallback ones)
+   ------------------------- */
+function renderHotlines(){
+    const grid = document.getElementById('hotlinesGrid');
+    grid.innerHTML = '';
+    const hotlines = dtesResources.filter(r => r.type && r.type.toLowerCase().includes('hotline'));
+    if(hotlines.length === 0){
+        // fallback hardcoded hotlines if JSON doesn't include them
+        const fallback = [
+            { name: "BC Mental Health", phone: "310-6789", description: "Provincial mental health support (BC)" },
+            { name: "Suicide Crisis (9-8-8)", phone: "988", description: "24/7 suicide & crisis support — call or text (Canada)" },
+            { name: "Hope for Wellness", phone: "1-855-242-3310", description: "24/7 culturally-safe support for Indigenous peoples" },
+            { name: "Kids Help Phone", phone: "1-800-668-6868", description: "24/7 support for young people (call/text/chat)" },
+            { name: "BC211", phone: "211", description: "Information & referrals across BC — interpretation available" },
+            { name: "Crisis Services Canada", phone: "1-833-456-4566", description: "National crisis line — call or text 45645" },
+            { name: "Poison Control (Canada)", phone: "1-844-764-7669", description: "National poison centre (1-844-POISON-X)" },
+            { name: "Vancouver Non-Emergency", phone: "604-717-3321", description: "Vancouver Police non-emergency reporting" }
+        ];
+        fallback.forEach(h => {
+            const el = document.createElement('div');
+            el.innerHTML = `<div class="font-semibold text-teal-400 mb-2"><i class="fas fa-headset mr-2"></i> ${safe(h.name)}</div>
+                            <a href="tel:${safe(h.phone)}" class="hover:text-teal-300 block text-lg font-bold">${safe(h.phone)}</a>
+                            <div class="text-xs text-gray-400 mt-1">${safe(h.description)}</div>`;
+            grid.appendChild(el);
+        });
+        return;
+    }
+    hotlines.forEach(h => {
+        const el = document.createElement('div');
+        el.innerHTML = `<div class="font-semibold text-teal-400 mb-2"><i class="fas fa-headset mr-2"></i> ${safe(h.name)}</div>
+                        <a href="tel:${safe(h.phone)}" class="hover:text-teal-300 block text-lg font-bold">${safe(h.phone)}</a>
+                        <div class="text-xs text-gray-400 mt-1">${safe(h.description || '')}</div>`;
+        grid.appendChild(el);
+    });
+}
+
+/* -------------------------
+   Loading overlay helpers
+   ------------------------- */
+function hideLoadingOverlay(){
+    const overlay = document.getElementById('loadingOverlay');
+    if(overlay){
+        overlay.style.opacity = '0';
+        setTimeout(()=> overlay.style.display = 'none', 400);
+        document.getElementById('mainAppContent').style.opacity = '1';
+    }
+}
+
+/* -------------------------
+   Utility: hide/show quick exit
+   ------------------------- */
+window.addEventListener('scroll', ()=> { document.getElementById('quickExitBtn').style.display = window.scrollY > 200 ? 'block' : 'none'; });
+document.getElementById('quickExitBtn').addEventListener('click', ()=> window.location.href = 'https://www.google.com');
+
+/* -------------------------
+   Initialize: load JSON on DOM ready
+   ------------------------- */
+document.addEventListener('DOMContentLoaded', () => {
+    // set default language from browser if available
+    const browser = (navigator.language || 'en').split('-')[0];
+    if(uiText[browser]) { 
+        currentLanguage = browser; 
+        document.getElementById('languageSelect').value = browser; 
+    }
+    
+    document.getElementById('languageSelect').addEventListener('change', (e)=> {
+        currentLanguage = e.target.value;
+        applyUiTranslations();
+        // update popups
+        markers.forEach(m => {
+            m.bindPopup(createPopupHtml(m.resourceData), { maxWidth: 340 });
+        });
+        // Apply RTL for Arabic, Persian, Urdu
+        if(['ar', 'fa', 'ur'].includes(currentLanguage)) {
+            document.body.classList.add('rtl');
+        } else {
+            document.body.classList.remove('rtl');
+        }
+    });
+    
+    loadResourcesJSON('dtes-resources.json');
+});
+
+/* Apply UI translations for top-level labels */
+function applyUiTranslations(){
+    const t = uiText[currentLanguage] || uiText.en;
+    document.getElementById('mainTitle').textContent = t.title;
+    document.getElementById('subtitle').textContent = t.subtitle;
+    document.getElementById('searchBar').setAttribute('placeholder', t.searchPlaceholder);
+    document.getElementById('locateBtnLabel').textContent = t.locate;
+    document.getElementById('naloxoneBtnLabel').textContent = t.naloxone;
+    document.getElementById('reportBtnLabel').textContent = t.report;
+    document.getElementById('emergencyBtnLabel').textContent = t.emergency;
+    document.getElementById('filterLabel').textContent = t.filterLabel;
+    document.getElementById('searchLabel').textContent = t.searchLabel;
+    document.getElementById('alertText').textContent = t.alert;
+    document.getElementById('hotlinesTitle').textContent = t.hotlinesTitle;
+    document.getElementById('footerText').textContent = t.footerText;
+    document.getElementById('a11yTitle').textContent = t.a11yTitle;
+    document.getElementById('a11yDesc').textContent = t.a11yDesc;
+    document.getElementById('contrastBtnText').textContent = t.contrastBtnText;
+    
+    // Update button texts
+    document.getElementById('allBtnText').textContent = t.allBtnText;
+    document.getElementById('naloxoneBtnText').textContent = t.naloxoneBtnText;
+    document.getElementById('sitesBtnText').textContent = t.sitesBtnText;
+    document.getElementById('detoxBtnText').textContent = t.detoxBtnText;
+    document.getElementById('foodBtnText').textContent = t.foodBtnText;
+    document.getElementById('shelterBtnText').textContent = t.shelterBtnText;
+    document.getElementById('urgentBtnText').textContent = t.urgentBtnText;
+    document.getElementById('washroomsBtnText').textContent = t.washroomsBtnText;
+    document.getElementById('mentalBtnText').textContent = t.mentalBtnText;
+    
+    updateResourceCount();
+}
 </script>
 </body>
 </html>
