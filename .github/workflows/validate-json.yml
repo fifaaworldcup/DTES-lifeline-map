@@ -1,0 +1,25 @@
+name: Validate JSON
+
+on:
+  push:
+    paths:
+      - 'dtes-resources.json'
+      - 'schema.json'
+  pull_request:
+    paths:
+      - 'dtes-resources.json'
+      - 'schema.json'
+
+jobs:
+  validate_json:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install ajv-cli
+        run: npm install -g ajv-cli
+      - name: Validate dtes-resources.json
+        run: ajv validate -s schema.json -d dtes-resources.json
