@@ -1,0 +1,19 @@
+{
+  "name": "dtes-lifeline-map",
+  "version": "1.0.0",
+  "description": "Offline-capable map of DTES community resources",
+  "main": "index.html",
+  "scripts": {
+    "update-resources": "node scripts/update-resources.js",
+    "validate": "ajv validate -s schema.json -d dtes-resources.json",
+    "serve": "python3 -m http.server 8000"
+  },
+  "dependencies": {
+    "node-fetch": "^2.6.7",
+    "simple-git": "^3.15.1",
+    "cheerio": "^1.0.0-rc.12"
+  },
+  "devDependencies": {
+    "ajv-cli": "^5.0.0"
+  }
+}
