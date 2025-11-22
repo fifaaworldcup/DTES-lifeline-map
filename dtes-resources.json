@@ -7,9 +7,7 @@
     "type": "Food",
     "lat": 49.278026,
     "lng": -123.123444,
-    "source": "City of Vancouver — Free and low-cost resources",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources"
   },
   {
     "name": "Evelyne Saller Centre",
@@ -19,9 +17,7 @@
     "type": "Food",
     "lat": 49.281056,
     "lng": -123.105234,
-    "source": "City of Vancouver — Free and low-cost resources",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources"
   },
   {
     "name": "Lookout Housing and Health Society (site)",
@@ -31,9 +27,7 @@
     "type": "Food",
     "lat": 49.2824,
     "lng": -123.0998,
-    "source": "City of Vancouver; Lookout Housing + Health",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources; Lookout Housing + Health"
   },
   {
     "name": "RainCity Housing (Triage Shelter)",
@@ -43,9 +37,7 @@
     "type": "Shelter",
     "lat": 49.2819,
     "lng": -123.1002,
-    "source": "RainCity Housing",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources; RainCity Housing"
   },
   {
     "name": "Union Gospel Mission — The Cornerstone",
@@ -55,9 +47,7 @@
     "type": "Food",
     "lat": 49.2827,
     "lng": -123.1010,
-    "source": "Union Gospel Mission",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources; Union Gospel Mission"
   },
   {
     "name": "DTES Neighbourhood House",
@@ -67,9 +57,7 @@
     "type": "Food",
     "lat": 49.2825,
     "lng": -123.1015,
-    "source": "City of Vancouver",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources"
   },
   {
     "name": "Ray-Cam Co-operative Centre",
@@ -79,21 +67,17 @@
     "type": "Food",
     "lat": 49.2842,
     "lng": -123.0969,
-    "source": "City of Vancouver",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources"
   },
   {
     "name": "Covenant House Vancouver",
     "address": "575 Drake St, Vancouver, BC",
     "phone": "604-638-4438",
-    "hours": "Youth drop-in (see Covenant House)",
+    "hours": "Varies — youth drop-in (see Covenant House)",
     "type": "Shelter",
     "lat": 49.2820,
     "lng": -123.1034,
-    "source": "Covenant House",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources"
   },
   {
     "name": "Atira Women's Resource Society",
@@ -103,9 +87,37 @@
     "type": "Clothing",
     "lat": 49.2834,
     "lng": -123.0976,
-    "source": "Atira",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "City of Vancouver — Free and low-cost resources"
+  },
+  {
+    "name": "Downtown Eastside Women's Centre",
+    "address": "302 Columbia St, Vancouver, BC",
+    "phone": "604-681-8480",
+    "hours": "Mon, Tue, Thu, Fri 10am–2pm; Daily 2pm–4pm",
+    "type": "Clothing",
+    "lat": 49.2821,
+    "lng": -123.1030,
+    "source": "City of Vancouver — Free and low-cost resources"
+  },
+  {
+    "name": "Dress for Success Vancouver",
+    "address": "675 W Hastings St, Vancouver, BC",
+    "phone": "604-408-7923",
+    "hours": "Tue–Fri 9:30am–4:30pm; Sat 10am–1pm",
+    "type": "Clothing",
+    "lat": 49.2839,
+    "lng": -123.1175,
+    "source": "City of Vancouver — Free and low-cost resources"
+  },
+  {
+    "name": "Working Gear",
+    "address": "520 Powell St, Vancouver, BC",
+    "phone": "778-877-0147",
+    "hours": "By appointment (Tue, Thu, Sat)",
+    "type": "Clothing",
+    "lat": 49.2823,
+    "lng": -123.0992,
+    "source": "City of Vancouver — Free and low-cost resources"
   },
   {
     "name": "Insite Supervised Consumption Site",
@@ -115,183 +127,136 @@
     "type": "Injection Site",
     "lat": 49.2811,
     "lng": -123.0995,
-    "description": "Supervised consumption and harm reduction services",
-    "source": "VCH / Insite",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "VCH / Insite"
   },
   {
-    "name": "Portland Hotel Society",
-    "address": "403 E Hastings St, Vancouver, BC V6A 1N6",
-    "phone": "604-681-8976",
-    "hours": "24/7",
-    "type": "Shelter",
-    "lat": 49.2822,
-    "lng": -123.0998,
-    "source": "Portland Hotel Society",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "First United Church",
-    "address": "320 E Hastings St, Vancouver, BC V6A 1N8",
-    "phone": "604-681-8365",
-    "hours": "Mon–Fri 9am–5pm",
-    "type": "Food",
-    "lat": 49.2830,
-    "lng": -123.0990,
-    "source": "First United Church",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "St. Paul's Hospital Emergency",
-    "address": "1081 Burrard St, Vancouver, BC V6Z 1Y6",
-    "phone": "604-682-2344",
-    "hours": "24/7",
-    "type": "Mental Health",
-    "lat": 49.2845,
-    "lng": -123.1230,
-    "source": "St. Paul's Hospital",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "Vancouver Coastal Health Downtown Community Health Centre",
-    "address": "569 Seymour St, Vancouver, BC V6B 3H6",
-    "phone": "604-675-2520",
-    "hours": "Mon–Fri 8:30am–4:30pm",
-    "type": "Mental Health",
-    "lat": 49.2835,
-    "lng": -123.1220,
-    "source": "Vancouver Coastal Health",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "BC Centre for Disease Control",
-    "address": "655 W 12th Ave, Vancouver, BC V5Z 4R4",
-    "phone": "604-707-2400",
-    "hours": "Mon–Fri 8:30am–4:30pm",
-    "type": "Naloxone",
-    "lat": 49.2630,
-    "lng": -123.1260,
-    "source": "BCCDC",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "Powell Street Getaway",
-    "address": "276 Powell St, Vancouver, BC V6A 1E9",
-    "phone": "604-255-8640",
-    "hours": "Mon–Fri 9am–5pm",
-    "type": "Washrooms",
-    "lat": 49.2840,
-    "lng": -123.0995,
-    "source": "Powell Street Getaway",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "Vancouver Native Health Society",
-    "address": "449 E Hastings St, Vancouver, BC V6A 1P6",
-    "phone": "604-254-9930",
-    "hours": "Mon–Fri 9am–5pm",
-    "type": "Mental Health",
-    "lat": 49.2820,
-    "lng": -123.0990,
-    "source": "Vancouver Native Health Society",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "Carnegie Community Centre",
-    "address": "401 Main St, Vancouver, BC V6A 2S7",
-    "phone": "604-665-2220",
-    "hours": "Mon–Fri 9am–9pm, Sat–Sun 10am–5pm",
-    "type": "Food",
-    "lat": 49.2835,
-    "lng": -123.1005,
-    "source": "Carnegie Community Centre",
-    "verified_at": "2025-11-18",
-    "status": "open"
-  },
-  {
-    "name": "Overdose Prevention Site (OPS)",
-    "address": "390 Main St, Vancouver, BC V6A 2S7",
-    "phone": "604-685-7677",
-    "hours": "24/7",
+    "name": "Powell St Getaway OPS",
+    "address": "528 Powell St, Vancouver, BC",
+    "phone": "778-379-2640",
+    "hours": "Daily 10am-10pm",
     "type": "Injection Site",
+    "lat": 49.2817,
+    "lng": -123.0982,
+    "source": "Peer-run OPS"
+  },
+  {
+    "name": "Lookout Emergency Shelter",
+    "address": "336 Main St, Vancouver, BC",
+    "phone": "604-253-1111",
+    "hours": "24/7 intake",
+    "type": "Shelter",
+    "lat": 49.2810,
+    "lng": -123.1020,
+    "source": "Lookout Housing + Health"
+  },
+  {
+    "name": "Vancouver Aboriginal Health Society",
+    "address": "1147 Seymour St, Vancouver, BC",
+    "phone": "604-682-5616",
+    "hours": "Mon–Fri",
+    "type": "Health",
+    "lat": 49.2860,
+    "lng": -123.1190,
+    "source": "VAHS"
+  },
+  {
+    "name": "PHS Community Services",
+    "address": "310 E Hastings St, Vancouver, BC",
+    "phone": "604-253-2521",
+    "hours": "Varies",
+    "type": "Harm Reduction",
+    "lat": 49.2813,
+    "lng": -123.0999,
+    "source": "PHS"
+  },
+  {
+    "name": "St. James Community Service Society",
+    "address": "321 E Cordova St, Vancouver, BC",
+    "phone": "604-684-7499",
+    "hours": "Varies",
+    "type": "Food",
     "lat": 49.2830,
+    "lng": -123.0990,
+    "source": "St. James"
+  },
+  {
+    "name": "Streetohome Foundation (info)",
+    "address": "Suite 203 - 50 W Pender St, Vancouver, BC",
+    "phone": "604-629-2711",
+    "hours": "Mon–Fri",
+    "type": "Info",
+    "lat": 49.2850,
+    "lng": -123.1180,
+    "source": "Streetohome"
+  },
+  {
+    "name": "Vancouver Coastal Health - DTES",
+    "address": "455 E Hastings St, Vancouver, BC",
+    "phone": "604-675-3800",
+    "hours": "Mon–Fri",
+    "type": "Health",
+    "lat": 49.2825,
+    "lng": -123.1012,
+    "source": "VCH"
+  },
+  {
+    "name": "Onsite Needle Disposal (multiple)",
+    "address": "Various locations in DTES",
+    "phone": "",
+    "hours": "Varies",
+    "type": "Naloxone",
+    "lat": 49.2820,
     "lng": -123.1000,
-    "description": "Overdose prevention services",
-    "source": "VCH",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "source": "VCH"
   },
   {
-    "name": "BC Crisis Line",
-    "address": "Province-wide service",
-    "phone": "310-6789",
+    "name": "BC 211 (Information & referrals)",
+    "address": "",
+    "phone": "211",
     "hours": "24/7",
     "type": "Hotline",
-    "lat": null,
-    "lng": null,
-    "description": "Mental health and substance use support",
-    "source": "BC Crisis Centre",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "lat": 49.2820,
+    "lng": -123.1000,
+    "source": "BC 211"
   },
   {
-    "name": "1-800 SUICIDE",
-    "address": "Province-wide service",
-    "phone": "1-800-784-2433",
-    "hours": "24/7",
-    "type": "Hotline",
-    "lat": null,
-    "lng": null,
-    "description": "Suicide prevention and emotional support",
-    "source": "BC Crisis Centre",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "name": "Kettle Society",
+    "address": "1725 W 3rd Ave, Vancouver, BC",
+    "phone": "604-257-1711",
+    "hours": "Varies",
+    "type": "Shelter",
+    "lat": 49.2630,
+    "lng": -123.1380,
+    "source": "Kettle Society"
   },
   {
-    "name": "Kids Help Phone",
-    "address": "Canada-wide service",
-    "phone": "1-800-668-6868",
+    "name": "Crisis Centre (Vancouver)",
+    "address": "",
+    "phone": "604-872-3311",
     "hours": "24/7",
     "type": "Hotline",
-    "lat": null,
-    "lng": null,
-    "description": "Support for children and youth",
-    "source": "Kids Help Phone",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "lat": 49.2820,
+    "lng": -123.1000,
+    "source": "Crisis Centre"
   },
   {
-    "name": "VictimLinkBC",
-    "address": "Province-wide service",
-    "phone": "1-800-563-0808",
-    "hours": "24/7",
-    "type": "Hotline",
-    "lat": null,
-    "lng": null,
-    "description": "Support for victims of crime and family violence",
-    "source": "VictimLinkBC",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "name": "Portland Hotel Society Food Bank",
+    "address": "501 Powell St, Vancouver, BC",
+    "phone": "604-254-7511",
+    "hours": "Varies",
+    "type": "Food",
+    "lat": 49.2816,
+    "lng": -123.1005,
+    "source": "PHS"
   },
   {
-    "name": "8-1-1 HealthLinkBC",
-    "address": "Province-wide service",
-    "phone": "8-1-1",
-    "hours": "24/7",
-    "type": "Hotline",
-    "lat": null,
-    "lng": null,
-    "description": "Health information and advice",
-    "source": "HealthLinkBC",
-    "verified_at": "2025-11-18",
-    "status": "open"
+    "name": "Street Nurse Program (PHS)",
+    "address": "Multiple",
+    "phone": "604-253-2521",
+    "hours": "Varies",
+    "type": "Health",
+    "lat": 49.2825,
+    "lng": -123.1005,
+    "source": "PHS"
   }
 ]
